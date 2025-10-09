@@ -2,5 +2,6 @@
         <div class="logo">
             <span>YouNiFirst</span>
         </div>
-        <button class="login-btn">Login</button>
+        <a href="/login">
+            <button class="login-btn" onclick="window.location.href='/login'">Login</button></a>
     </nav>

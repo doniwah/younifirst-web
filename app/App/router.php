@@ -14,8 +14,9 @@ class Router
     public function run()
     {
         $method = $_SERVER['REQUEST_METHOD'];
-        $url = $_GET['url'] ?? '/';
-        $url = '/' . trim($url, '/');
+        $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $url = rtrim($url, '/');
+        if ($url === '') $url = '/';
 
         $callback = $this->routes[$method][$url] ?? false;
 

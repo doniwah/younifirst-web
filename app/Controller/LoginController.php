@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
-class HomeController
+class LoginController
 {
-    public function index()
+    public function login()
     {
         ob_start();
-        include '../app/view/index.php';
+        include '../app/view/auth/login.php';
         return ob_get_clean();
     }
 }
