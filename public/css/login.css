@@ -39,7 +39,7 @@ body {
 .brand-name {
   font-size: 32px;
   font-weight: 700;
-  background: linear-gradient(to right, #4285f4, #8e24aa);
+  background: linear-gradient(to right, #003366, #0070c0);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -106,7 +106,7 @@ input::placeholder {
 .login-button {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #5b7cff 0%, #8b5cf6 100%);
+  background: linear-gradient(to right, #003366, #0070c0);
   color: white;
   border: none;
   border-radius: 10px;
