@@ -16,7 +16,6 @@
     ?>
 
     <section class="hero">
-        <div class="badge">Platform Komunitas Kampus</div>
         <h1>Terhubung, Berkompetisi, Berkembang Bersama</h1>
         <p>YouNiFirst adalah platform all-in-one untuk mahasiswa. Temukan lomba, tim, event, dan lebih banyak lagi dalam
             satu tempat.</p>
@@ -68,7 +67,7 @@
             <h2>Mengapa Memilih <br>YouNiFirst?</h2>
 
             <div class="why-item">
-                <div class="why-icon icon-people"><i class="bi bi-people" style="color: #3B82F6"></i></div>
+                <div class="why-icon icon-people"><i class="bi bi-people"></i></div>
                 <div>
                     <h3>Komunitas Aktif</h3>
                     <p>Bergabung dengan ribuan mahasiswa yang aktif berbagi dan berkolaborasi</p>
@@ -76,7 +75,7 @@
             </div>
 
             <div class="why-item">
-                <div class="why-icon icon-shield"><i class="bi bi-shield" style="color: #8B5CF6"></i></div>
+                <div class="why-icon icon-shield"><i class="bi bi-shield"></i></div>
                 <div>
                     <h3>Aman & Terpercaya</h3>
                     <p>Platform dengan sistem keamanan terjamin untuk melindungi data kamu</p>
@@ -84,7 +83,7 @@
             </div>
 
             <div class="why-item">
-                <div class="why-icon icon-calendar"><i class="bi bi-calendar4" style="color: #F59E0B"></i></div>
+                <div class="why-icon icon-calendar"><i class="bi bi-calendar4"></i></div>
                 <div>
                     <h3>Update Berkala</h3>
                     <p>Dapatkan informasi terbaru tentang lomba, event, dan aktivitas kampus</p>
@@ -99,10 +98,95 @@
         </div>
     </section>
 
-    <section class="cta-section">
-        <h2>Siap Memulai Perjalananmu?</h2>
-        <p>Bergabung sekarang dan rasakan pengalaman kampus yang lebih terkoneksi dan<br> produktif</p>
-        <button class="btn-white">Daftar Gratis</button>
+    <section class="testimonial-section">
+        <div class="section-header">
+            <h2>Apa Kata Mahasiswa?</h2>
+            <p>Dengarkan pengalaman dari pengguna YouNiFirst lainnya</p>
+        </div>
+
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <div class="card-header">
+                    <div class="avatar blue1">AM</div>
+                    <div class="user-info">
+                        <h3>Ahmad Maulana</h3>
+                        <p>Teknologi Informasi</p>
+                    </div>
+                </div>
+                <div class="testimonial-text">
+                    "YouNiFirst sangat membantu saya menemukan tim untuk kompetisi. Sekarang lebih mudah berkolaborasi
+                    dengan mahasiswa lain!"
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="card-header">
+                    <div class="avatar blue2">SP</div>
+                    <div class="user-info">
+                        <h3>Siti Permata</h3>
+                        <p>Sistem Informasi</p>
+                    </div>
+                </div>
+                <div class="testimonial-text">
+                    "Fitur Lost & Found-nya sangat berguna! Saya berhasil menemukan dompet yang hilang dalam 2 hari."
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="card-header">
+                    <div class="avatar blue3">RP</div>
+                    <div class="user-info">
+                        <h3>Rizki Pratama</h3>
+                        <p>Teknik Elektro</p>
+                    </div>
+                </div>
+                <div class="testimonial-text">
+                    "Platform yang lengkap dan mudah digunakan. Forum diskusinya aktif dan membantu dalam belajar
+                    kelompok."
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq-section">
+        <div class="section-header">
+            <h2>Pertanyaan Yang Sering Diajukan</h2>
+            <p>Temukan jawaban untuk pertanyaan umum tentang YouNiFirst</p>
+        </div>
+
+        <div class="faq-container">
+            <div class="faq-item">
+                <div class="faq-question">Apakah CampusHub gratis?</div>
+                <div class="faq-answer">
+                    Ya, YouNiFirst sepenuhnya gratis untuk semua mahasiswa. Anda dapat mengakses semua fitur tanpa biaya
+                    apapun.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Bagaimana cara bergabung dengan tim kompetisi?</div>
+                <div class="faq-answer">
+                    Buka halaman Kompetisi, cari tim yang sesuai dengan minat Anda, lalu klik tombol "Daftar". Pembuat
+                    tim akan meninjau aplikasi Anda.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Siapa yang bisa melihat postingan saya di forum?</div>
+                <div class="faq-answer">
+                    Untuk forum jurusan, hanya mahasiswa dari jurusan yang sama yang dapat melihat. Forum global dapat
+                    dilihat oleh semua pengguna.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Bagaimana cara melaporkan barang hilang?</div>
+                <div class="faq-answer">
+                    Kunjungi halaman Lost & Found, klik tombol "Laporkan", pilih kategori "Kehilangan", lalu isi detail
+                    barang yang hilang dengan lengkap.
+                </div>
+            </div>
+        </div>
     </section>
 
     <?php
