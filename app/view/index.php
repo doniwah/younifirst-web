@@ -156,7 +156,7 @@
 
         <div class="faq-container">
             <div class="faq-item">
-                <div class="faq-question">Apakah CampusHub gratis?</div>
+                <div class="faq-question">Apakah YouNiFirst gratis?</div>
                 <div class="faq-answer">
                     Ya, YouNiFirst sepenuhnya gratis untuk semua mahasiswa. Anda dapat mengakses semua fitur tanpa biaya
                     apapun.
