@@ -11,6 +11,11 @@ class Router
         $this->routes['GET'][$path] = $callback;
     }
 
+    public function post($path, $callback)
+    {
+        $this->routes['POST'][$path] = $callback;
+    }
+
     public function run()
     {
         $method = $_SERVER['REQUEST_METHOD'];

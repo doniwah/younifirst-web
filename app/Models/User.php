@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\Database;
+
+class User
+{
+    public static function findByEmail($email)
+    {
+        $db = Database::getInstance();
+        $stmt = $db->prepare("SELECT * FROM users WHERE email = :email OR username = :username");
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':username', $email);
+        $stmt->execute();
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    public static function findByUsername($username)
+    {
+        $db = Database::getInstance();
+        $stmt = $db->prepare("SELECT * FROM users WHERE username = :username");
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+}
