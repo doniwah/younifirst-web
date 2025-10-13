@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-class DashboardController
+class KompetisiController
 {
-    public function dashboard()
+    public function kompetisi()
     {
         session_start();
 
@@ -14,7 +14,7 @@ class DashboardController
         }
 
         ob_start();
-        include __DIR__ . '/../view/component/dashboard/index.php';
+        include __DIR__ . '/../view/component/kompetisi/index.php';
         return ob_get_clean();
     }
 }

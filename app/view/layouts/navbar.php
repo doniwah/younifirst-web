@@ -4,12 +4,20 @@
             <span>YouNiFirst</span>
         </div>
         <div class="btn_nav">
+            <?php
+            $current_route = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            ?>
             <?php if (isset($_SESSION['user'])): ?>
-                <a href=""><i class="bi bi-house"></i>Dashboard</a>
-                <a href=""><i class="bi bi-trophy"></i>Kompetisi</a>
-                <a href=""><i class="bi bi-box-seam"></i>Lost & Found</a>
-                <a href=""><i class="bi bi-calendar4"></i>Event</a>
-                <a href=""><i class="bi bi-chat-left"></i>Forum</a>
+                <a href="/dashboard" class="<?= ($current_route == '/dashboard') ? 'active' : '' ?>"><i
+                        class="bi bi-house"></i>Dashboard</a>
+                <a href="/kompetisi" class="<?= ($current_route == '/kompetisi') ? 'active' : '' ?>"><i
+                        class="bi bi-trophy"></i>Kompetisi</a>
+                <a href="" class="<?= ($current_route == '/lost&found') ? 'active' : '' ?>"><i
+                        class="bi bi-box-seam"></i>Lost & Found</a>
+                <a href="" class="<?= ($current_route == '/event') ? 'active' : '' ?>"><i
+                        class="bi bi-calendar4"></i>Event</a>
+                <a href="" class="<?= ($current_route == '/forum') ? 'active' : '' ?>"><i
+                        class="bi bi-chat-left"></i>Forum</a>
             <?php endif; ?>
         </div>
         <?php if (isset($_SESSION['user'])): ?>
