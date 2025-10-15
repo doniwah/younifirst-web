@@ -12,11 +12,11 @@
                         class="bi bi-house"></i>Dashboard</a>
                 <a href="/kompetisi" class="<?= ($current_route == '/kompetisi') ? 'active' : '' ?>"><i
                         class="bi bi-trophy"></i>Kompetisi</a>
-                <a href="" class="<?= ($current_route == '/lost&found') ? 'active' : '' ?>"><i
+                <a href="/lost_found" class="<?= ($current_route == '/lost_found') ? 'active' : '' ?>"><i
                         class="bi bi-box-seam"></i>Lost & Found</a>
-                <a href="" class="<?= ($current_route == '/event') ? 'active' : '' ?>"><i
+                <a href="/event" class="<?= ($current_route == '/event') ? 'active' : '' ?>"><i
                         class="bi bi-calendar4"></i>Event</a>
-                <a href="" class="<?= ($current_route == '/forum') ? 'active' : '' ?>"><i
+                <a href="/forum" class="<?= ($current_route == '/forum') ? 'active' : '' ?>"><i
                         class="bi bi-chat-left"></i>Forum</a>
             <?php endif; ?>
         </div>

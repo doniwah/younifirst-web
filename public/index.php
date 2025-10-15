@@ -6,7 +6,10 @@ use App\App\Router;
 use App\Controller\HomeController;
 use App\Controller\LoginController;
 use App\Controller\DashboardController;
+use App\Controller\EventController;
 use App\Controller\KompetisiController;
+use App\Controller\LostnFoundController;
+use App\Controller\ForumController;
 use App\Models\Database;
 
 $router = new Router();
@@ -18,4 +21,7 @@ $router->get('/logout', [LoginController::class, 'logout']);
 
 $router->get('/dashboard', [DashboardController::class, 'dashboard']);
 $router->get('/kompetisi', [KompetisiController::class, 'kompetisi']);
+$router->get('/lost_found', [LostnFoundController::class, 'lost_found']);
+$router->get('/event', [EventController::class, 'event']);
+$router->get('/forum', [ForumController::class, 'forum']);
 $router->run();
