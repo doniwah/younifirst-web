@@ -20,9 +20,14 @@ $router->post('/login', [LoginController::class, 'login']);
 $router->get('/logout', [LoginController::class, 'logout']);
 
 $router->get('/dashboard', [DashboardController::class, 'dashboard']);
-$router->get('/kompetisi', [KompetisiController::class, 'kompetisi']);
+
+
+$router->get('/kompetisi', [KompetisiController::class, 'index']);
 $router->post('/kompetisi/create', [KompetisiController::class, 'create']);
 $router->get('/kompetisi/{id}', [KompetisiController::class, 'detail']);
+
+$router->post('/kompetisi/{id}/approve', [KompetisiController::class, 'approve']);
+$router->post('/kompetisi/{id}/reject', [KompetisiController::class, 'reject']);
 
 $router->get('/lost_found', [LostnFoundController::class, 'lost_found']);
 $router->get('/event', [EventController::class, 'event']);

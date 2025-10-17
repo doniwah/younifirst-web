@@ -3,18 +3,17 @@
 namespace App\Controller;
 
 use App\Models\Competition;
-use App\Models\Database;
 
 class KompetisiController
 {
 
-    // Show kompetisi page
+    // Show kompetisi page (hanya yang sudah di-approve)
     public function index()
     {
         // Initialize competition model
         $competition = new Competition();
 
-        // Get all competitions
+        // Get only approved competitions
         $stmt = $competition->readAll();
         $competitions = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -28,10 +27,14 @@ class KompetisiController
         $this->index();
     }
 
-    // Create new competition
+    // Create new competition (status = waiting)
     public function create()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Enable error reporting untuk debugging
+            error_reporting(E_ALL);
+            ini_set('display_errors', 1);
+
             // Check if user is logged in
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();
@@ -45,67 +48,50 @@ class KompetisiController
             // Initialize competition model
             $competition = new Competition();
 
-            // Handle file upload for poster
-            $poster_lomba = '';
-            if (isset($_FILES['poster_lomba']) && $_FILES['poster_lomba']['error'] === 0) {
-                $target_dir = __DIR__ . "/../../public/uploads/posters/";
-
-                // Create directory if not exists
-                if (!is_dir($target_dir)) {
-                    mkdir($target_dir, 0777, true);
+            // Handle file upload
+            $poster_path = '';
+            if (isset($_FILES['poster_lomba']) && $_FILES['poster_lomba']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = __DIR__ . '/../../public/uploads/posters/';
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0777, true);
                 }
-
-                $file_extension = pathinfo($_FILES['poster_lomba']['name'], PATHINFO_EXTENSION);
-                $new_filename = uniqid() . '_' . time() . '.' . $file_extension;
-                $target_file = $target_dir . $new_filename;
-
-                // Validate file type
-                $allowed_types = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-                if (in_array(strtolower($file_extension), $allowed_types)) {
-                    // Validate file size (max 5MB)
-                    if ($_FILES['poster_lomba']['size'] <= 5242880) {
-                        if (move_uploaded_file($_FILES['poster_lomba']['tmp_name'], $target_file)) {
-                            $poster_lomba = '/uploads/posters/' . $new_filename;
-                        }
-                    } else {
-                        header('Location: /kompetisi?status=error&message=Ukuran file terlalu besar (max 5MB)');
-                        exit();
-                    }
-                } else {
-                    header('Location: /kompetisi?status=error&message=Format file tidak didukung');
-                    exit();
+                $filename = uniqid() . '-' . basename($_FILES['poster_lomba']['name']);
+                $target_file = $upload_dir . $filename;
+                if (move_uploaded_file($_FILES['poster_lomba']['tmp_name'], $target_file)) {
+                    $poster_path = '/uploads/posters/' . $filename;
                 }
             }
 
             // Set competition properties from POST data
             $competition->nama_lomba = $_POST['nama_lomba'] ?? '';
-            $competition->poster_lomba = $poster_lomba;
-            $competition->tanggal_lomba = $_POST['tanggal_lomba'] ?? '';
+            $competition->deskripsi = $_POST['deskripsi'] ?? '';
+            $competition->kategori = $_POST['kategori'] ?? '';
+            $competition->tanggal_lomba = $_POST['deadline'] ?? '';
+            $competition->lokasi = $_POST['lokasi'] ?? '';
+            $competition->hadiah = $_POST['hadiah'] ?? '0';
             $competition->user_id = $_SESSION['user_id'];
+            $competition->poster_lomba = $poster_path;
 
             // Validate input
             if (empty($competition->nama_lomba) || empty($competition->tanggal_lomba)) {
-                header('Location: /kompetisi?status=error&message=Semua field harus diisi');
+                echo "Validasi gagal: Field kosong<br>";
+                header('Location: /kompetisi?status=error&message=Nama lomba dan tanggal harus diisi');
                 exit();
             }
 
-            // Create competition
+            // Create competition (akan masuk dengan status 'waiting')
             if ($competition->create()) {
-                // Success - redirect with success message
-                header('Location: /kompetisi?status=success&message=Lomba berhasil diposting');
+                header('Location: /kompetisi?status=success&message=Lomba berhasil diposting! Menunggu persetujuan admin');
                 exit();
             } else {
-                // Error - redirect with error message
                 header('Location: /kompetisi?status=error&message=Gagal memposting lomba');
                 exit();
             }
         }
     }
 
-    // Get competition details
     public function detail($params = [])
     {
-        // Extract ID from params array (untuk Router Anda)
         $id = $params['id'] ?? null;
 
         if (!$id) {
@@ -123,14 +109,81 @@ class KompetisiController
             echo json_encode([
                 'lomba_id' => $competition->lomba_id,
                 'nama_lomba' => $competition->nama_lomba,
-                'poster_lomba' => $competition->poster_lomba,
-                'status' => $competition->status,
+                'deskripsi' => $competition->deskripsi,
+                'kategori' => $competition->kategori,
                 'tanggal_lomba' => $competition->tanggal_lomba,
+                'lokasi' => $competition->lokasi,
+                'hadiah' => $competition->hadiah,
+                'status' => $competition->status,
                 'user_id' => $competition->user_id
             ]);
         } else {
             http_response_code(404);
             echo json_encode(['message' => 'Competition not found']);
+        }
+    }
+
+    // Approve competition (Admin only)
+    public function approve($params = [])
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Check if admin
+        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            header('Location: /dashboard?status=error&message=Unauthorized access');
+            exit();
+        }
+
+        $id = $params['id'] ?? null;
+
+        if (!$id) {
+            header('Location: /dashboard?status=error&message=Invalid competition ID');
+            exit();
+        }
+
+        $competition = new Competition();
+        $competition->lomba_id = $id;
+
+        if ($competition->approve()) {
+            header('Location: /dashboard?status=success&message=Lomba berhasil di-approve');
+            exit();
+        } else {
+            header('Location: /dashboard?status=error&message=Gagal approve lomba');
+            exit();
+        }
+    }
+
+    // Reject competition (Admin only)
+    public function reject($params = [])
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Check if admin
+        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            header('Location: /dashboard?status=error&message=Unauthorized access');
+            exit();
+        }
+
+        $id = $params['id'] ?? null;
+
+        if (!$id) {
+            header('Location: /dashboard?status=error&message=Invalid competition ID');
+            exit();
+        }
+
+        $competition = new Competition();
+        $competition->lomba_id = $id;
+
+        if ($competition->reject()) {
+            header('Location: /dashboard?status=success&message=Lomba berhasil di-reject');
+            exit();
+        } else {
+            header('Location: /dashboard?status=error&message=Gagal reject lomba');
+            exit();
         }
     }
 }
