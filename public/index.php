@@ -21,6 +21,9 @@ $router->get('/logout', [LoginController::class, 'logout']);
 
 $router->get('/dashboard', [DashboardController::class, 'dashboard']);
 $router->get('/kompetisi', [KompetisiController::class, 'kompetisi']);
+$router->post('/kompetisi/create', [KompetisiController::class, 'create']);
+$router->get('/kompetisi/{id}', [KompetisiController::class, 'detail']);
+
 $router->get('/lost_found', [LostnFoundController::class, 'lost_found']);
 $router->get('/event', [EventController::class, 'event']);
 $router->get('/forum', [ForumController::class, 'forum']);

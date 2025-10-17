@@ -5,11 +5,11 @@
     </div>
 
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Cari kompetisi atau tim...">
+        <input type="text" id="searchInput" class="input" placeholder="Cari kompetisi atau tim...">
     </div>
 
     <div class="tabs">
-        <button class="tab active" data-tab="daftar-lomba">Daftar Lomba</button>
+        <button class="tab active" data-tab="daftar-lomba" id="openModalBtn">Daftar Lomba</button>
         <button class="tab" data-tab="cari-tim">Cari Tim</button>
     </div>
 
@@ -137,5 +137,38 @@
                 <button class="btn-join">Ajukan Bergabung</button>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="lombaModal" class="modal">
+    <div class="modal-content">
+        <span class="close"><i class="bi bi-x"></i></span>
+        <h2 class="title_pop">Posting Lomba Baru</h2>
+        <p class="deskripsi_pop">Bagikan informasi lomba kepada komunitas</p>
+
+        <label>Judul Lomba</label>
+        <input type="text" placeholder="Nama lomba">
+
+        <label>Kategori</label>
+        <input type="text" placeholder="Contoh: Technology, Business">
+
+        <label>Deskripsi</label>
+        <textarea placeholder="Detail lomba..."></textarea>
+
+        <div class="row">
+            <div>
+                <label>Deadline</label>
+                <input type="date">
+            </div>
+            <div>
+                <label>Lokasi</label>
+                <input type="text" placeholder="Lokasi lomba">
+            </div>
+        </div>
+
+        <label>Hadiah</label>
+        <input type="text" placeholder="Contoh: Rp 10.000.000">
+
+        <button class="submit-btn">Posting Lomba</button>
     </div>
 </div>
