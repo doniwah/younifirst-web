@@ -36,7 +36,7 @@ class Competition
         try {
             $stmt = $this->conn->prepare($query);
 
-            // Sanitize input
+
             $this->nama_lomba = htmlspecialchars(strip_tags($this->nama_lomba));
             $this->deskripsi = htmlspecialchars(strip_tags($this->deskripsi ?? ''));
             $this->status = 'waiting';
@@ -47,12 +47,10 @@ class Competition
             $this->lokasi = htmlspecialchars(strip_tags($this->lokasi ?? ''));
             $this->poster_lomba = htmlspecialchars(strip_tags($this->poster_lomba ?? ''));
 
-            // Debug log
             error_log("Attempting to insert competition: " . $this->nama_lomba);
             error_log("User ID: " . $this->user_id);
             error_log("Tanggal: " . $this->tanggal_lomba);
 
-            // Bind parameters
             $stmt->bindParam(':nama_lomba', $this->nama_lomba);
             $stmt->bindParam(':deskripsi', $this->deskripsi);
             $stmt->bindParam(':status', $this->status);
@@ -81,7 +79,7 @@ class Competition
         }
     }
 
-    // Read only approved competitions (status = 'confirm')
+
     public function readAll()
     {
         $query = "SELECT * FROM " . $this->table . " WHERE status = 'confirm' ORDER BY tanggal_lomba DESC";
@@ -90,7 +88,7 @@ class Competition
         return $stmt;
     }
 
-    // Read all competitions including waiting (untuk admin)
+
     public function readAllForAdmin()
     {
         $query = "SELECT * FROM " . $this->table . " ORDER BY 

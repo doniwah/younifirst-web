@@ -4,12 +4,11 @@
         <p>Temukan lomba dan tim untuk berkompetisi bersama</p>
     </div>
 
-    <!-- Display Success/Error Messages -->
     <?php if (isset($_GET['status']) && isset($_GET['message'])): ?>
-    <div class="alert alert-<?= $_GET['status'] === 'success' ? 'success' : 'error' ?>"
-        style="padding: 15px; margin: 20px 0; border-radius: 8px; background: <?= $_GET['status'] === 'success' ? '#d4edda' : '#f8d7da' ?>; color: <?= $_GET['status'] === 'success' ? '#155724' : '#721c24' ?>; border: 1px solid <?= $_GET['status'] === 'success' ? '#c3e6cb' : '#f5c6cb' ?>;">
-        <?= htmlspecialchars($_GET['message']) ?>
-    </div>
+        <div class="alert alert-<?= $_GET['status'] === 'success' ? 'success' : 'error' ?>"
+            style="padding: 15px; margin: 20px 0; border-radius: 8px; background: <?= $_GET['status'] === 'success' ? '#d4edda' : '#f8d7da' ?>; color: <?= $_GET['status'] === 'success' ? '#155724' : '#721c24' ?>; border: 1px solid <?= $_GET['status'] === 'success' ? '#c3e6cb' : '#f5c6cb' ?>;">
+            <?= htmlspecialchars($_GET['message']) ?>
+        </div>
     <?php endif; ?>
 
     <div class="search-box">
@@ -21,7 +20,6 @@
         <button class="tab" data-tab="cari-tim">Cari Tim</button>
     </div>
 
-    <!-- DAFTAR LOMBA SECTION -->
     <div id="daftar-lomba" class="tab-content active">
         <div class="top-section">
             <button class="btn-posting">Posting Lomba</button>
@@ -29,50 +27,49 @@
 
         <div class="competitions-grid">
             <?php if (!empty($competitions)): ?>
-            <?php foreach ($competitions as $comp): ?>
-            <div class="competition-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <span class="trophy-icon"><i class="bi bi-trophy"></i></span>
-                        <h3><?= htmlspecialchars($comp['nama_lomba']) ?></h3>
+                <?php foreach ($competitions as $comp): ?>
+                    <div class="competition-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="trophy-icon"><i class="bi bi-trophy"></i></span>
+                                <h3><?= htmlspecialchars($comp['nama_lomba']) ?></h3>
+                            </div>
+                            <span class="category-badge badge-technology"><?= htmlspecialchars($comp['kategori']) ?></span>
+                        </div>
+                        <p class="card-description"><?= htmlspecialchars($comp['deskripsi']) ?></p>
+                        <div class="card-details">
+                            <div class="detail-item">
+                                <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>Deadline: <?= date('d F Y', strtotime($comp['tanggal_lomba'])) ?></span>
+                            </div>
+                            <div class="detail-item">
+                                <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span><?= htmlspecialchars($comp['lokasi']) ?></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="trophy-icon" style="font-size: 1rem;"><i class="bi bi-trophy"></i></span>
+                                <span class="prize-amount">Rp <?= number_format($comp['hadiah'], 0, ',', '.') ?></span>
+                            </div>
+                        </div>
+                        <button class="btn-detail" data-id="<?= $comp['lomba_id'] ?>">Lihat Detail</button>
                     </div>
-                    <span class="category-badge badge-technology"><?= htmlspecialchars($comp['kategori']) ?></span>
-                </div>
-                <p class="card-description"><?= htmlspecialchars($comp['deskripsi']) ?></p>
-                <div class="card-details">
-                    <div class="detail-item">
-                        <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span>Deadline: <?= date('d F Y', strtotime($comp['tanggal_lomba'])) ?></span>
-                    </div>
-                    <div class="detail-item">
-                        <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span><?= htmlspecialchars($comp['lokasi']) ?></span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="trophy-icon" style="font-size: 1rem;"><i class="bi bi-trophy"></i></span>
-                        <span class="prize-amount">Rp <?= number_format($comp['hadiah'], 0, ',', '.') ?></span>
-                    </div>
-                </div>
-                <button class="btn-detail" data-id="<?= $comp['lomba_id'] ?>">Lihat Detail</button>
-            </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
             <?php else: ?>
-            <div style="text-align: center; padding: 40px; color: #666;">
-                <p>Belum ada kompetisi yang tersedia.</p>
-            </div>
+                <div style="text-align: center; padding: 40px; color: #666;">
+                    <p>Belum ada kompetisi yang tersedia.</p>
+                </div>
             <?php endif; ?>
         </div>
     </div>
 
-    <!-- CARI TIM SECTION -->
     <div id="cari-tim" class="tab-content">
         <div class="top-section">
             <button class="btn-posting">Buat Tim</button>

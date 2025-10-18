@@ -11,66 +11,8 @@
 </head>
 
 <body>
-    <?php
-    require_once __DIR__ . "/../../layouts/navbar.php";
-    require_once __DIR__ . "/main.php";
-    ?>
-
-
-    <script>
-        // Tab switching functionality
-        const tabs = document.querySelectorAll('.tab');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                // Remove active class from all tabs
-                tabs.forEach(t => t.classList.remove('active'));
-
-                // Add active class to clicked tab
-                this.classList.add('active');
-
-                // Hide all tab contents
-                tabContents.forEach(content => content.classList.remove('active'));
-
-                // Show the selected tab content
-                const targetTab = this.getAttribute('data-tab');
-                document.getElementById(targetTab).classList.add('active');
-
-                // Update search placeholder
-                const searchInput = document.getElementById('searchInput');
-                if (targetTab === 'daftar-lomba') {
-                    searchInput.placeholder = 'Cari kompetisi atau tim...';
-                } else {
-                    searchInput.placeholder = 'Cari tim...';
-                }
-            });
-        });
-
-        // Button functionality for Daftar Lomba
-        document.querySelectorAll('.btn-posting').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
-                if (activeTab === 'daftar-lomba') {
-                    alert('Fitur Posting Lomba');
-                } else {
-                    alert('Fitur Buat Tim');
-                }
-            });
-        });
-
-        document.querySelectorAll('.btn-detail').forEach(btn => {
-            btn.addEventListener('click', function() {
-                alert('Menampilkan detail kompetisi');
-            });
-        });
-
-        document.querySelectorAll('.btn-join').forEach(btn => {
-            btn.addEventListener('click', function() {
-                alert('Ajukan bergabung dengan tim');
-            });
-        });
-    </script>
+    <?php require_once __DIR__ . "/../../layouts/navbar.php"; ?>
+    <?php require_once __DIR__ . "/main.php"; ?>
 </body>
 
 </html>
