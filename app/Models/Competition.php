@@ -102,7 +102,6 @@ class Competition
         return $stmt;
     }
 
-    // Read competitions by user
     public function readByUser($user_id)
     {
         $query = "SELECT * FROM " . $this->table . " WHERE user_id = :user_id ORDER BY tanggal_lomba DESC";
@@ -112,7 +111,6 @@ class Competition
         return $stmt;
     }
 
-    // Read single competition
     public function readOne()
     {
         $query = "SELECT * FROM " . $this->table . " WHERE lomba_id = :lomba_id LIMIT 1";
@@ -138,7 +136,6 @@ class Competition
         return false;
     }
 
-    // Approve competition (Admin only)
     public function approve()
     {
         $query = "UPDATE " . $this->table . " SET status = 'confirm' WHERE lomba_id = :lomba_id";
@@ -156,7 +153,6 @@ class Competition
         }
     }
 
-    // Reject competition (Admin only)
     public function reject()
     {
         $query = "UPDATE " . $this->table . " SET status = 'rejected' WHERE lomba_id = :lomba_id";
@@ -174,7 +170,6 @@ class Competition
         }
     }
 
-    // Delete competition
     public function delete()
     {
         $query = "DELETE FROM " . $this->table . " WHERE lomba_id = :lomba_id";

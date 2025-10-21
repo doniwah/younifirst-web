@@ -33,11 +33,11 @@ body {
 }
 
 .search-box {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .search-box input {
@@ -349,6 +349,103 @@ body {
   background-color: #162e5a;
 }
 
+/* Toast Notification - Variant Modern */
+.toast-notification {
+  position: fixed;
+  bottom: -100px;
+  right: 30px;
+  background: white;
+  color: #333;
+  padding: 18px 24px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 320px;
+  max-width: 400px;
+  z-index: 9999;
+  animation: slideUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  border-left: 4px solid #ef4444;
+}
+
+@keyframes slideUp {
+  to {
+    bottom: 30px;
+  }
+}
+
+.toast-notification.hide {
+  animation: slideDown 0.4s ease-out forwards;
+}
+
+@keyframes slideDown {
+  to {
+    bottom: -100px;
+    opacity: 0;
+  }
+}
+
+.toast-icon {
+  width: 40px;
+  height: 40px;
+  background: #fee2e2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.3rem;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-content p {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #1f2937;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 5px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  font-size: 1rem;
+}
+
+.toast-close:hover {
+  opacity: 1;
+}
+
+/* Progress bar */
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: #ef4444;
+  width: 100%;
+  border-radius: 0 0 12px 12px;
+  animation: progressBar 3.5s linear forwards;
+}
+
+@keyframes progressBar {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
 @media (max-width: 768px) {
   .competitions-grid,
   .teams-grid {
@@ -373,13 +470,13 @@ body {
 /* LOST N FOUND */
 
 .ver-hilang {
-  background-color: #EF4444;
+  background-color: #ef4444;
   color: white;
 }
 
 .ver-ditemukan {
   color: white;
-  background-color: #162B59;
+  background-color: #162b59;
 }
 
 .dibuat-oleh {
@@ -389,17 +486,17 @@ body {
 }
 
 .progress-container {
-    width: 100%;
-    height: 10px;
-    background-color: #e0e0e0; 
-    border-radius: 50px; 
-    overflow: hidden; 
-    margin: 10px 0; 
+  width: 100%;
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 50px;
+  overflow: hidden;
+  margin: 10px 0;
 }
 
 .progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #003366 0%, #0070C0 100%);
-    border-radius: 50px; 
-    transition: width 0.4s ease; 
+  height: 100%;
+  background: linear-gradient(90deg, #003366 0%, #0070c0 100%);
+  border-radius: 50px;
+  transition: width 0.4s ease;
 }

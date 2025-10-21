@@ -9,13 +9,12 @@ class ForumController
 {
     public function __construct()
     {
-        // PENTING: Start session jika belum
+
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
     }
 
-    // Helper untuk mendapatkan user_id dari session
     private function getUserId()
     {
         if (isset($_SESSION['user_id'])) {
@@ -29,10 +28,9 @@ class ForumController
         return null;
     }
 
-    // Menampilkan halaman daftar komunitas (main) - SEMUA KOMUNITAS DITAMPILKAN
     public function forum()
     {
-        // Validasi login
+
         $isLoggedIn = isset($_SESSION['user']) || isset($_SESSION['user_id']);
 
         if (!$isLoggedIn) {
@@ -56,17 +54,16 @@ class ForumController
 
         $current_user_jurusan = $user_data['jurusan'] ?? null;
 
-        // Ambil SEMUA komunitas (tidak difilter)
+
         $komunitas_list = Forum::getAllKomunitas();
 
-        // Load view dengan layout
+
         require_once __DIR__ . '/../view/component/forum/index.php';
     }
 
-    // Menampilkan halaman chat komunitas - VALIDASI AKSES DI SINI
     public function chat()
     {
-        // Validasi login
+
         $isLoggedIn = isset($_SESSION['user']) || isset($_SESSION['user_id']);
 
         if (!$isLoggedIn) {
@@ -88,7 +85,6 @@ class ForumController
             exit();
         }
 
-        // Ambil komunitas_id dari URL
         $komunitas_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
         if ($komunitas_id <= 0) {
@@ -98,16 +94,12 @@ class ForumController
 
         $jurusan = $user_data['jurusan'] ?? null;
 
-        // VALIDASI: Cek apakah user bisa akses komunitas ini
         if (!Forum::canUserAccessKomunitas($komunitas_id, $jurusan)) {
-            echo "<script>
-                alert('Anda tidak memiliki akses ke komunitas ini! Komunitas ini hanya untuk jurusan tertentu.');
-                window.location.href='/forum';
-            </script>";
+
+            header("Location: /forum?error=access_denied");
             exit();
         }
 
-        // Ambil data komunitas
         $komunitas = Forum::getKomunitasById($komunitas_id);
 
         if (!$komunitas) {
@@ -115,22 +107,17 @@ class ForumController
             exit();
         }
 
-        // Auto-join user ke komunitas jika belum bergabung
+
         if (!Forum::isUserMember($komunitas_id, $user_id)) {
             Forum::addMember($komunitas_id, $user_id);
         }
 
-        // Ambil semua pesan
+
         $messages = Forum::getMessages($komunitas_id);
-
-        // Data untuk view
         $current_user = $user_data;
-
-        // Load view
         require_once __DIR__ . '/../view/component/forum/chat.php';
     }
 
-    // AJAX: Mengirim pesan
     public function sendMessage()
     {
         header('Content-Type: application/json');
@@ -150,7 +137,6 @@ class ForumController
             if ($komunitas_id > 0 && !empty($message_text)) {
                 $user_data = User::getUserById($user_id);
 
-                // Validasi akses sebelum kirim pesan
                 if (!Forum::canUserAccessKomunitas($komunitas_id, $user_data['jurusan'] ?? null)) {
                     echo json_encode(['success' => false, 'message' => 'Access denied']);
                     exit();
@@ -166,7 +152,7 @@ class ForumController
                         'time' => date('H:i')
                     ];
 
-                    // Jika ada reply, tambahkan info reply
+
                     if ($reply_to_message_id) {
                         $reply_message = Forum::getMessageById($reply_to_message_id);
                         $response['reply_to'] = [

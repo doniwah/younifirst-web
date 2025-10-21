@@ -11,7 +11,6 @@ class Forum
         return Database::getInstance();
     }
 
-    // Mengambil SEMUA komunitas (tidak difilter, semua ditampilkan)
     public static function getAllKomunitas()
     {
         $db = self::getConnection();
@@ -51,7 +50,6 @@ class Forum
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    // Cek apakah user memiliki akses ke komunitas (validasi saat masuk chat)
     public static function canUserAccessKomunitas($komunitas_id, $jurusan)
     {
         $db = self::getConnection();
@@ -66,16 +64,13 @@ class Forum
             return false;
         }
 
-        // Jika jurusan_filter NULL = Komunitas Global (semua bisa akses)
         if ($komunitas['jurusan_filter'] === null || $komunitas['jurusan_filter'] === '') {
             return true;
         }
 
-        // Jika jurusan_filter ada, harus sama dengan jurusan user
         return $komunitas['jurusan_filter'] === $jurusan;
     }
 
-    // Mengambil detail komunitas berdasarkan ID (tanpa validasi jurusan)
     public static function getKomunitasById($komunitas_id)
     {
         $db = self::getConnection();
@@ -92,7 +87,6 @@ class Forum
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-    // Cek apakah user sudah menjadi anggota
     public static function isUserMember($komunitas_id, $user_id)
     {
         $db = self::getConnection();
@@ -106,7 +100,6 @@ class Forum
         return $stmt->rowCount() > 0;
     }
 
-    // Menambahkan user sebagai anggota komunitas
     public static function addMember($komunitas_id, $user_id)
     {
         $db = self::getConnection();
@@ -167,7 +160,7 @@ class Forum
     {
         $db = self::getConnection();
 
-        // Cek apakah pesan milik user
+
         $query_check = "SELECT user_id FROM forum_messages WHERE message_id = :message_id";
         $stmt_check = $db->prepare($query_check);
         $stmt_check->bindParam(':message_id', $message_id);
@@ -175,18 +168,15 @@ class Forum
         $message = $stmt_check->fetch(\PDO::FETCH_ASSOC);
 
         if (!$message || $message['user_id'] != $user_id) {
-            return false; // Tidak bisa hapus pesan orang lain
+            return false;
         }
 
-        // Hapus pesan
         $query = "DELETE FROM forum_messages WHERE message_id = :message_id";
         $stmt = $db->prepare($query);
         $stmt->bindParam(':message_id', $message_id);
         return $stmt->execute();
     }
 
-
-    // Mengambil jumlah anggota komunitas
     public static function getAnggotaCount($komunitas_id)
     {
         $db = self::getConnection();

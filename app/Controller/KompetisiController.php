@@ -9,12 +9,12 @@ use App\Models\TeamMember;
 class KompetisiController
 {
 
-    // Show kompetisi page (hanya yang sudah di-approve)
+
     public function index()
     {
         // Initialize models
         $competition = new Competition();
-        $team = new Team();
+        $team = new \App\Models\Team();
 
         // Get only approved competitions
         $stmt = $competition->readAll();
@@ -26,14 +26,10 @@ class KompetisiController
 
         // Add member count for each team
         foreach ($teams as &$tm) {
-            $memberModel = new TeamMember();
+            $memberModel = new \App\Models\TeamMember();
             $memberStmt = $memberModel->readByTeam($tm['team_id'], 'confirm');
             $tm['confirmed_members'] = $memberStmt->rowCount();
         }
-
-        // Get all approved competitions for dropdown in Buat Tim modal
-        $stmtCompList = $competition->readAll();
-        $competitionList = $stmtCompList->fetchAll(\PDO::FETCH_ASSOC);
 
         // Pass data to view
         require_once __DIR__ . '/../view/component/kompetisi/index.php';

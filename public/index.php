@@ -10,6 +10,7 @@ use App\Controller\EventController;
 use App\Controller\KompetisiController;
 use App\Controller\LostnFoundController;
 use App\Controller\ForumController;
+use App\Controller\TeamController;
 use App\Models\Database;
 
 $router = new Router();
@@ -21,7 +22,6 @@ $router->get('/logout', [LoginController::class, 'logout']);
 
 $router->get('/dashboard', [DashboardController::class, 'dashboard']);
 
-
 $router->get('/kompetisi', [KompetisiController::class, 'index']);
 $router->post('/kompetisi/create', [KompetisiController::class, 'create']);
 $router->get('/kompetisi/{id}', [KompetisiController::class, 'detail']);
@@ -30,27 +30,28 @@ $router->post('/kompetisi/{id}/approve', [KompetisiController::class, 'approve']
 $router->post('/kompetisi/{id}/reject', [KompetisiController::class, 'reject']);
 
 $router->get('/lost_found', [LostnFoundController::class, 'lost_found']);
-$router->get('/event', [EventController::class, 'event']);
+$router->post('/lost_found/create', [LostnFoundController::class, 'create']);
 
+
+$router->get('/event', [EventController::class, 'event']);
 
 $router->get('/forum', [ForumController::class, 'forum']);
 $router->get('/forum/chat', [ForumController::class, 'chat']);
 $router->post('/forum/send-message', [ForumController::class, 'sendMessage']);
 $router->post('/forum/delete-message', [ForumController::class, 'deleteMessage']);
-$router->run();
 
-// Team Routes
-$router->post('/team/create', 'TeamController@create');
-$router->get('/team/detail/{id}', 'TeamController@detail');
-$router->get('/team/list', 'TeamController@index');
+// Team Management - GANTI DENGAN FORMAT YANG BENAR
+$router->post('/team/create', [TeamController::class, 'create']);
+$router->get('/team/list', [TeamController::class, 'index']);
+$router->get('/team/detail/{id}', [TeamController::class, 'detail']);
+$router->post('/team/{id}/delete', [TeamController::class, 'delete']);
 
 // Team Request Routes
-$router->post('/team/request', 'TeamController@submitRequest');
-$router->get('/team/requests/pending', 'TeamController@getPendingRequests');
-$router->get('/team/{id}/requests', 'TeamController@getTeamRequests');
-$router->get('/team/request/{id}/detail', 'TeamController@requestDetail');
-$router->post('/team/request/{id}/approve', 'TeamController@approveRequest');
-$router->post('/team/request/{id}/reject', 'TeamController@rejectRequest');
+$router->post('/team/request', [TeamController::class, 'submitRequest']);
+$router->get('/team/requests/pending', [TeamController::class, 'getPendingRequests']);
+$router->get('/team/{id}/requests', [TeamController::class, 'getTeamRequests']);
+$router->get('/team/request/{id}/detail', [TeamController::class, 'requestDetail']);
+$router->post('/team/{id}/approve', [TeamController::class, 'approve']);
+$router->post('/team/{id}/reject', [TeamController::class, 'reject']);
 
-// Team Management
-$router->post('/team/{id}/delete', 'TeamController@delete');
+$router->run();

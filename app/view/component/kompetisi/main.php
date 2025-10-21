@@ -16,13 +16,13 @@
     </div>
 
     <div class="tabs">
-        <button class="tab active" data-tab="daftar-lomba" id="openModalBtn">Daftar Lomba</button>
+        <button class="tab active" data-tab="daftar-lomba">Daftar Lomba</button>
         <button class="tab" data-tab="cari-tim">Cari Tim</button>
     </div>
 
     <div id="daftar-lomba" class="tab-content active">
         <div class="top-section">
-            <button class="btn-posting">Posting Lomba</button>
+            <button class="btn-posting" id="openModalBtn" type="button">Posting Lomba</button>
         </div>
 
         <div class="competitions-grid">
@@ -72,57 +72,40 @@
 
     <div id="cari-tim" class="tab-content">
         <div class="top-section">
-            <button class="btn-posting">Buat Tim</button>
+            <button class="btn-posting" id="openTimModalBtn" type="button">Buat Tim</button>
         </div>
 
         <div class="teams-grid">
-            <div class="team-card">
-                <div class="team-header">
-                    <div class="team-title">
-                        <span class="team-icon"><i class="bi bi-people"></i></span>
-                        <h3>Code Warriors</h3>
+            <?php if (!empty($teams)): ?>
+                <?php foreach ($teams as $team): ?>
+                    <div class="team-card" data-team-id="<?= $team['team_id'] ?>">
+                        <div class="team-header">
+                            <div class="team-title">
+                                <span class="team-icon"><i class="bi bi-people"></i></span>
+                                <h3><?= htmlspecialchars($team['nama_team']) ?></h3>
+                            </div>
+                            <span class="member-count"><?= $team['jumlah_anggota'] ?> anggota</span>
+                        </div>
+                        <p class="team-description"><?= htmlspecialchars($team['deskripsi_anggota']) ?></p>
+                        <button class="btn-join"
+                            onclick="openJoinModal('<?= $team['team_id'] ?>', '<?= htmlspecialchars($team['nama_team']) ?>', <?= $team['jumlah_anggota'] ?>)">
+                            Ajukan Bergabung
+                        </button>
                     </div>
-                    <span class="member-count">3/5 anggota</span>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div style="text-align: center; padding: 40px; color: #666;">
+                    <p>Belum ada tim yang tersedia.</p>
                 </div>
-                <p class="competition-name">Hackathon Nasional 2024</p>
-                <p class="team-description">Tim yang berfokus pada pengembangan web modern</p>
-                <div class="roles-section">
-                    <div class="roles-title">Role yang Dibutuhkan:</div>
-                    <div class="roles-list">
-                        <span class="role-badge">Frontend Developer</span>
-                        <span class="role-badge">UI/UX Designer</span>
-                    </div>
-                </div>
-                <button class="btn-join">Ajukan Bergabung</button>
-            </div>
-
-            <div class="team-card">
-                <div class="team-header">
-                    <div class="team-title">
-                        <span class="team-icon"><i class="bi bi-people"></i></span>
-                        <h3>Business Innovators</h3>
-                    </div>
-                    <span class="member-count">2/4 anggota</span>
-                </div>
-                <p class="competition-name">Business Plan Competition</p>
-                <p class="team-description">Tim dengan ide bisnis di bidang edtech</p>
-                <div class="roles-section">
-                    <div class="roles-title">Role yang Dibutuhkan:</div>
-                    <div class="roles-list">
-                        <span class="role-badge">Financial Analyst</span>
-                        <span class="role-badge">Marketing Specialist</span>
-                    </div>
-                </div>
-                <button class="btn-join">Ajukan Bergabung</button>
-            </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
 
 <!-- Modal Posting Lomba -->
-<div id="lombaModal" class="modal">
+<div id="lombaModal" class="modal" style="display: none;">
     <div class="modal-content">
-        <span class="close"><i class="bi bi-x"></i></span>
+        <span class="close" onclick="closeLombaModal()"><i class="bi bi-x"></i></span>
         <h2 class="title_pop">Posting Lomba Baru</h2>
         <p class="deskripsi_pop">Bagikan informasi lomba kepada komunitas</p>
 
@@ -157,3 +140,175 @@
         </form>
     </div>
 </div>
+
+<!-- Modal Buat Tim -->
+<div id="timModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeTimModal()"><i class="bi bi-x"></i></span>
+        <h2 class="title_pop">Buat Tim Baru</h2>
+        <p class="deskripsi_pop">Rekrut anggota untuk timmu</p>
+
+        <form action="/team/create" method="POST" id="timForm">
+            <label>Nama Tim <span style="color: red;">*</span></label>
+            <input type="text" name="nama_team" placeholder="Nama tim kamu" required>
+
+            <label>Deskripsi Tim</label>
+            <textarea name="deskripsi_anggota" placeholder="Ceritakan tentang timmu..." rows="4"></textarea>
+
+            <label>Role Anda sebagai Pembuat Tim</label>
+            <select name="role_pembuat"
+                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                <option value="ketua">Ketua</option>
+                <option value="anggota">Anggota</option>
+            </select>
+
+            <button type="submit" class="submit-btn">Buat Tim</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Ajukan Bergabung -->
+<div id="joinModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeJoinModal()"><i class="bi bi-x"></i></span>
+        <h2 class="title_pop">Ajukan Bergabung ke <span id="teamNameDisplay"></span></h2>
+        <p class="deskripsi_pop">Isi form berikut untuk mengajukan diri bergabung dengan tim</p>
+
+        <form action="/team/request" method="POST" id="joinForm">
+            <input type="hidden" name="team_id" id="joinTeamId">
+
+            <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                <p style="margin: 0; font-size: 14px;"><strong>Anggota Saat Ini:</strong> <span
+                        id="joinMemberCount"></span> orang</p>
+            </div>
+
+            <label>Role yang Diminati <span style="color: red;">*</span></label>
+            <select name="role_diminta" required
+                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                <option value="">Pilih Role</option>
+                <option value="ketua">Ketua</option>
+                <option value="anggota">Anggota</option>
+            </select>
+
+            <label>Alasan Bergabung <span style="color: red;">*</span></label>
+            <textarea name="alasan_bergabung" placeholder="Ceritakan mengapa kamu ingin bergabung dengan tim ini..."
+                rows="4" required></textarea>
+
+            <label>Keahlian & Pengalaman <span style="color: red;">*</span></label>
+            <textarea name="keahlian_pengalaman" placeholder="Jelaskan keahlian dan pengalaman yang relevan..." rows="4"
+                required></textarea>
+
+            <label>Link Portfolio/Project (Optional)</label>
+            <input type="url" name="portfolio_link" placeholder="https://github.com/username atau portfolio link">
+
+            <label>Kontak (Email/WhatsApp) <span style="color: red;">*</span></label>
+            <input type="text" name="kontak" placeholder="email@example.com atau 08123456789" required>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button type="button" onclick="closeJoinModal()"
+                    style="flex: 1; padding: 12px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                    Batal
+                </button>
+                <button type="submit" class="submit-btn" style="flex: 1; margin: 0;">
+                    Kirim Pengajuan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Modal Lomba
+    const lombaModal = document.getElementById('lombaModal');
+    const openModalBtn = document.getElementById('openModalBtn');
+
+    if (openModalBtn) {
+        openModalBtn.onclick = function(e) {
+            e.preventDefault(); // Prevent default action
+            e.stopPropagation(); // Stop event bubbling
+            lombaModal.style.display = 'block';
+        }
+    }
+
+    function closeLombaModal() {
+        lombaModal.style.display = 'none';
+    }
+
+    // Modal Tim
+    const timModal = document.getElementById('timModal');
+    const openTimModalBtn = document.getElementById('openTimModalBtn');
+
+    if (openTimModalBtn) {
+        openTimModalBtn.onclick = function(e) {
+            e.preventDefault(); // Prevent default action
+            e.stopPropagation(); // Stop event bubbling
+            timModal.style.display = 'block';
+        }
+    }
+
+    function closeTimModal() {
+        timModal.style.display = 'none';
+    }
+
+    // Modal Join
+    const joinModal = document.getElementById('joinModal');
+
+    function openJoinModal(teamId, teamName, memberCount) {
+        document.getElementById('joinTeamId').value = teamId;
+        document.getElementById('teamNameDisplay').textContent = teamName;
+        document.getElementById('joinMemberCount').textContent = memberCount;
+
+        joinModal.style.display = 'block';
+    }
+
+    function closeJoinModal() {
+        joinModal.style.display = 'none';
+        document.getElementById('joinForm').reset();
+    }
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target === lombaModal) {
+            closeLombaModal();
+        }
+        if (event.target === timModal) {
+            closeTimModal();
+        }
+        if (event.target === joinModal) {
+            closeJoinModal();
+        }
+    });
+
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
+
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            // Add active class to clicked tab and corresponding content
+            this.classList.add('active');
+            document.getElementById(targetTab).classList.add('active');
+        });
+    });
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const activeTab = document.querySelector('.tab-content.active');
+
+        if (activeTab.id === 'daftar-lomba') {
+            document.querySelectorAll('.competition-card').forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+        } else {
+            document.querySelectorAll('.team-card').forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+        }
+    });
+</script>

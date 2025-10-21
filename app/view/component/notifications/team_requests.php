@@ -55,14 +55,14 @@ if (isset($_SESSION['user_id'])) {
                                 </button>
                                 <form method="POST" action="/team/request/<?= $request['detail_id'] ?>/approve"
                                     style="display: inline;">
-                                    <button type="submit"
+                                    <button type="submit" onclick="return confirm('Terima anggota ini?')"
                                         style="padding: 6px 12px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">
                                         <i class="bi bi-check-lg"></i> Terima
                                     </button>
                                 </form>
                                 <form method="POST" action="/team/request/<?= $request['detail_id'] ?>/reject"
                                     style="display: inline;">
-                                    <button type="submit"
+                                    <button type="submit" onclick="return confirm('Tolak anggota ini?')"
                                         style="padding: 6px 12px; background: #f44336; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">
                                         <i class="bi bi-x-lg"></i> Tolak
                                     </button>
@@ -75,10 +75,15 @@ if (isset($_SESSION['user_id'])) {
         </div>
 
         <!-- Modal Detail Request -->
-        <div id="requestDetailModal" class="modal" style="display: none;">
-            <div class="modal-content" style="max-width: 600px;">
-                <span class="close" onclick="closeRequestDetail()"><i class="bi bi-x"></i></span>
-                <h2 class="title_pop">Detail Pengajuan</h2>
+        <div id="requestDetailModal" class="modal"
+            style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+            <div class="modal-content"
+                style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; border-radius: 12px; width: 90%; max-width: 600px;">
+                <span class="close" onclick="closeRequestDetail()"
+                    style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">
+                    <i class="bi bi-x"></i>
+                </span>
+                <h2 style="margin-top: 0;">Detail Pengajuan</h2>
 
                 <div id="requestDetailContent">
                     <!-- Will be populated by JavaScript -->
@@ -131,12 +136,12 @@ if (isset($_SESSION['user_id'])) {
                     
                     <div style="display: flex; gap: 10px; margin-top: 30px;">
                         <form method="POST" action="/team/request/${detailId}/approve" style="flex: 1;">
-                            <button type="submit" style="width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+                            <button type="submit" onclick="return confirm('Terima anggota ini?')" style="width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
                                 <i class="bi bi-check-lg"></i> Terima Pengajuan
                             </button>
                         </form>
                         <form method="POST" action="/team/request/${detailId}/reject" style="flex: 1;">
-                            <button type="submit" style="width: 100%; padding: 12px; background: #f44336; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+                            <button type="submit" onclick="return confirm('Tolak anggota ini?')" style="width: 100%; padding: 12px; background: #f44336; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
                                 <i class="bi bi-x-lg"></i> Tolak Pengajuan
                             </button>
                         </form>

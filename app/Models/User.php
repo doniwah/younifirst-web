@@ -25,7 +25,6 @@ class User
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-    // Tambahkan method baru untuk Forum
     public static function getUserById($user_id)
     {
         $db = Database::getInstance();
