@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
+use App\App\View;
+
 class HomeController
 {
     public function index()
     {
-        ob_start();
-        include '../app/view/index.php';
-        return ob_get_clean();
+        View::render('index', ['title' => 'YouniFirst']);
     }
 }

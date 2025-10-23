@@ -1,4 +1,3 @@
-<?php if (!isset($_SESSION)) session_start(); ?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -13,7 +12,7 @@
     <div class="container">
         <div class="header">
             <div class="logo-container">
-                <div class="brand-name">CampusHub</div>
+                <div class="brand-name">YouniFirst</div>
             </div>
             <p class="subtitle">Selamat datang di platform komunitas kampus</p>
         </div>
@@ -23,12 +22,12 @@
             <p class="card-subtitle">Masukkan email dan password untuk melanjutkan</p>
 
             <?php if (isset($error)): ?>
-                <p style="color:red; text-align:center; margin-bottom:10px;">
-                    <?= htmlspecialchars($error) ?>
-                </p>
+            <p style="color:red; text-align:center; margin-bottom:10px;">
+                <?= htmlspecialchars($error) ?>
+            </p>
             <?php endif; ?>
 
-            <form method="POST" action="">
+            <form method="post" action="/users/login">
                 <div class="form-group">
                     <label for="username">Email</label>
                     <input type="text" id="email" name="email" placeholder="nim@student.polije.ac.id" required>
@@ -38,6 +37,10 @@
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" placeholder="********" required>
                 </div>
+
+                <?php if (isset($model['error'])): ?>
+                <p style="color:red;"><?= htmlspecialchars($model['error']) ?></p>
+                <?php endif; ?>
 
                 <button type="submit" class="login-button">Login</button>
             </form>

@@ -4,39 +4,56 @@ namespace App\App;
 
 class Router
 {
-    private $routes = [];
 
-    public function get($path, $callback)
-    {
-        $this->routes['GET'][$path] = $callback;
+    private static array $routes = [];
+
+    public static function add(
+        string $method,
+        string $path,
+        string $controller,
+        string $function,
+        array  $middlewares = []
+    ): void {
+        self::$routes[] = [
+            'method' => $method,
+            'path' => $path,
+            'controller' => $controller,
+            'function' => $function,
+            'middleware' => $middlewares
+        ];
     }
 
-    public function post($path, $callback)
+    public static function run(): void
     {
-        $this->routes['POST'][$path] = $callback;
-    }
+        $path = '/';
+        if (isset($_SERVER['PATH_INFO'])) {
+            $path = $_SERVER['PATH_INFO'];
+        }
 
-    public function run()
-    {
         $method = $_SERVER['REQUEST_METHOD'];
-        $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $url = rtrim($url, '/');
-        if ($url === '') $url = '/';
 
-        $callback = $this->routes[$method][$url] ?? false;
+        foreach (self::$routes as $route) {
+            $pattern = "#^" . $route['path'] . "$#";
+            if (preg_match($pattern, $path, $variables) && $method == $route['method']) {
 
-        if ($callback === false) {
-            http_response_code(404);
-            echo "404 - Page Not Found";
-            return;
+                // call middleware
+                foreach ($route['middleware'] as $middleware) {
+                    $instance = new $middleware;
+                    $instance->before();
+                }
+
+                $function = $route['function'];
+                $controller = new $route['controller'];
+                // $controller->$function();
+
+                array_shift($variables);
+                call_user_func_array([$controller, $function], $variables);
+
+                return;
+            }
         }
 
-        if (is_array($callback)) {
-            [$controller, $method] = $callback;
-            $controller = new $controller;
-            echo call_user_func([$controller, $method]);
-        } else {
-            echo call_user_func($callback);
-        }
+        http_response_code(404);
+        echo 'CONTROLLER NOT FOUND';
     }
 }
