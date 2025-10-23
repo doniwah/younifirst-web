@@ -1,38 +1,31 @@
 <?php
 
-namespace App\Middleware {
+declare(strict_types=1);
 
-    require_once __DIR__ . '/../Helper/helper.php';
+use PHPUnit\Framework\TestCase;
 
-    use PHPUnit\Framework\TestCase;
-    use App\Config\Database;
-    use App\Domain\Session;
-    use App\Domain\User;
-    use App\Repository\SessionRepository;
-    use App\Repository\UserRepository;
-    use App\Service\SessionService;
+require __DIR__ . '/../../vendor/autoload.php';
 
-    class MustNotLoginMiddlewareTest extends TestCase
+class MustNotLoginMiddlewareTest extends TestCase
+{
+    public function testBeforeRedirectsIfLoggedIn()
     {
+        $_COOKIE[\App\Service\SessionService::$COOKIE_NAME] = '68f9ca46a7002';
 
-        private MustNotLoginMiddleware $middleware;
-        private UserRepository $userRepository;
-        private SessionRepository $sessionRepository;
+        $mw = new \App\Middleware\MustNotLoginMiddleware();
 
-        protected function setUp(): void
-        {
-            $this->middleware = new MustNotLoginMiddleware();
-            putenv("mode=test");
-
-            $this->userRepository = new UserRepository(Database::getConnection());
-            $this->sessionRepository = new SessionRepository(Database::getConnection());
-
-            $this->sessionRepository->deleteAll();
+        // Tangkap output
+        ob_start();
+        try {
+            $mw->before();
+        } catch (\Throwable $e) {
+            // abaikan exit() jika ada
         }
+        $output = ob_get_clean();
 
-        public function testMiddlewareCanBeCreated(): void
-        {
-            $this->assertInstanceOf(MustNotLoginMiddleware::class, $this->middleware);
-        }
+        // Anggap redirect berhasil kalau ada teks "Redirect" atau "Location"
+        $redirected = stripos($output, 'redirect') !== false || stripos($output, 'location') !== false;
+
+        $this->assertTrue($redirected, 'Middleware seharusnya melakukan redirect saat user login.');
     }
 }

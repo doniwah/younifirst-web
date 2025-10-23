@@ -2,19 +2,14 @@
 
 namespace App\Controller;
 
+use App\App\View;
+
 class DashboardController
 {
-    public function dashboard()
+    public function index()
     {
-        session_start();
-
-        if (!isset($_SESSION['user'])) {
-            header('Location: /login');
-            exit;
-        }
-
-        ob_start();
-        include __DIR__ . '/../view/component/dashboard/index.php';
-        return ob_get_clean();
+        View::render('component/dashboard/index', [
+            'title' => 'Dashboard',
+        ]);
     }
 }

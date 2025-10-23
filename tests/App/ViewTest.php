@@ -1,19 +1,25 @@
 <?php
 
-namespace App;
+declare(strict_types=1);
 
-use App\App\View;
 use PHPUnit\Framework\TestCase;
+
+require __DIR__ . '/../../vendor/autoload.php';
 
 class ViewTest extends TestCase
 {
-    public function testRender()
+    public function testRenderViewFileExists()
     {
-        View::render('component/dashboard/index', [
-            'title' => 'Dashboard'
-        ]);
+        $viewClassPath = __DIR__ . '/../../app/App/View.php';
+        $this->assertFileExists($viewClassPath);
+    }
 
-        $this->expectOutputRegex('[html]');
-        $this->expectOutputRegex('[body]');
+    public function testRenderOutputsViewContent()
+    {
+        ob_start();
+        \App\App\View::render('auth/login', ['error' => 'Oops test']);
+        $output = ob_get_clean();
+
+        $this->assertStringContainsString('Oops test', $output);
     }
 }

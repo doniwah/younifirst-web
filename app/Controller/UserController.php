@@ -3,16 +3,10 @@
 namespace App\Controller;
 
 use App\App\View;
-use App\Config\Database;
 use App\Exception\ValidationException;
 use App\Model\UserLoginRequest;
-use App\Model\UserPasswordUpdateRequest;
-use App\Model\UserProfileUpdateRequest;
-use App\Model\UserRegisterRequest;
-use App\Repository\SessionRepository;
-use App\Repository\UserRepository;
-use App\Service\SessionService;
 use App\Service\UserService;
+use App\Service\SessionService;
 
 class UserController
 {
@@ -21,20 +15,13 @@ class UserController
 
     public function __construct()
     {
-        $connection = Database::getConnection();
-        $userRepository = new UserRepository($connection);
-        $this->userService = new UserService($userRepository);
-
-        $sessionRepository = new SessionRepository($connection);
-        $this->sessionService = new SessionService($sessionRepository, $userRepository);
+        $this->userService = new UserService();
+        $this->sessionService = new SessionService();
     }
-
 
     public function login()
     {
-        View::render('auth/login', [
-            "title" => "Login user"
-        ]);
+        View::render('auth/login', []);
     }
 
     public function postLogin()
@@ -45,22 +32,18 @@ class UserController
 
         try {
             $response = $this->userService->login($request);
-            $this->sessionService->create($response->user->id);
-            View::render('component/dashboard/index', [
-                'title' => 'Dashboard'
-            ]);
-        } catch (ValidationException $exception) {
+            $this->sessionService->create($response->user->user_id);
+            View::redirect('/dashboard');
+        } catch (ValidationException $e) {
             View::render('auth/login', [
-                'title' => 'Login user',
-                'error' => $exception->getMessage()
+                'error' => $e->getMessage()
             ]);
         }
     }
 
-
     public function logout()
     {
         $this->sessionService->destroy();
-        View::redirect("/");
+        View::redirect('/users/login');
     }
 }

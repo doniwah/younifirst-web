@@ -4,5 +4,5 @@ namespace App\Middleware;
 
 interface Middleware
 {
-    function before(): void;
+    public function before(): void;
 }

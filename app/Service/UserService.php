@@ -7,48 +7,34 @@ use App\Domain\User;
 use App\Exception\ValidationException;
 use App\Model\UserLoginRequest;
 use App\Model\UserLoginResponse;
-use App\Model\UserPasswordUpdateRequest;
-use App\Model\UserPasswordUpdateResponse;
-use App\Model\UserProfileUpdateRequest;
-use App\Model\UserProfileUpdateResponse;
-use App\Model\UserRegisterRequest;
-use App\Model\UserRegisterResponse;
 use App\Repository\UserRepository;
 
 class UserService
 {
     private UserRepository $userRepository;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct()
     {
-        $this->userRepository = $userRepository;
+        $this->userRepository = new UserRepository(Database::getConnection('prod'));
     }
 
     public function login(UserLoginRequest $request): UserLoginResponse
     {
-        $this->validateUserLoginRequest($request);
+        if (trim($request->email) === '' || trim($request->password) === '') {
+            throw new ValidationException('Email dan Password wajib diisi');
+        }
 
         $user = $this->userRepository->findByEmail($request->email);
         if ($user == null) {
-            throw new ValidationException("Email or password is wrong");
+            throw new ValidationException('Email tidak ditemukan');
         }
 
-        if (password_verify($request->password, $user->password)) {
-            $response = new UserLoginResponse();
-            $response->user = $user;
-            return $response;
-        } else {
-            throw new ValidationException("Email or password is wrong");
+        if (!password_verify($request->password, $user->password)) {
+            throw new ValidationException('Password salah');
         }
-    }
 
-    private function validateUserLoginRequest(UserLoginRequest $request)
-    {
-        if (
-            $request->email == null || $request->password == null ||
-            trim($request->email) == "" || trim($request->password) == ""
-        ) {
-            throw new ValidationException("Email dan password tidak boleh kosong");
-        }
+        $response = new UserLoginResponse();
+        $response->user = $user;
+        return $response;
     }
 }

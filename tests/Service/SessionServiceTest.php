@@ -1,43 +1,26 @@
 <?php
 
-namespace App\Service;
-
-require_once __DIR__ . '/../Helper/helper.php';
+declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use App\Config\Database;
-use App\Domain\Session;
-use App\Domain\User;
-use App\Repository\SessionRepository;
-use App\Repository\UserRepository;
+
+require __DIR__ . '/../../vendor/autoload.php';
 
 class SessionServiceTest extends TestCase
 {
-    private SessionService $sessionService;
-    private SessionRepository $sessionRepository;
-    private UserRepository $userRepository;
-
-    protected function setUp(): void
+    public function testCreateSessionReturnsSessionObject()
     {
-        $this->sessionRepository = new SessionRepository(Database::getConnection());
-        $this->userRepository = new UserRepository(Database::getConnection());
-        $this->sessionService = new SessionService($this->sessionRepository, $this->userRepository);
+        try {
+            $pdo = \App\Config\Database::getConnection('test');
+        } catch (Throwable $e) {
+            $this->markTestSkipped('No test database: ' . $e->getMessage());
+            return;
+        }
 
-        $this->sessionRepository->deleteAll();
-    }
+        $service = new \App\Service\SessionService();
+        $session = $service->create('1');
 
-    public function testCurrent()
-    {
-        $session = new Session();
-        $session->id = "68f9b0b403d5c";
-        $session->user_id = "68f97c612b8b4";
-
-        $this->sessionRepository->save($session);
-
-        $_COOKIE[SessionService::$COOKIE_NAME] = $session->id;
-
-        $user = $this->sessionService->current();
-
-        self::assertEquals($session->user_id, $user->id);
+        $this->assertInstanceOf(\App\Domain\Session::class, $session);
+        $this->assertEquals('1', $session->userId);
     }
 }

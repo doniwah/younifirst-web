@@ -2,55 +2,67 @@
 
 namespace App\Service;
 
+use App\Config\Database;
 use App\Domain\Session;
-use App\Domain\User;
 use App\Repository\SessionRepository;
 use App\Repository\UserRepository;
 
 class SessionService
 {
-
-    public static string $COOKIE_NAME = "X-PZN-SESSION";
-
+    public static string $COOKIE_NAME = 'X-YOUNIFIRST-SESSION';
     private SessionRepository $sessionRepository;
     private UserRepository $userRepository;
 
-    public function __construct(SessionRepository $sessionRepository, UserRepository $userRepository)
+    public function __construct()
     {
-        $this->sessionRepository = $sessionRepository;
-        $this->userRepository = $userRepository;
+        $connection = Database::getConnection('prod');
+        $this->sessionRepository = new SessionRepository($connection);
+        $this->userRepository = new UserRepository($connection);
     }
 
     public function create(string $userId): Session
     {
-        $session = new Session();
-        $session->id = uniqid();
-        $session->user_id = $userId;
+        // Hapus cookie lama jika ada
+        if (isset($_COOKIE[self::$COOKIE_NAME])) {
+            setcookie(self::$COOKIE_NAME, '', time() - 3600, "/");
+            unset($_COOKIE[self::$COOKIE_NAME]);
+        }
 
+        // Buat session baru
+        $session = new Session();
+        $session->id = uniqid('sess_');
+        $session->userId = $userId;
+
+        // Simpan ke DB
         $this->sessionRepository->save($session);
 
+        // Set cookie baru
         setcookie(self::$COOKIE_NAME, $session->id, time() + (60 * 60 * 24 * 30), "/");
 
         return $session;
     }
 
-    public function destroy()
+    public function current(): ?object
     {
-        $sessionId = $_COOKIE[self::$COOKIE_NAME] ?? '';
-        $this->sessionRepository->deleteById($sessionId);
+        if (!isset($_COOKIE[self::$COOKIE_NAME])) {
+            return null;
+        }
 
-        setcookie(self::$COOKIE_NAME, '', 1, "/");
-    }
-
-    public function current(): ?User
-    {
-        $sessionId = $_COOKIE[self::$COOKIE_NAME] ?? '';
-
+        $sessionId = $_COOKIE[self::$COOKIE_NAME];
         $session = $this->sessionRepository->findById($sessionId);
         if ($session == null) {
             return null;
         }
 
-        return $this->userRepository->findByEmail($session->user_id);
+        return $this->userRepository->findById($session->userId);
+    }
+
+    public function destroy(): void
+    {
+        if (isset($_COOKIE[self::$COOKIE_NAME])) {
+            $sessionId = $_COOKIE[self::$COOKIE_NAME];
+            $this->sessionRepository->deleteById($sessionId);
+            setcookie(self::$COOKIE_NAME, '', time() - 3600, "/");
+        }
     }
 }

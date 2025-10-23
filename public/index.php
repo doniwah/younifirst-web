@@ -25,6 +25,11 @@ Router::add('GET', '/', HomeController::class, 'index', []);
 Router::add('GET', '/users/logout', UserController::class, 'logout', [MustLoginMiddleware::class]);
 Router::add('GET', '/users/login', UserController::class, 'login', [MustNotLoginMiddleware::class]);
 Router::add('POST', '/users/login', UserController::class, 'postLogin', [MustNotLoginMiddleware::class]);
+
+
+Router::add('GET', '/dashboard', DashboardController::class, 'index', [MustLoginMiddleware::class]);
+
+Router::add('GET', '/users/logout', UserController::class, 'logout', [MustLoginMiddleware::class]);
 // Router::add('GET', '/login', LoginController::class, 'login', []);
 // Router::add('POST', '/login', LoginController::class, 'login', []);
 // Router::add('GET', '/logout', LoginController::class, 'logout', []);
