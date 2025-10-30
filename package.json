@@ -1,0 +1,17 @@
+{
+  "name": "younifirst-web",
+  "version": "1.0.0",
+  "description": "Ini adalah proyek website Younifirst, sebuah aplikasi web yang dibangun menggunakan PHP.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.9.1"
+  }
+}

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Models\Team;
 use App\Models\TeamMember;
 use App\Models\Competition;
+use App\App\View;
 
 class TeamController
 {
@@ -153,19 +154,21 @@ class TeamController
     // Get all teams with member info
     public function index()
     {
-        $team = new Team();
-        $stmt = $team->readAll();
-        $teams = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        // $team = new Team();
+        // $stmt = $team->readAll();
+        // $teams = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-        // Get member count for each team
-        foreach ($teams as &$tm) {
-            $memberModel = new TeamMember();
-            $memberStmt = $memberModel->readByTeam($tm['team_id'], 'confirm');
-            $tm['confirmed_members'] = $memberStmt->rowCount();
-        }
+        // // Get member count for each team
+        // foreach ($teams as &$tm) {
+        //     $memberModel = new TeamMember();
+        //     $memberStmt = $memberModel->readByTeam($tm['team_id'], 'confirm');
+        //     $tm['confirmed_members'] = $memberStmt->rowCount();
+        // }
 
-        header('Content-Type: application/json');
-        echo json_encode($teams);
+        // header('Content-Type: application/json');
+        // echo json_encode($teams);
+
+        View::render('component/kompetisi/index', ['title' => 'YouniFirst']);
     }
 
     // Get team detail
