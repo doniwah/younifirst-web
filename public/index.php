@@ -34,15 +34,14 @@ Router::add('GET', '/users/logout', UserController::class, 'logout', [MustLoginM
 
 // $router->get('/dashboard', [DashboardController::class, 'dashboard']);
 
-// $router->get('/kompetisi', [KompetisiController::class, 'index']);
-// $router->post('/kompetisi/create', [KompetisiController::class, 'create']);
-// $router->get('/kompetisi/{id}', [KompetisiController::class, 'detail']);
+Router::add('GET', '/kompetisi', KompetisiController::class, 'index', [MustLoginMiddleware::class]);
+Router::add('POST', '/kompetisi/create', KompetisiController::class, 'create', [MustLoginMiddleware::class]);
+Router::add('GET', '/kompetisi/{id}', KompetisiController::class, 'detail', [MustLoginMiddleware::class]);
 
 // $router->post('/kompetisi/{id}/approve', [KompetisiController::class, 'approve']);
 // $router->post('/kompetisi/{id}/reject', [KompetisiController::class, 'reject']);
-
-// $router->get('/lost_found', [LostnFoundController::class, 'lost_found']);
-// $router->post('/lost_found/create', [LostnFoundController::class, 'create']);
+Router::add('GET', '/lost_found', LostnFoundController::class, 'lost_found', [MustLoginMiddleware::class]);
+Router::add('POST', '/lost_found/create', LostnFoundController::class, 'create', [MustLoginMiddleware::class]);
 
 
 // $router->get('/event', [EventController::class, 'event']);
