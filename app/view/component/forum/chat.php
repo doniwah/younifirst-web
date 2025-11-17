@@ -55,7 +55,7 @@
         <div class="chat-messages" id="chatMessages">
             <?php foreach ($messages as $msg): ?>
             <?php
-                $is_sent = ($msg['user_id'] == $current_user['user_id']);
+                $is_sent = ($msg['user_id'] == $current_user->user_id);
                 $time = date('H:i', strtotime($msg['created_at']));
                 $initials = strtoupper(substr($msg['username'], 0, 2));
                 ?>

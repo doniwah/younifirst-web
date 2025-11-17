@@ -4,45 +4,37 @@ namespace App\Controller;
 
 use App\Models\LostnFoundModel;
 use App\Service\SessionService;
+use App\App\View;
 
 class LostnFoundController
 {
     private $model;
-    private $sessionService;
+    private SessionService $session;
 
     public function __construct()
     {
-        $this->model = new LostnFoundModel();
-        $this->sessionService = new SessionService();
+        $this->session = new SessionService();
     }
 
     public function lost_found()
     {
-        $user = $this->sessionService->current();
-
-        if (!$user) {
-            header('Location: /users/login');
-            exit;
-        }
-
-        $items = $this->model->getAllItems();
-
-        ob_start();
-        include __DIR__ . '/../view/component/lost&found/index.php';
-        return ob_get_clean();
+        View::render('component/lost&found/index', [
+            'title' => 'Kompetisi',
+            'user' => $this->session->current()
+        ]);
     }
 
     public function create()
     {
-        $user = $this->sessionService->current();
+        // $user = $this->sessionService->current();
 
-        if (!$user) {
+        if (!$this->session->current()) {
             header('Location: /users/login');
             exit;
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $user_id = $user->user_id; // Ambil dari session service
+            $user_id = $this->session->current()->user_id; // Ambil dari session service
             $kategori = $_POST['kategori'] ?? '';
             $lokasi = $_POST['lokasi'] ?? '';
             $no_hp = $_POST['no_hp'] ?? '';

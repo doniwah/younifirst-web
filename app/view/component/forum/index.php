@@ -109,9 +109,9 @@
 
 <body>
     <?php require_once __DIR__ . "/../../layouts/navbar.php"; ?>
-    <?php require_once __DIR__ . "/main.php"; ?>
 
-    <!-- Toast Container -->
+    <?php require __DIR__ . "/main.php"; ?>
+
     <div id="toastContainer"></div>
 
     <script>

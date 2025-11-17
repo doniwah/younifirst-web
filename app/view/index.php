@@ -29,8 +29,8 @@
     </section>
 
     <section class="features">
-        <h2 data-aos="fade-right">Fitur Lengkap untuk Mahasiswa</h2>
-        <p class="features-subtitle" data-aos="fade-left">Semua yang kamu butuhkan untuk berkembang di kampus, dalam
+        <h2 data-aos="fade-up">Fitur Lengkap untuk Mahasiswa</h2>
+        <p class="features-subtitle" data-aos="fade-up">Semua yang kamu butuhkan untuk berkembang di kampus, dalam
             satu platform <br>yang
             mudah
             digunakan</p>

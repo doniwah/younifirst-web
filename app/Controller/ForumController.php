@@ -2,202 +2,176 @@
 
 namespace App\Controller;
 
-use App\Models\Forum;
-use App\Models\User;
+use App\Model\Forum;
+use App\Service\SessionService;
+use App\App\View;
+use App\Repository\UserRepository;
+use App\Config\Database; // pastikan sesuai folder Database kamu
 
 class ForumController
 {
+    private SessionService $session;
+    private UserRepository $userRepo;
+
     public function __construct()
     {
-
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        $this->session = new SessionService();
+        $this->userRepo = new UserRepository(Database::getConnection());
     }
 
-    private function getUserId()
+    /* --------------------------
+     * Helper untuk cek login
+     * -------------------------- */
+    private function requireLogin()
     {
-        if (isset($_SESSION['user_id'])) {
-            return $_SESSION['user_id'];
+        // Ambil user dari session (User object)
+        $user = $this->session->current();
+
+        if (!$user) {
+            View::redirect('/users/login');
+            exit();
         }
 
-        if (isset($_SESSION['user']['user_id'])) {
-            return $_SESSION['user']['user_id'];
+        // Jika session menyimpan user_id saja, bisa di-handle di sini:
+        if (is_array($user) && isset($user->user_id)) {
+            // berarti session lama → ambil user dari repo
+            $user = $this->userRepo->findById($user->user_id);
         }
 
-        return null;
+        // Jika masih null berarti gagal ambil dari DB
+        if (!$user) {
+            View::redirect('/users/login');
+            exit();
+        }
+
+        return $user; // Ini object App\Domain\User
     }
 
+    /* --------------------------
+     * Halaman forum
+     * -------------------------- */
     public function forum()
     {
-
-        $isLoggedIn = isset($_SESSION['user']) || isset($_SESSION['user_id']);
-
-        if (!$isLoggedIn) {
-            header("Location: /login");
-            exit();
-        }
-
-        $user_id = $this->getUserId();
-
-        if (!$user_id) {
-            header("Location: /login");
-            exit();
-        }
-
-        $user_data = User::getUserById($user_id);
-
-        if (!$user_data) {
-            header("Location: /login");
-            exit();
-        }
-
-        $current_user_jurusan = $user_data['jurusan'] ?? null;
-
-
+        $user = $this->requireLogin();
         $komunitas_list = Forum::getAllKomunitas();
-
-
-        require_once __DIR__ . '/../view/component/forum/index.php';
+        View::render('component/forum/index', [
+            'title'     => 'Forum',
+            'user'      => $user,
+            'komunitas_list' => $komunitas_list
+        ]);
     }
 
+    /* --------------------------
+     * Halaman chat
+     * -------------------------- */
     public function chat()
     {
+        $user = $this->requireLogin();
+        $userId = $user->user_id;
 
-        $isLoggedIn = isset($_SESSION['user']) || isset($_SESSION['user_id']);
-
-        if (!$isLoggedIn) {
-            header("Location: /login");
-            exit();
-        }
-
-        $user_id = $this->getUserId();
-
-        if (!$user_id) {
-            header("Location: /login");
-            exit();
-        }
-
-        $user_data = User::getUserById($user_id);
-
-        if (!$user_data) {
-            header("Location: /login");
-            exit();
-        }
-
-        $komunitas_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+        $komunitas_id = intval($_GET['id'] ?? 0);
 
         if ($komunitas_id <= 0) {
-            header("Location: /forum");
+            View::redirect('/forum');
             exit();
         }
 
-        $jurusan = $user_data['jurusan'] ?? null;
-
-        if (!Forum::canUserAccessKomunitas($komunitas_id, $jurusan)) {
-
-            header("Location: /forum?error=access_denied");
+        if (!Forum::canUserAccessKomunitas($komunitas_id, $user->jurusan)) {
+            View::redirect('/forum?error=access_denied');
             exit();
         }
 
         $komunitas = Forum::getKomunitasById($komunitas_id);
 
         if (!$komunitas) {
-            header("Location: /forum");
+            View::redirect('/forum');
             exit();
         }
 
-
-        if (!Forum::isUserMember($komunitas_id, $user_id)) {
-            Forum::addMember($komunitas_id, $user_id);
+        if (!Forum::isUserMember($komunitas_id, $userId)) {
+            Forum::addMember($komunitas_id, $userId);
         }
 
-
-        $messages = Forum::getMessages($komunitas_id);
-        $current_user = $user_data;
-        require_once __DIR__ . '/../view/component/forum/chat.php';
+        View::render('component/forum/chat', [
+            'title'     => $komunitas['nama_komunitas'],
+            'user'      => $user,
+            'komunitas' => $komunitas,
+            'messages'  => Forum::getMessages($komunitas_id),
+            'current_user' => $user
+        ]);
     }
 
+    /* --------------------------
+     * Kirim pesan (AJAX)
+     * -------------------------- */
     public function sendMessage()
     {
         header('Content-Type: application/json');
 
-        $user_id = $this->getUserId();
+        $user = $this->requireLogin();
+        $userId = $user->user_id;
 
-        if (!$user_id) {
-            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Invalid request']);
             exit();
         }
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $komunitas_id = isset($_POST['komunitas_id']) ? intval($_POST['komunitas_id']) : 0;
-            $message_text = isset($_POST['message']) ? trim($_POST['message']) : '';
-            $reply_to_message_id = isset($_POST['reply_to_message_id']) ? intval($_POST['reply_to_message_id']) : null;
+        $komunitas_id = intval($_POST['komunitas_id'] ?? 0);
+        $text = trim($_POST['message'] ?? '');
+        $reply_to = intval($_POST['reply_to_message_id'] ?? 0) ?: null;
 
-            if ($komunitas_id > 0 && !empty($message_text)) {
-                $user_data = User::getUserById($user_id);
-
-                if (!Forum::canUserAccessKomunitas($komunitas_id, $user_data['jurusan'] ?? null)) {
-                    echo json_encode(['success' => false, 'message' => 'Access denied']);
-                    exit();
-                }
-
-                $message_id = Forum::sendMessage($komunitas_id, $user_id, $message_text, $reply_to_message_id);
-
-                if ($message_id) {
-                    $response = [
-                        'success' => true,
-                        'message_id' => $message_id,
-                        'username' => $user_data['username'],
-                        'time' => date('H:i')
-                    ];
-
-
-                    if ($reply_to_message_id) {
-                        $reply_message = Forum::getMessageById($reply_to_message_id);
-                        $response['reply_to'] = [
-                            'username' => $reply_message['username'] ?? '',
-                            'text' => $reply_message['message_text'] ?? ''
-                        ];
-                    }
-
-                    echo json_encode($response);
-                } else {
-                    echo json_encode(['success' => false, 'message' => 'Failed to send message']);
-                }
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Invalid data']);
-            }
+        if ($komunitas_id <= 0 || $text === '') {
+            echo json_encode(['success' => false, 'message' => 'Invalid data']);
+            exit();
         }
+
+        if (!Forum::canUserAccessKomunitas($komunitas_id, $user->jurusan)) {
+            echo json_encode(['success' => false, 'message' => 'Access denied']);
+            exit();
+        }
+
+        $messageId = Forum::sendMessage($komunitas_id, $userId, $text, $reply_to);
+
+        if (!$messageId) {
+            echo json_encode(['success' => false, 'message' => 'Failed to send message']);
+            exit();
+        }
+
+        echo json_encode([
+            'success'     => true,
+            'message_id'  => $messageId,
+            'username'    => $user->username,
+            'time'        => date('H:i')
+        ]);
+
         exit();
     }
 
+    /* --------------------------
+     * Hapus pesan
+     * -------------------------- */
     public function deleteMessage()
     {
         header('Content-Type: application/json');
 
-        $user_id = $this->getUserId();
+        $user = $this->requireLogin();
+        $userId = $user->user_id;
 
-        if (!$user_id) {
-            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Invalid request']);
             exit();
         }
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $message_id = isset($_POST['message_id']) ? intval($_POST['message_id']) : 0;
+        $message_id = intval($_POST['message_id'] ?? 0);
 
-            if ($message_id > 0) {
-                $result = Forum::deleteMessage($message_id, $user_id);
-
-                if ($result) {
-                    echo json_encode(['success' => true]);
-                } else {
-                    echo json_encode(['success' => false, 'message' => 'Cannot delete message']);
-                }
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Invalid message ID']);
-            }
+        if ($message_id <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Invalid message ID']);
+            exit();
         }
+
+        $result = Forum::deleteMessage($message_id, $userId);
+
+        echo json_encode(['success' => $result]);
         exit();
     }
 }

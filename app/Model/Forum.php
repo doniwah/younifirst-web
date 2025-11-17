@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Models;
+namespace App\Model;
 
-use App\Models\Database;
+use App\Config\Database;
 
 class Forum
 {
     private static function getConnection()
     {
-        return Database::getInstance();
+        return Database::getConnection("prod");
     }
 
     public static function getAllKomunitas()

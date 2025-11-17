@@ -43,13 +43,15 @@ Router::add('GET', '/kompetisi/{id}', KompetisiController::class, 'detail', [Mus
 Router::add('GET', '/lost_found', LostnFoundController::class, 'lost_found', [MustLoginMiddleware::class]);
 Router::add('POST', '/lost_found/create', LostnFoundController::class, 'create', [MustLoginMiddleware::class]);
 
+Router::add('GET', '/event', EventController::class, 'event', [MustLoginMiddleware::class]);
 
-// $router->get('/event', [EventController::class, 'event']);
 
-// $router->get('/forum', [ForumController::class, 'forum']);
-// $router->get('/forum/chat', [ForumController::class, 'chat']);
-// $router->post('/forum/send-message', [ForumController::class, 'sendMessage']);
-// $router->post('/forum/delete-message', [ForumController::class, 'deleteMessage']);
+Router::add('GET', '/forum', ForumController::class, 'forum', [MustLoginMiddleware::class]);
+
+
+Router::add('GET', '/forum/chat', ForumController::class, 'chat', [MustLoginMiddleware::class]);
+Router::add('POST', '/forum/send-message', ForumController::class, 'sendMessage', [MustLoginMiddleware::class]);
+Router::add('POST', '/forum/delete-message', ForumController::class, 'deleteMessage', [MustLoginMiddleware::class]);
 
 // // Team Management - GANTI DENGAN FORMAT YANG BENAR
 // $router->post('/team/create', [TeamController::class, 'create']);

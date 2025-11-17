@@ -6,7 +6,16 @@ class View
 {
     public static function render(string $view, array $model = []): void
     {
+
+
+        ob_start();
+        extract($model);
+
         require __DIR__ . '/../View/' . $view . '.php';
+
+        $output = ob_get_clean();
+
+        echo $output;
     }
 
     public static function redirect(string $url): void
