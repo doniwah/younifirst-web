@@ -2,27 +2,39 @@
 
 namespace App\Controller;
 
-use App\Models\Competition;
+use App\Model\Competition;
 use App\Service\SessionService;
 use App\App\View;
+use App\Model\Team;
 
 class KompetisiController
 {
 
     private SessionService $session;
+    private Competition $competition;
+    private Team $teams;
 
     public function __construct()
     {
         $this->session = new SessionService();
+        $this->competition = new Competition();
+        $this->teams = new Team();
     }
 
     public function index()
     {
+
+        $competitions = $this->competition->readAll();
+        $teams = $this->teams->readAll();
+
         View::render('component/kompetisi/index', [
             'title' => 'Kompetisi',
-            'user' => $this->session->current()
+            'user' => $this->session->current(),
+            'competitions' => $competitions,
+            'teams' => $teams
         ]);
     }
+
 
     public function create()
     {
@@ -37,7 +49,6 @@ class KompetisiController
             exit;
         }
 
-        $competition = new Competition();
         $poster_path = '';
         if (isset($_FILES['poster_lomba']) && $_FILES['poster_lomba']['error'] === UPLOAD_ERR_OK) {
             $upload_dir = __DIR__ . '/../../public/uploads/posters/';
@@ -51,16 +62,16 @@ class KompetisiController
             }
         }
 
-        $competition->nama_lomba = $_POST['nama_lomba'] ?? '';
-        $competition->deskripsi = $_POST['deskripsi'] ?? '';
-        $competition->kategori = $_POST['kategori'] ?? '';
-        $competition->tanggal_lomba = $_POST['deadline'] ?? '';
-        $competition->lokasi = $_POST['lokasi'] ?? '';
-        $competition->hadiah = $_POST['hadiah'] ?? '0';
-        $competition->user_id = $_SESSION['user_id'];
-        $competition->poster_lomba = $poster_path;
+        $this->competition->nama_lomba = $_POST['nama_lomba'] ?? '';
+        $this->competition->kategori = $_POST['kategori'] ?? '';
+        $this->competition->deskripsi = $_POST['deskripsi'] ?? '';
+        $this->competition->tanggal_lomba = $_POST['deadline'] ?? '';
+        $this->competition->lokasi = $_POST['lokasi'] ?? '';
+        $this->competition->hadiah = $_POST['hadiah'] ?? '0';
+        $this->competition->user_id = $_SESSION['user_id'];
+        $this->competition->poster_lomba = $poster_path;
 
-        if (empty($competition->nama_lomba) || empty($competition->tanggal_lomba)) {
+        if (empty($this->competition->nama_lomba) || empty($this->competition->tanggal_lomba)) {
             echo "Validasi gagal: Field kosong<br>";
             View::render('component/kompetisi/index', [
                 'title' => 'Kompetisi',
@@ -69,7 +80,7 @@ class KompetisiController
             exit();
         }
 
-        if ($competition->create()) {
+        if ($this->competition->create()) {
             header('Location: /kompetisi?status=success&message=Lomba berhasil diposting! Menunggu persetujuan admin');
             exit();
         } else {
@@ -88,22 +99,21 @@ class KompetisiController
             return;
         }
 
-        $competition = new Competition();
-        $competition->lomba_id = $id;
+        $this->competition->lomba_id = $id;
 
-        if ($competition->readOne()) {
+        if ($this->competition->readOne()) {
             // Return competition data as JSON
             header('Content-Type: application/json');
             echo json_encode([
-                'lomba_id' => $competition->lomba_id,
-                'nama_lomba' => $competition->nama_lomba,
-                'deskripsi' => $competition->deskripsi,
-                'kategori' => $competition->kategori,
-                'tanggal_lomba' => $competition->tanggal_lomba,
-                'lokasi' => $competition->lokasi,
-                'hadiah' => $competition->hadiah,
-                'status' => $competition->status,
-                'user_id' => $competition->user_id
+                'lomba_id' => $this->competition->lomba_id,
+                'nama_lomba' => $this->competition->nama_lomba,
+                'deskripsi' => $this->competition->deskripsi,
+                'kategori' => $this->competition->kategori,
+                'tanggal_lomba' => $this->competition->tanggal_lomba,
+                'lokasi' => $this->competition->lokasi,
+                'hadiah' => $this->competition->hadiah,
+                'status' => $this->competition->status,
+                'user_id' => $this->competition->user_id
             ]);
         } else {
             http_response_code(404);
@@ -111,7 +121,6 @@ class KompetisiController
         }
     }
 
-    // Approve competition (Admin only)
     public function approve($params = [])
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -131,10 +140,9 @@ class KompetisiController
             exit();
         }
 
-        $competition = new Competition();
-        $competition->lomba_id = $id;
+        $this->competition->lomba_id = $id;
 
-        if ($competition->approve()) {
+        if ($this->competition->approve()) {
             header('Location: /dashboard?status=success&message=Lomba berhasil di-approve');
             exit();
         } else {
@@ -163,10 +171,9 @@ class KompetisiController
             exit();
         }
 
-        $competition = new Competition();
-        $competition->lomba_id = $id;
+        $this->competition->lomba_id = $id;
 
-        if ($competition->reject()) {
+        if ($this->competition->reject()) {
             header('Location: /dashboard?status=success&message=Lomba berhasil di-reject');
             exit();
         } else {

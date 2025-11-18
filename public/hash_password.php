@@ -1,9 +1,9 @@
 <?php
 // Jalankan file ini SEKALI untuk hash semua password di database
 require_once '../vendor/autoload.php';
-require_once '../app/Models/Database.php';
+require_once '../app/Model/Database.php';
 
-use App\Models\Database;
+use App\Model\Database;
 
 try {
     $db = Database::getInstance();

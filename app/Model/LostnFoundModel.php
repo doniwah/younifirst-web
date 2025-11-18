@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Model;
 
 use PDO;
 
@@ -26,7 +26,8 @@ class LostnFoundModel
                         lf.email,
                         lf.deskripsi,
                         lf.nama_barang,
-                        u.email AS user_email
+                        u.email AS user_email,
+                        u.username AS username
                       FROM lost_found lf
                       LEFT JOIN users u ON lf.user_id = u.user_id
                       ORDER BY lf.tanggal DESC";
@@ -41,7 +42,6 @@ class LostnFoundModel
         }
     }
 
-    // Tambah data baru
     public function insertItem($data)
     {
         try {

@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Models\Team;
-use App\Models\TeamMember;
-use App\Models\Competition;
+use App\Model\Team;
+use App\Model\TeamMember;
+use App\Model\Competition;
 use App\App\View;
 use App\Service\SessionService;
 
@@ -15,6 +15,21 @@ class TeamController
     public function __construct()
     {
         $this->session = new SessionService();
+    }
+
+    public function readAllApproved()
+    {
+        $db = \App\Model\Database::getInstance();
+        $stmt = $db->prepare("
+        SELECT t.*, 
+            (SELECT COUNT(*) FROM detail_angota da 
+             WHERE da.team_id = t.team_id AND da.status = 'confirm') AS jumlah_anggota
+        FROM teams t
+        WHERE t.status = 'approved'
+        ORDER BY t.team_id DESC
+    ");
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     public function create()
@@ -55,7 +70,7 @@ class TeamController
         }
 
         if ($team->create()) {
-            $conn = \App\Models\Database::getInstance();
+            $conn = \App\Model\Database::getInstance();
             $role = $_POST['role_pembuat'] ?? 'ketua';
 
             $stmt = $conn->prepare("

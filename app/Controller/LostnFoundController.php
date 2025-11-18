@@ -2,25 +2,27 @@
 
 namespace App\Controller;
 
-use App\Models\LostnFoundModel;
+use App\Model\LostnFoundModel;
 use App\Service\SessionService;
 use App\App\View;
 
 class LostnFoundController
 {
-    private $model;
     private SessionService $session;
+    private LostnFoundModel $dataBarang;
 
     public function __construct()
     {
         $this->session = new SessionService();
+        $this->dataBarang = new LostnFoundModel();
     }
 
     public function lost_found()
     {
         View::render('component/lost&found/index', [
             'title' => 'Kompetisi',
-            'user' => $this->session->current()
+            'user' => $this->session->current(),
+            'datas' => $this->dataBarang->getAllItems()
         ]);
     }
 
@@ -34,7 +36,7 @@ class LostnFoundController
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $user_id = $this->session->current()->user_id; // Ambil dari session service
+            $user_id = $this->session->current()->user_id; 
             $kategori = $_POST['kategori'] ?? '';
             $lokasi = $_POST['lokasi'] ?? '';
             $no_hp = $_POST['no_hp'] ?? '';
@@ -60,7 +62,7 @@ class LostnFoundController
                 'nama_barang' => $nama_barang
             ];
 
-            if ($this->model->insertItem($data)) {
+            if ($this->dataBarang->insertItem($data)) {
                 header('Location: /lost_found?success=1');
             } else {
                 header('Location: /lost_found?error=database');
@@ -73,7 +75,7 @@ class LostnFoundController
     {
         do {
             $id_barang = substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 10);
-        } while ($this->model->isIdExists($id_barang));
+        } while ($this->dataBarang->isIdExists($id_barang));
         return $id_barang;
     }
 }
