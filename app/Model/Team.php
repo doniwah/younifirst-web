@@ -11,12 +11,12 @@ class Team
     private $table = 'team';
 
     public $team_id;
-    public $lomba_id;
+    public $nama_kegiatan;
     public $nama_team;
     public $deskripsi_anggota;
-    public $role_dibutuhkan;
-    public $jumlah_anggota;
-    public $maksimal_anggota;
+    public $role_required;
+    public $max_anggota;
+    public $role;
     public $status;
 
     public function __construct()

@@ -23,7 +23,6 @@ class KompetisiController
 
     public function index()
     {
-
         $competitions = $this->competition->readAll();
         $teams = $this->teams->readAll();
 
@@ -68,7 +67,7 @@ class KompetisiController
         $this->competition->tanggal_lomba = $_POST['deadline'] ?? '';
         $this->competition->lokasi = $_POST['lokasi'] ?? '';
         $this->competition->hadiah = $_POST['hadiah'] ?? '0';
-        $this->competition->user_id = $_SESSION['user_id'];
+        $this->competition->user_id = $user->user_id;
         $this->competition->poster_lomba = $poster_path;
 
         if (empty($this->competition->nama_lomba) || empty($this->competition->tanggal_lomba)) {

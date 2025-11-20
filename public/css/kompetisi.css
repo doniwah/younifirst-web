@@ -348,23 +348,26 @@ body {
   display: none;
   position: fixed;
   z-index: 1000;
-  padding-top: 60px;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.4);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
 }
 
 .modal-content {
   background-color: #fff;
-  margin: auto;
-  padding: 20px 30px;
-  border-radius: 6px;
-  width: 480px;
+  margin: 60px auto;
+  padding: 25px 30px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   font-family: "Inter", sans-serif;
-  margin-top: -80px;
+  position: relative;
 }
 
 .title_pop {
@@ -373,6 +376,7 @@ body {
   margin-bottom: 5px;
   font-family: "Poppins", "Nunito Sans", sans-serif;
 }
+
 .deskripsi_pop {
   font-size: 12px;
   margin-bottom: 10px;
@@ -393,7 +397,8 @@ label {
 }
 
 input,
-textarea {
+textarea,
+select {
   width: 100%;
   padding: 10px;
   margin-top: 6px;
@@ -401,6 +406,17 @@ textarea {
   border: 1px solid #ccc;
   border-radius: 6px;
   font-family: "Poppins", "Nunito Sans", sans-serif;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+input[type="file"] {
+  padding: 8px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
 }
 
 .input {
@@ -414,9 +430,18 @@ textarea {
 
 .row div {
   flex: 1;
+  min-width: 0;
 }
 
-/* Tombol submit */
+.row label {
+  display: block;
+}
+
+.row input,
+.row select {
+  width: 100%;
+}
+
 .submit-btn {
   width: 100%;
   background-color: #001f54;
@@ -428,6 +453,59 @@ textarea {
   font-size: 15px;
   cursor: pointer;
 }
+
+.submit-btn:hover {
+  background-color: #001a45;
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 60px auto;
+  padding: 25px 30px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 800px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  font-family: "Inter", sans-serif;
+  position: relative;
+}
+
+.main-content-add {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  margin-top: 15px;
+  align-items: flex-start;
+}
+
+.main-content-add .left-content,
+.main-content-add .right-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.main-content-add .right-content .row {
+  display: flex;
+  gap: 15px;
+  margin-top: 2px;
+}
+
+.main-content-add .right-content .row > div {
+  flex: 1;
+}
+
+.main-content-add input,
+.main-content-add textarea,
+.main-content-add select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
 @media (max-width: 768px) {
   .competitions-grid,
   .teams-grid {
@@ -446,5 +524,44 @@ textarea {
 
   .tab {
     white-space: nowrap;
+  }
+
+  .modal {
+    padding: 10px;
+  }
+
+  .modal-content {
+    padding: 20px 15px;
+    margin: 20px auto;
+  }
+
+  .title_pop {
+    font-size: 14px;
+  }
+
+  .deskripsi_pop {
+    font-size: 11px;
+  }
+  .main-content-add {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .main-content-add .left-content {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .row div {
+    width: 100%;
+  }
+
+  .input {
+    width: 100%;
   }
 }

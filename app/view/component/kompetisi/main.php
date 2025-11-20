@@ -84,11 +84,12 @@
                                 <span class="team-icon"><i class="bi bi-people"></i></span>
                                 <h3><?= htmlspecialchars($team['nama_team']) ?></h3>
                             </div>
-                            <span class="member-count"><?= $team['jumlah_anggota'] ?> anggota</span>
+                            <span class="member-count"><?= $team['max_anggota'] ?> anggota</span>
                         </div>
+                        <h4><?= $team['nama_kegiatan'] ?></h4>
                         <p class="team-description"><?= htmlspecialchars($team['deskripsi_anggota']) ?></p>
                         <button class="btn-join"
-                            onclick="openJoinModal('<?= $team['team_id'] ?>', '<?= htmlspecialchars($team['nama_team']) ?>', <?= $team['jumlah_anggota'] ?>)">
+                            onclick="openJoinModal('<?= $team['team_id'] ?>', '<?= htmlspecialchars($team['nama_team']) ?>', <?= $team['max_anggota'] ?>)">
                             Ajukan Bergabung
                         </button>
                     </div>
@@ -110,32 +111,37 @@
         <p class="deskripsi_pop">Bagikan informasi lomba kepada komunitas</p>
 
         <form action="/kompetisi/create" method="POST" enctype="multipart/form-data" id="lombaForm">
-            <label>Judul Lomba <span style="color: red;">*</span></label>
-            <input type="text" name="nama_lomba" placeholder="Nama lomba" required>
+            <div class="main-content-add">
+                <div class="left-content">
+                    <label>Judul Lomba <span style="color: red;">*</span></label>
+                    <input type="text" name="nama_lomba" placeholder="Nama lomba" required>
 
-            <label>Kategori</label>
-            <input type="text" name="kategori" placeholder="Contoh: Technology, Business">
+                    <label>Kategori</label>
+                    <input type="text" name="kategori" placeholder="Contoh: Technology, Business">
 
-            <label>Deskripsi</label>
-            <textarea name="deskripsi" placeholder="Detail lomba..." rows="4"></textarea>
-
-            <div class="row">
-                <div>
-                    <label>Deadline <span style="color: red;">*</span></label>
-                    <input type="date" name="deadline" required>
+                    <label>Deskripsi</label>
+                    <textarea name="deskripsi" placeholder="Detail lomba..." rows="4"></textarea>
                 </div>
-                <div>
-                    <label>Lokasi</label>
-                    <input type="text" name="lokasi" placeholder="Lokasi lomba">
+                <div class="right-content">
+                    <div class="row">
+                        <div>
+                            <label>Deadline <span style="color: red;">*</span></label>
+                            <input type="date" name="deadline" required>
+                        </div>
+                        <div>
+                            <label>Lokasi</label>
+                            <input type="text" name="lokasi" placeholder="Lokasi lomba">
+                        </div>
+                    </div>
+
+                    <label>Hadiah (Rp)</label>
+                    <input type="number" name="hadiah" placeholder="Contoh: 10000000" min="0">
+
+                    <label>Poster Lomba</label>
+                    <input type="file" name="poster_lomba" accept="image/*">
+
                 </div>
             </div>
-
-            <label>Hadiah (Rp)</label>
-            <input type="number" name="hadiah" placeholder="Contoh: 10000000" min="0">
-
-            <label>Poster Lomba</label>
-            <input type="file" name="poster_lomba" accept="image/*">
-
             <button type="submit" class="submit-btn">Posting Lomba</button>
         </form>
     </div>
@@ -149,19 +155,25 @@
         <p class="deskripsi_pop">Rekrut anggota untuk timmu</p>
 
         <form action="/team/create" method="POST" id="timForm">
-            <label>Nama Tim <span style="color: red;">*</span></label>
-            <input type="text" name="nama_team" placeholder="Nama tim kamu" required>
+            <div class="main-content-add">
+                <div class="left-content">
+                    <label>Nama Tim <span style="color: red;">*</span></label>
+                    <input type="text" name="nama_team" placeholder="Nama tim kamu" required>
 
-            <label>Deskripsi Tim</label>
-            <textarea name="deskripsi_anggota" placeholder="Ceritakan tentang timmu..." rows="4"></textarea>
+                    <label>Nama Kegiatan <span style="color: red;">*</span></label>
+                    <input type="text" name="nama_kegiatan" placeholder="Lomba/penelitian" required>
 
-            <label>Role Anda sebagai Pembuat Tim</label>
-            <select name="role_pembuat"
-                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
-                <option value="ketua">Ketua</option>
-                <option value="anggota">Anggota</option>
-            </select>
+                    <label>Deskripsi Tim</label>
+                    <textarea name="deskripsi_tim" placeholder="Ceritakan tentang timmu..." rows="4"></textarea>
+                </div>
+                <div class="right-content">
+                    <label>Role Dibutuhkan</label>
+                    <textarea name="role_dibutuhkan" placeholder="Programmer, Desaigner" rows="4"></textarea>
 
+                    <label>Jumlah anggota <span style="color: red;">*</span></label>
+                    <input type="number" name="jumlah_anggota" placeholder="" required>
+                </div>
+            </div>
             <button type="submit" class="submit-btn">Buat Tim</button>
         </form>
     </div>

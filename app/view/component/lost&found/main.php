@@ -95,49 +95,40 @@
 <!-- Modal Popup -->
 <div id="modalOverlay" class="modal-overlay">
     <div id="modalContent" class="modal-content">
-        <div class="modal-header">
-            <h2>Laporkan Barang</h2>
-            <button class="close-btn" onclick="closeModal()">&times;</button>
-        </div>
+        <span class="close" onclick="closeModal()"><i class="bi bi-x"></i></span>
+        <h2 class="title_pop">Laporkan Barang</h2>
         <p class="modal-subtitle">Laporkan barang hilang atau barang yang ditemukan</p>
 
         <form id="laporanForm" method="POST" action="/lost_found/create">
-            <div class="form-group">
-                <label for="kategori">Kategori</label>
-                <select id="kategori" name="kategori" required>
-                    <option value="">Pilih kategori</option>
-                    <option value="hilang">Barang Hilang</option>
-                    <option value="menemukan">Barang Ditemukan</option>
-                </select>
-            </div>
+            <div class="main-content-add">
+                <div class="left-content">
+                    <label for="kategori">Kategori</label>
+                    <select id="kategori" name="kategori" required>
+                        <option value="">Pilih kategori</option>
+                        <option value="hilang">Barang Hilang</option>
+                        <option value="menemukan">Barang Ditemukan</option>
+                    </select>
 
-            <div class="form-group">
-                <label for="nama_barang">Nama Barang</label>
-                <input type="text" id="nama_barang" name="nama_barang" placeholder="Contoh: Dompet Kulit" required>
-            </div>
+                    <label for="nama_barang">Nama Barang</label>
+                    <input type="text" id="nama_barang" name="nama_barang" placeholder="Contoh: Dompet Kulit" required>
 
-            <div class="form-group">
-                <label for="deskripsi">Deskripsi Detail</label>
-                <textarea id="deskripsi" name="deskripsi" rows="4" placeholder="Jelaskan ciri-ciri barang..."
+                    <label for="deskripsi">Deskripsi Detail</label>
+                    <textarea id="deskripsi" name="deskripsi" rows="4" placeholder="Jelaskan ciri-ciri barang..."
                     required></textarea>
-            </div>
 
-            <div class="form-group">
-                <label for="lokasi">Lokasi</label>
-                <input type="text" id="lokasi" name="lokasi" placeholder="Lokasi terakhir terlihat / ditemukan"
+                </div>
+                <div class="right-content">
+                    <label for="lokasi">Lokasi</label>
+                    <input type="text" id="lokasi" name="lokasi" placeholder="Lokasi terakhir terlihat / ditemukan"
                     required>
-            </div>
 
-            <div class="form-group">
-                <label for="no_hp">Nomor Kontak</label>
-                <input type="tel" id="no_hp" name="no_hp" placeholder="0812-xxxx-xxxx" required>
-            </div>
+                    <label for="no_hp">Nomor Kontak</label>
+                    <input type="tel" id="no_hp" name="no_hp" placeholder="0812-xxxx-xxxx" required>
 
-            <div class="form-group">
-                <label for="email">Email (Opsional)</label>
-                <input type="email" id="email" name="email" placeholder="email@example.com">
+                    <label for="email">Email (Opsional)</label>
+                    <input type="email" id="email" name="email" placeholder="email@example.com">
+                </div>
             </div>
-
             <button type="submit" class="btn-submit">Posting Laporan</button>
         </form>
     </div>
