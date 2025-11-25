@@ -21,7 +21,7 @@ class UserController
 
     public function login()
     {
-        View::render('auth/login', []);
+        View::render('auth/login');
     }
 
     public function postLogin()
@@ -32,12 +32,11 @@ class UserController
 
         try {
             $response = $this->userService->login($request);
+
             $this->sessionService->create($response->user->user_id);
             View::redirect('/dashboard');
         } catch (ValidationException $e) {
-            View::render('auth/login', [
-                'error' => $e->getMessage()
-            ]);
+            View::render('auth/login', ['error' => $e->getMessage()]);
         }
     }
 

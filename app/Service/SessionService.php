@@ -2,67 +2,30 @@
 
 namespace App\Service;
 
-use App\Config\Database;
-use App\Domain\Session;
-use App\Repository\SessionRepository;
-use App\Repository\UserRepository;
-
 class SessionService
 {
-    public static string $COOKIE_NAME = 'X-YOUNIFIRST-SESSION';
-    private SessionRepository $sessionRepository;
-    private UserRepository $userRepository;
+    public static string $SESSION_KEY = 'user_id';
 
     public function __construct()
     {
-        $connection = Database::getConnection('prod');
-        $this->sessionRepository = new SessionRepository($connection);
-        $this->userRepository = new UserRepository($connection);
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
     }
 
-    public function create(string $userId): Session
+    public function create(string $userId): void
     {
-        // Hapus cookie lama jika ada
-        if (isset($_COOKIE[self::$COOKIE_NAME])) {
-            setcookie(self::$COOKIE_NAME, '', time() - 3600, "/");
-            unset($_COOKIE[self::$COOKIE_NAME]);
-        }
-
-        // Buat session baru
-        $session = new Session();
-        $session->id = uniqid('sess_');
-        $session->userId = $userId;
-
-        // Simpan ke DB
-        $this->sessionRepository->save($session);
-
-        // Set cookie baru
-        setcookie(self::$COOKIE_NAME, $session->id, time() + (60 * 60 * 24 * 30), "/");
-
-        return $session;
+        $_SESSION[self::$SESSION_KEY] = $userId;
     }
 
-    public function current(): ?object
+    public function current(): ?string
     {
-        if (!isset($_COOKIE[self::$COOKIE_NAME])) {
-            return null;
-        }
-
-        $sessionId = $_COOKIE[self::$COOKIE_NAME];
-        $session = $this->sessionRepository->findById($sessionId);
-        if ($session == null) {
-            return null;
-        }
-
-        return $this->userRepository->findById($session->userId);
+        return $_SESSION[self::$SESSION_KEY] ?? null;
     }
 
     public function destroy(): void
     {
-        if (isset($_COOKIE[self::$COOKIE_NAME])) {
-            $sessionId = $_COOKIE[self::$COOKIE_NAME];
-            $this->sessionRepository->deleteById($sessionId);
-            setcookie(self::$COOKIE_NAME, '', time() - 3600, "/");
-        }
+        unset($_SESSION[self::$SESSION_KEY]);
+        session_destroy();
     }
 }
