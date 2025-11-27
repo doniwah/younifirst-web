@@ -11,6 +11,7 @@ use App\Controller\LostnFoundController;
 use App\Controller\ForumController;
 use App\Controller\TeamController;
 use App\Controller\UserController;
+use App\Controller\Api\KompetisiApiController;
 use App\Config\Database;
 use App\App\Router;
 use App\Middleware\MustLoginMiddleware;
@@ -32,11 +33,23 @@ Router::add('GET', '/users/logout', UserController::class, 'logout', [MustLoginM
 // Router::add('POST', '/login', LoginController::class, 'login', []);
 // Router::add('GET', '/logout', LoginController::class, 'logout', []);
 
+Router::add('GET', '/team', TeamController::class, 'index', []);
+
 // $router->get('/dashboard', [DashboardController::class, 'dashboard']);
 
 Router::add('GET', '/kompetisi', KompetisiController::class, 'index', [MustLoginMiddleware::class]);
 Router::add('POST', '/kompetisi/create', KompetisiController::class, 'create', [MustLoginMiddleware::class]);
+Router::add('POST', '/kompetisi/create-lomba', KompetisiController::class, 'createLomba', [MustLoginMiddleware::class]);
+Router::add('POST', '/kompetisi/create-team', KompetisiController::class, 'createTeam', [MustLoginMiddleware::class]);
 Router::add('GET', '/kompetisi/{id}', KompetisiController::class, 'detail', [MustLoginMiddleware::class]);
+
+//API KOMPETISI
+Router::add('GET', '/api/kompetisi', KompetisiApiController::class, 'index');
+Router::add('GET', '/api/kompetisi/{id}', KompetisiApiController::class, 'detail');
+Router::add('POST', '/api/kompetisi/create', KompetisiApiController::class, 'create');
+Router::add('POST', '/api/kompetisi/create-lomba', KompetisiApiController::class, 'createLomba');
+Router::add('POST', '/api/kompetisi/create-team', KompetisiApiController::class, 'createTeam');
+
 
 // $router->post('/kompetisi/{id}/approve', [KompetisiController::class, 'approve']);
 // $router->post('/kompetisi/{id}/reject', [KompetisiController::class, 'reject']);

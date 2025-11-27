@@ -1,126 +1,192 @@
-    <section id="hero">
-        <div class="dashboard-header">
-            <h1>Dashboard</h1>
-            <p>Selamat datang kembali! Lihat update terbaru dari komunitas.</p>
-        </div>
+<section id="hero">
+    <div class="dashboard-header">
+        <h1>Dashboard</h1>
+        <p>Selamat datang di Campus Nexus Grid Admin Panel</p>
+    </div>
 
-        <div class="stats-grid">
-            <div class="stat-card trophy">
-                <div class="stat-info">
-                    <h3>Kompetisi Aktif</h3>
-                    <div class="number"><?= htmlspecialchars($stat_kompetisi) ?></div>
-                </div>
-                <div class="stat-icon"><i class="bi bi-trophy" style="font-size: 20px; color: #0f4174"></i></div>
+    <!-- Stats Cards Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon-box blue">
+                <i class="bi bi-calendar4"></i>
             </div>
-
-            <div class="stat-card package">
-                <div class="stat-info">
-                    <h3>Barang Hilang</h3>
-                    <div class="number"><?= htmlspecialchars($stat_lost) ?></div>
+            <div class="stat-info">
+                <div class="stat-label">Total Events</div>
+                <div class="stat-number"><?= htmlspecialchars($stat_event ?? '45') ?></div>
+                <div class="stat-change positive">
+                    <i class="bi bi-arrow-up"></i> +12% dari bulan lalu
                 </div>
-                <div class="stat-icon"><i class="bi bi-box-seam" style="font-size: 20px; color: #0f4174"></i></div>
-            </div>
-
-            <div class="stat-card calendar">
-                <div class="stat-info">
-                    <h3>Event Mendatang</h3>
-                    <div class="number"><?= htmlspecialchars($stat_event) ?></div>
-                </div>
-                <div class="stat-icon"><i class="bi bi-calendar4" style="font-size: 20px; color: #2b99d0"></i></div>
             </div>
         </div>
 
-        <div class="content-grid">
-            <div class="section-card">
-                <div class="section-header">
-                    <div class="section-title">
-                        <div>
-                            <h2 class="h-1"><i class="bi bi-trophy"
-                                    style="font-size: 18px; margin-right: 10px;"></i>Kompetisi
-                                Terbaru</h2>
-                            <div class="section-subtitle">Lomba yang sedang dibuka pendaftaran</div>
-                        </div>
-                    </div>
-                    <a href="#" class="view-all">Lihat Semua <i class="bi bi-arrow-right-short"
-                            style="font-size: 24px;"></i></a>
-                </div>
-                <?php foreach ($kompetisi_latest as $k): ?>
-                    <div class="item">
-                        <div class="item-header">
-                            <div>
-                                <div class="item-title"><?= htmlspecialchars($k['nama_lomba']) ?></div>
-                                <div class="item-meta">
-                                    <span
-                                        style="background:white; border:1px solid #ddd; padding:2px 10px; border-radius:20px; font-size:12px;">
-                                        <?= htmlspecialchars($k['kategori']) ?>
-                                    </span>
-                                    <span><i class="bi bi-clock"></i> <?= htmlspecialchars($k['tanggal_lomba']) ?></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+        <div class="stat-card">
+            <div class="stat-icon-box green">
+                <i class="bi bi-people"></i>
             </div>
-
-            <div class="section-card">
-                <div class="section-header">
-                    <div class="section-title">
-                        <div>
-                            <h2 class="h-2"><i class="bi bi-box-seam"
-                                    style="font-size: 18px; margin-right: 10px;"></i>Lost & Found
-                                Terbaru</h2>
-                            <div class="section-subtitle">Barang hilang dan ditemukan</div>
-                        </div>
-                    </div>
-                    <a href="#" class="view-all">Lihat Semua <i class="bi bi-arrow-right-short"
-                            style="font-size: 24px;"></i></a>
+            <div class="stat-info">
+                <div class="stat-label">Active Teams</div>
+                <div class="stat-number">23</div>
+                <div class="stat-change positive">
+                    <i class="bi bi-arrow-up"></i> +5% dari bulan lalu
                 </div>
-
-                <?php foreach ($lost_latest as $l): ?>
-                    <div class="item">
-                        <div class="item-header">
-                            <div>
-                                <div class="item-title"><?= htmlspecialchars($l['nama_barang']) ?></div>
-                                <div class="item-meta">
-                                    <span><i class="bi bi-geo-alt"></i> <?= htmlspecialchars($l['lokasi']) ?></span>
-                                    <span><i class="bi bi-clock"></i> <?= htmlspecialchars($l['tanggal']) ?></span>
-                                </div>
-                            </div>
-                            <span class="badge <?= $l['kategori'] === 'hilang' ? 'missing' : 'found' ?>">
-                                <?= ucfirst($l['kategori']) ?>
-                            </span>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-
             </div>
         </div>
 
-        <div class="event-full">
+        <div class="stat-card">
+            <div class="stat-icon-box orange">
+                <i class="bi bi-chat-dots"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">Forum Posts</div>
+                <div class="stat-number">156</div>
+                <div class="stat-change positive">
+                    <i class="bi bi-arrow-up"></i> +18% dari bulan lalu
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon-box red">
+                <i class="bi bi-search"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">Lost Items</div>
+                <div class="stat-number"><?= htmlspecialchars($stat_lost ?? '8') ?></div>
+                <div class="stat-change negative">
+                    <i class="bi bi-arrow-down"></i> -2% dari bulan lalu
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Grid: Events and Team Search -->
+    <div class="content-grid-two">
+        <!-- Event Terbaru Section -->
+        <div class="section-card">
             <div class="section-header">
-                <div class="section-title">
-                    <div>
-                        <h2 class="event-h2"><i class="bi bi-calendar4"
-                                style="font-size: 18px; font-weight: 600; color: #2b99d0"></i>
-                            Event Mendatang
-                        </h2>
-                        <div class="section-subtitle">Acara yang akan segera berlangsung</div>
-                    </div>
+                <div class="section-title-group">
+                    <h2><i class="bi bi-calendar4"></i> Event Terbaru</h2>
+                    <p class="section-subtitle">Event yang akan datang dan sedang berlangsung</p>
                 </div>
-                <a href="#" class="view-all">Lihat Semua <i class="bi bi-arrow-right-short"
-                        style="font-size: 24px;"></i></a>
             </div>
 
-            <div class="event-grid">
-                <?php foreach ($events_latest as $e): ?>
-                    <div class="event-item">
-                        <div class="event-title"><?= htmlspecialchars($e['nama_event']) ?></div>
-                        <div class="event-detail"><i class="bi bi-calendar4"></i>
-                            <?= htmlspecialchars($e['tanggal_mulai']) ?></div>
-                        <div class="event-detail"><i class="bi bi-geo-alt"></i> <?= htmlspecialchars($e['lokasi']) ?></div>
-                        <button class="register-btn">Daftar Sekarang</button>
+            <div class="events-list">
+                <?php
+                $sample_events = [
+                    [
+                        'nama_event' => 'Workshop React JS untuk Pemula',
+                        'organizer' => 'Himpunan Informatika',
+                        'tanggal_mulai' => '2024-01-15',
+                        'waktu' => '14:00',
+                        'peserta' => '45',
+                        'status' => 'Upcoming'
+                    ],
+                    [
+                        'nama_event' => 'Seminar Digital Marketing',
+                        'organizer' => 'BEM Fakultas Ekonomi',
+                        'tanggal_mulai' => '2024-01-18',
+                        'waktu' => '09:00',
+                        'peserta' => '67',
+                        'status' => 'Upcoming'
+                    ],
+                    [
+                        'nama_event' => 'Lomba Programming Competition',
+                        'organizer' => 'UKM Programming Club',
+                        'tanggal_mulai' => '2024-01-20',
+                        'waktu' => '08:00',
+                        'peserta' => '89',
+                        'status' => 'Registrasi'
+                    ]
+                ];
+
+                $events_to_show = $events_latest ?? $sample_events;
+                foreach ($events_to_show as $e):
+                ?>
+                <div class="event-item-row">
+                    <div class="event-info">
+                        <div class="event-title-row"><?= htmlspecialchars($e['nama_event']) ?></div>
+                        <div class="event-meta">
+                            <?= htmlspecialchars($e['organizer'] ?? 'Organizer') ?>
+                        </div>
+                        <div class="event-details">
+                            <span><i class="bi bi-calendar4"></i> <?= htmlspecialchars($e['tanggal_mulai']) ?> •
+                                <?= htmlspecialchars($e['waktu'] ?? '00:00') ?></span>
+                            <span><i class="bi bi-people"></i> <?= htmlspecialchars($e['peserta'] ?? '0') ?>
+                                peserta</span>
+                        </div>
                     </div>
+                    <div class="event-status">
+                        <span class="badge-status <?= strtolower($e['status'] ?? 'upcoming') ?>">
+                            <?= htmlspecialchars($e['status'] ?? 'Upcoming') ?>
+                        </span>
+                    </div>
+                </div>
                 <?php endforeach; ?>
             </div>
+
+            <div class="section-footer">
+                <a href="#" class="view-all-link">
+                    <i class="bi bi-eye"></i> Lihat Semua Event
+                </a>
+            </div>
         </div>
-    </section>
+
+        <!-- Pencarian Tim Aktif Section -->
+        <div class="section-card">
+            <div class="section-header">
+                <div class="section-title-group">
+                    <h2><i class="bi bi-people"></i> Pencarian Tim Aktif</h2>
+                    <p class="section-subtitle">Mahasiswa yang sedang mencari anggota tim</p>
+                </div>
+            </div>
+
+            <div class="team-search-list">
+                <?php
+                $sample_teams = [
+                    [
+                        'nama_tim' => 'Tim Lomba Mobile App Development',
+                        'leader' => 'Ahmad Ridwan (Informatika)',
+                        'skills' => ['Flutter', 'UI/UX Design'],
+                        'butuh' => '2 orang',
+                        'deadline' => '2024-01-25'
+                    ],
+                    [
+                        'nama_tim' => 'Tim Business Plan Competition',
+                        'leader' => 'Sarah Putri (Manajemen)',
+                        'skills' => ['Business Analysis', 'Financial Modeling'],
+                        'butuh' => '1 orang',
+                        'deadline' => '2024-01-30'
+                    ]
+                ];
+
+                $teams_to_show = $teams_latest ?? $sample_teams;
+                foreach ($teams_to_show as $t):
+                ?>
+                <div class="team-item">
+                    <div class="team-info">
+                        <div class="team-title"><?= htmlspecialchars($t['nama_tim']) ?></div>
+                        <div class="team-leader"><?= htmlspecialchars($t['leader']) ?></div>
+                        <div class="team-skills">
+                            <?php foreach ($t['skills'] as $skill): ?>
+                            <span class="skill-tag"><?= htmlspecialchars($skill) ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                        <div class="team-deadline">
+                            Deadline: <?= htmlspecialchars($t['deadline']) ?>
+                        </div>
+                    </div>
+                    <div class="team-need">
+                        <div class="need-badge">Butuh <?= htmlspecialchars($t['butuh']) ?></div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <div class="section-footer">
+                <a href="#" class="view-all-link">
+                    <i class="bi bi-eye"></i> Lihat Semua Pencarian
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

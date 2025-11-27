@@ -5,10 +5,10 @@
     </div>
 
     <?php if (isset($_GET['status']) && isset($_GET['message'])): ?>
-        <div class="alert alert-<?= $_GET['status'] === 'success' ? 'success' : 'error' ?>"
-            style="padding: 15px; margin: 20px 0; border-radius: 8px; background: <?= $_GET['status'] === 'success' ? '#d4edda' : '#f8d7da' ?>; color: <?= $_GET['status'] === 'success' ? '#155724' : '#721c24' ?>; border: 1px solid <?= $_GET['status'] === 'success' ? '#c3e6cb' : '#f5c6cb' ?>;">
-            <?= htmlspecialchars($_GET['message']) ?>
-        </div>
+    <div class="alert alert-<?= $_GET['status'] === 'success' ? 'success' : 'error' ?>"
+        style="padding: 15px; margin: 20px 0; border-radius: 8px; background: <?= $_GET['status'] === 'success' ? '#d4edda' : '#f8d7da' ?>; color: <?= $_GET['status'] === 'success' ? '#155724' : '#721c24' ?>; border: 1px solid <?= $_GET['status'] === 'success' ? '#c3e6cb' : '#f5c6cb' ?>;">
+        <?= htmlspecialchars($_GET['message']) ?>
+    </div>
     <?php endif; ?>
 
     <div class="search-box">
@@ -27,45 +27,45 @@
 
         <div class="competitions-grid">
             <?php if (!empty($competitions)): ?>
-                <?php foreach ($competitions as $comp): ?>
-                    <div class="competition-card">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <span class="trophy-icon"><i class="bi bi-trophy"></i></span>
-                                <h3><?= htmlspecialchars($comp['nama_lomba']) ?></h3>
-                            </div>
-                            <span class="category-badge badge-technology"><?= htmlspecialchars($comp['kategori']) ?></span>
-                        </div>
-                        <p class="card-description"><?= htmlspecialchars($comp['deskripsi']) ?></p>
-                        <div class="card-details">
-                            <div class="detail-item">
-                                <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span>Deadline: <?= date('d F Y', strtotime($comp['tanggal_lomba'])) ?></span>
-                            </div>
-                            <div class="detail-item">
-                                <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                <span><?= htmlspecialchars($comp['lokasi']) ?></span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="trophy-icon" style="font-size: 1rem;"><i class="bi bi-trophy"></i></span>
-                                <span class="prize-amount">Rp <?= number_format($comp['hadiah'], 0, ',', '.') ?></span>
-                            </div>
-                        </div>
-                        <button class="btn-detail" data-id="<?= $comp['lomba_id'] ?>">Lihat Detail</button>
+            <?php foreach ($competitions as $comp): ?>
+            <div class="competition-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="trophy-icon"><i class="bi bi-trophy"></i></span>
+                        <h3><?= htmlspecialchars($comp['nama_lomba']) ?></h3>
                     </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <div style="text-align: center; padding: 40px; color: #666;">
-                    <p>Belum ada kompetisi yang tersedia.</p>
+                    <span class="category-badge badge-technology"><?= htmlspecialchars($comp['kategori']) ?></span>
                 </div>
+                <p class="card-description"><?= htmlspecialchars($comp['deskripsi']) ?></p>
+                <div class="card-details">
+                    <div class="detail-item">
+                        <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Deadline: <?= date('d F Y', strtotime($comp['tanggal_lomba'])) ?></span>
+                    </div>
+                    <div class="detail-item">
+                        <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span><?= htmlspecialchars($comp['lokasi']) ?></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="trophy-icon" style="font-size: 1rem;"><i class="bi bi-trophy"></i></span>
+                        <span class="prize-amount">Rp <?= number_format($comp['hadiah'], 0, ',', '.') ?></span>
+                    </div>
+                </div>
+                <button class="btn-detail" data-id="<?= $comp['lomba_id'] ?>">Lihat Detail</button>
+            </div>
+            <?php endforeach; ?>
+            <?php else: ?>
+            <div style="text-align: center; padding: 40px; color: #666;">
+                <p>Belum ada kompetisi yang tersedia.</p>
+            </div>
             <?php endif; ?>
         </div>
     </div>
@@ -77,27 +77,27 @@
 
         <div class="teams-grid">
             <?php if (!empty($teams)): ?>
-                <?php foreach ($teams as $team): ?>
-                    <div class="team-card" data-team-id="<?= $team['team_id'] ?>">
-                        <div class="team-header">
-                            <div class="team-title">
-                                <span class="team-icon"><i class="bi bi-people"></i></span>
-                                <h3><?= htmlspecialchars($team['nama_team']) ?></h3>
-                            </div>
-                            <span class="member-count"><?= $team['max_anggota'] ?> anggota</span>
-                        </div>
-                        <h4><?= $team['nama_kegiatan'] ?></h4>
-                        <p class="team-description"><?= htmlspecialchars($team['deskripsi_anggota']) ?></p>
-                        <button class="btn-join"
-                            onclick="openJoinModal('<?= $team['team_id'] ?>', '<?= htmlspecialchars($team['nama_team']) ?>', <?= $team['max_anggota'] ?>)">
-                            Ajukan Bergabung
-                        </button>
+            <?php foreach ($teams as $team): ?>
+            <div class="team-card" data-team-id="<?= $team['team_id'] ?>">
+                <div class="team-header">
+                    <div class="team-title">
+                        <span class="team-icon"><i class="bi bi-people"></i></span>
+                        <h3><?= htmlspecialchars($team['nama_team']) ?></h3>
                     </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <div style="text-align: center; padding: 40px; color: #666;">
-                    <p>Belum ada tim yang tersedia.</p>
+                    <span class="member-count"><?= $team['max_anggota'] ?> anggota</span>
                 </div>
+                <h4><?= $team['nama_kegiatan'] ?></h4>
+                <p class="team-description"><?= htmlspecialchars($team['deskripsi_anggota']) ?></p>
+                <button class="btn-join"
+                    onclick="openJoinModal('<?= $team['team_id'] ?>', '<?= htmlspecialchars($team['nama_team']) ?>', <?= $team['max_anggota'] ?>)">
+                    Ajukan Bergabung
+                </button>
+            </div>
+            <?php endforeach; ?>
+            <?php else: ?>
+            <div style="text-align: center; padding: 40px; color: #666;">
+                <p>Belum ada tim yang tersedia.</p>
+            </div>
             <?php endif; ?>
         </div>
     </div>
@@ -126,7 +126,7 @@
                     <div class="row">
                         <div>
                             <label>Deadline <span style="color: red;">*</span></label>
-                            <input type="date" name="deadline" required>
+                            <input type="date" name="tanggal_lomba" required>
                         </div>
                         <div>
                             <label>Lokasi</label>
@@ -135,11 +135,10 @@
                     </div>
 
                     <label>Hadiah (Rp)</label>
-                    <input type="number" name="hadiah" placeholder="Contoh: 10000000" min="0">
+                    <input type="number" name="hadiah" placeholder="Contoh: 10000000" min="0" value="0">
 
                     <label>Poster Lomba</label>
                     <input type="file" name="poster_lomba" accept="image/*">
-
                 </div>
             </div>
             <button type="submit" class="submit-btn">Posting Lomba</button>
@@ -154,7 +153,7 @@
         <h2 class="title_pop">Buat Tim Baru</h2>
         <p class="deskripsi_pop">Rekrut anggota untuk timmu</p>
 
-        <form action="/team/create" method="POST" id="timForm">
+        <form action="/kompetisi/create" method="POST" id="timForm">
             <div class="main-content-add">
                 <div class="left-content">
                     <label>Nama Tim <span style="color: red;">*</span></label>
@@ -164,14 +163,14 @@
                     <input type="text" name="nama_kegiatan" placeholder="Lomba/penelitian" required>
 
                     <label>Deskripsi Tim</label>
-                    <textarea name="deskripsi_tim" placeholder="Ceritakan tentang timmu..." rows="4"></textarea>
+                    <textarea name="deskripsi" placeholder="Ceritakan tentang timmu..." rows="4"></textarea>
                 </div>
                 <div class="right-content">
                     <label>Role Dibutuhkan</label>
-                    <textarea name="role_dibutuhkan" placeholder="Programmer, Desaigner" rows="4"></textarea>
+                    <textarea name="role_dibutuhkan" placeholder="Programmer, Designer" rows="4"></textarea>
 
                     <label>Jumlah anggota <span style="color: red;">*</span></label>
-                    <input type="number" name="jumlah_anggota" placeholder="" required>
+                    <input type="number" name="max_anggota" placeholder="Contoh: 5" required>
                 </div>
             </div>
             <button type="submit" class="submit-btn">Buat Tim</button>
@@ -230,97 +229,97 @@
 </div>
 
 <script>
-    // Modal Lomba
-    const lombaModal = document.getElementById('lombaModal');
-    const openModalBtn = document.getElementById('openModalBtn');
+// Modal Lomba
+const lombaModal = document.getElementById('lombaModal');
+const openModalBtn = document.getElementById('openModalBtn');
 
-    if (openModalBtn) {
-        openModalBtn.onclick = function(e) {
-            e.preventDefault(); // Prevent default action
-            e.stopPropagation(); // Stop event bubbling
-            lombaModal.style.display = 'block';
-        }
+if (openModalBtn) {
+    openModalBtn.onclick = function(e) {
+        e.preventDefault(); // Prevent default action
+        e.stopPropagation(); // Stop event bubbling
+        lombaModal.style.display = 'block';
     }
+}
 
-    function closeLombaModal() {
-        lombaModal.style.display = 'none';
+function closeLombaModal() {
+    lombaModal.style.display = 'none';
+}
+
+// Modal Tim
+const timModal = document.getElementById('timModal');
+const openTimModalBtn = document.getElementById('openTimModalBtn');
+
+if (openTimModalBtn) {
+    openTimModalBtn.onclick = function(e) {
+        e.preventDefault(); // Prevent default action
+        e.stopPropagation(); // Stop event bubbling
+        timModal.style.display = 'block';
     }
+}
 
-    // Modal Tim
-    const timModal = document.getElementById('timModal');
-    const openTimModalBtn = document.getElementById('openTimModalBtn');
+function closeTimModal() {
+    timModal.style.display = 'none';
+}
 
-    if (openTimModalBtn) {
-        openTimModalBtn.onclick = function(e) {
-            e.preventDefault(); // Prevent default action
-            e.stopPropagation(); // Stop event bubbling
-            timModal.style.display = 'block';
-        }
+// Modal Join
+const joinModal = document.getElementById('joinModal');
+
+function openJoinModal(teamId, teamName, memberCount) {
+    document.getElementById('joinTeamId').value = teamId;
+    document.getElementById('teamNameDisplay').textContent = teamName;
+    document.getElementById('joinMemberCount').textContent = memberCount;
+
+    joinModal.style.display = 'block';
+}
+
+function closeJoinModal() {
+    joinModal.style.display = 'none';
+    document.getElementById('joinForm').reset();
+}
+
+// Close modal when clicking outside
+window.addEventListener('click', function(event) {
+    if (event.target === lombaModal) {
+        closeLombaModal();
     }
-
-    function closeTimModal() {
-        timModal.style.display = 'none';
+    if (event.target === timModal) {
+        closeTimModal();
     }
-
-    // Modal Join
-    const joinModal = document.getElementById('joinModal');
-
-    function openJoinModal(teamId, teamName, memberCount) {
-        document.getElementById('joinTeamId').value = teamId;
-        document.getElementById('teamNameDisplay').textContent = teamName;
-        document.getElementById('joinMemberCount').textContent = memberCount;
-
-        joinModal.style.display = 'block';
+    if (event.target === joinModal) {
+        closeJoinModal();
     }
+});
 
-    function closeJoinModal() {
-        joinModal.style.display = 'none';
-        document.getElementById('joinForm').reset();
-    }
+// Tab switching
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        const targetTab = this.getAttribute('data-tab');
 
-    // Close modal when clicking outside
-    window.addEventListener('click', function(event) {
-        if (event.target === lombaModal) {
-            closeLombaModal();
-        }
-        if (event.target === timModal) {
-            closeTimModal();
-        }
-        if (event.target === joinModal) {
-            closeJoinModal();
-        }
+        // Remove active class from all tabs and contents
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+        // Add active class to clicked tab and corresponding content
+        this.classList.add('active');
+        document.getElementById(targetTab).classList.add('active');
     });
+});
 
-    // Tab switching
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', function() {
-            const targetTab = this.getAttribute('data-tab');
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const activeTab = document.querySelector('.tab-content.active');
 
-            // Remove active class from all tabs and contents
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
-            // Add active class to clicked tab and corresponding content
-            this.classList.add('active');
-            document.getElementById(targetTab).classList.add('active');
+    if (activeTab.id === 'daftar-lomba') {
+        document.querySelectorAll('.competition-card').forEach(card => {
+            const text = card.textContent.toLowerCase();
+            card.style.display = text.includes(searchTerm) ? 'block' : 'none';
         });
-    });
-
-    // Search functionality
-    document.getElementById('searchInput').addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        const activeTab = document.querySelector('.tab-content.active');
-
-        if (activeTab.id === 'daftar-lomba') {
-            document.querySelectorAll('.competition-card').forEach(card => {
-                const text = card.textContent.toLowerCase();
-                card.style.display = text.includes(searchTerm) ? 'block' : 'none';
-            });
-        } else {
-            document.querySelectorAll('.team-card').forEach(card => {
-                const text = card.textContent.toLowerCase();
-                card.style.display = text.includes(searchTerm) ? 'block' : 'none';
-            });
-        }
-    });
+    } else {
+        document.querySelectorAll('.team-card').forEach(card => {
+            const text = card.textContent.toLowerCase();
+            card.style.display = text.includes(searchTerm) ? 'block' : 'none';
+        });
+    }
+});
 </script>

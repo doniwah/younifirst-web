@@ -1,119 +1,132 @@
-<div class="container">
-  <div class="header">
-    <h1>Event</h1>
-    <p>Temukan dan ikuti event menarik di kampus</p>
-  </div>
+<?php
+// Check if user is admin
+$isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Cari kompetisi atau tim...">
-    <button class="btn-posting">Buat Event</button>
-  </div>
+// Sample events data (replace with database query)
+$events = [
+  [
+    'id' => 1,
+    'title' => 'Workshop React JS untuk Pemula',
+    'organizer' => 'Himpunan Informatika',
+    'description' => 'Belajar dasar-dasar React JS untuk pengembangan web modern',
+    'date' => '2024-01-15',
+    'time' => '14:00 - 17:00',
+    'location' => 'Lab Komputer A.3.1',
+    'participants' => 45,
+    'capacity' => 50,
+    'status' => 'Upcoming'
+  ],
+  [
+    'id' => 2,
+    'title' => 'Seminar Digital Marketing',
+    'organizer' => 'BEM Fakultas Ekonomi',
+    'description' => 'Strategi pemasaran digital untuk era modern',
+    'date' => '2024-01-18',
+    'time' => '09:00 - 12:00',
+    'location' => 'Auditorium Utama',
+    'participants' => 67,
+    'capacity' => 100,
+    'status' => 'Upcoming'
+  ],
+  [
+    'id' => 3,
+    'title' => 'Lomba Programming Competition',
+    'organizer' => 'UKM Programming Club',
+    'description' => 'Kompetisi programming untuk mahasiswa se-universitas',
+    'date' => '2024-01-20',
+    'time' => '08:00 - 16:00',
+    'location' => 'Lab Komputer B.2.1',
+    'participants' => 89,
+    'capacity' => 75,
+    'status' => 'Registrasi'
+  ]
+];
+?>
 
-  <div class="competitions-grid">
-    <div class="competition-card">
-      <div class="card-header">
-        <div class="card-title">
-          <span class="trophy-icon"><i class="bi bi-calendar4"></i></span>
-          <h3>Tech Talk: AI in Education</h3>
+<section class="event-section">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-title-group">
+            <h1><?= $isAdmin ? 'Event Management' : 'Event' ?></h1>
+            <p><?= $isAdmin ? 'Kelola semua event kampus dalam satu tempat' : 'Temukan dan ikuti event menarik di kampus' ?>
+            </p>
         </div>
-        <span class="category-badge ver-ditemukan">Technology</span>
-      </div>
-
-      <p class="card-description">Diskusi mendalam tentang penerapan AI di dunia pendidikan</p>
-
-      <div class="card-details">
-        <div class="detail-item">
-          <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M8 7V3m8 4V3m-9 8h10M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
-          </svg>
-          <span>15 Oktober 2025</span>
-        </div>
-        <div class="detail-item">
-          <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>14:00 - 16:00 WIB</span>
-        </div>
-        <div class="detail-item">
-          <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span>Ruang Rapat</span>
-        </div>
-        <div class="detail-item">
-          <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M5.121 17.804A7 7 0 0112 15a7 7 0 016.879 2.804M12 13a5 5 0 100-10 5 5 0 000 10z" />
-          </svg>
-          <span>45 / 100 peserta</span>
-        </div>
-      </div>
-
-      <div class="progress-container">
-        <div class="progress-bar" style="width: 45%;"></div>
-      </div>
-
-      <hr size="1" color="#888888ff" width="100%">
-      <span class="card-description dibuat-oleh">Diselenggarakan oleh: Himpunan Mahasiswa Jurusan Teknologi Informasi</span>
-      <button class="btn-detail">Daftar Sekarang</button>
+        <?php if ($isAdmin): ?>
+        <button class="btn-add-event">
+            <i class="bi bi-plus-lg"></i>
+            Tambah Event Baru
+        </button>
+        <?php endif; ?>
     </div>
 
-    <div class="competition-card">
-      <div class="card-header">
-        <div class="card-title">
-          <span class="trophy-icon"><i class="bi bi-calendar4"></i></span>
-          <h3>Campus Job Fair 2025</h3>
+    <!-- Search and Filter Bar -->
+    <div class="search-filter-bar">
+        <div class="search-input-group">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Cari event atau organizer..." class="search-input">
         </div>
-        <span class="category-badge ver-ditemukan">Career</span>
-      </div>
 
-      <p class="card-description">Bursa kerja dengan 50+ perusahaan ternama</p>
-
-      <div class="card-details">
-        <div class="detail-item">
-          <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M8 7V3m8 4V3m-9 8h10M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
-          </svg>
-          <span>22 Desember 2025</span>
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-status="all">Semua</button>
+            <button class="filter-tab" data-status="upcoming">Upcoming</button>
+            <button class="filter-tab" data-status="registrasi">Registrasi</button>
+            <button class="filter-tab" data-status="selesai">Selesai</button>
         </div>
-        <div class="detail-item">
-          <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>09:00 - 17:00 WIB</span>
-        </div>
-        <div class="detail-item">
-          <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span>GOR DJUANG 45</span>
-        </div>
-        <div class="detail-item">
-          <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M5.121 17.804A7 7 0 0112 15a7 7 0 016.879 2.804M12 13a5 5 0 100-10 5 5 0 000 10z" />
-          </svg>
-          <span>100 / 200 peserta</span>
-        </div>
-      </div>
-
-      <div class="progress-container">
-        <div class="progress-bar" style="width: 50%;"></div>
-      </div>
-
-      <hr size="1" color="#888888ff" width="100%">
-      <span class="card-description dibuat-oleh">Diselenggarakan oleh: Politeknik Negeri Jember</span>
-      <button class="btn-detail">Daftar Sekarang</button>
     </div>
-  </div>
-</div>
+
+    <!-- Events List (Admin Style) -->
+    <div class="events-list">
+        <?php foreach ($events as $event): ?>
+        <div class="event-list-item" data-id="<?= $event['id'] ?>"
+            data-status="<?= htmlspecialchars($event['status']) ?>">
+            <div class="event-list-header">
+                <div class="event-list-title-section">
+                    <h3 class="event-list-title">
+                        <?= htmlspecialchars($event['title']) ?>
+                    </h3>
+                    <span class="status-badge-inline badge-<?= strtolower($event['status']) ?>">
+                        <?= htmlspecialchars($event['status']) ?>
+                    </span>
+                </div>
+
+                <?php if ($isAdmin): ?>
+                <div class="event-actions-inline">
+                    <button class="action-btn-icon view-btn" title="Lihat Detail">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="action-btn-icon edit-btn" title="Edit Event">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="action-btn-icon delete-btn" title="Hapus Event">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <?php endif; ?>
+            </div>
+
+            <div class="event-list-organizer"><?= htmlspecialchars($event['organizer']) ?></div>
+            <p class="event-list-description"><?= htmlspecialchars($event['description']) ?></p>
+
+            <div class="event-list-details">
+                <div class="detail-item-inline">
+                    <i class="bi bi-calendar4"></i>
+                    <span><?= htmlspecialchars($event['date']) ?> • <?= htmlspecialchars($event['time']) ?></span>
+                </div>
+                <div class="detail-item-inline">
+                    <i class="bi bi-geo-alt"></i>
+                    <span><?= htmlspecialchars($event['location']) ?></span>
+                </div>
+                <div class="detail-item-inline">
+                    <i class="bi bi-people"></i>
+                    <span><?= htmlspecialchars($event['participants']) ?>/<?= htmlspecialchars($event['capacity']) ?>
+                        peserta</span>
+                </div>
+            </div>
+
+            <?php if (!$isAdmin): ?>
+            <button class="btn-register-inline">Daftar Sekarang</button>
+            <?php endif; ?>
+        </div>
+        <?php endforeach; ?>
+    </div>
+</section>
