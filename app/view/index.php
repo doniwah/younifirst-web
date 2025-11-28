@@ -36,33 +36,18 @@
             digunakan</p>
 
         <div class="features-grid">
-            <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="feature-icon icon-purple"><i class="bi bi-trophy"
-                        style="color: #ffffff; font-size: 20px;"></i></div>
-                <h3>Kompetisi</h3>
-                <p>Posting lomba atau buat tim untuk berkompetensi bersama</p>
-            </div>
-
-            <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
-                <div class="feature-icon icon-pink"><i class="bi bi-box-seam"
-                        style="color: #ffffff; font-size: 20px;"></i></div>
-                <h3>Lost & Found</h3>
-                <p>Temukan atau laporkan barang hilang dengan mudah</p>
-            </div>
-
-            <div class="feature-card" data-aos="fade-up" data-aos-delay="600">
-                <div class="feature-icon icon-orange"><i class="bi bi-calendar4"
-                        style="color: #ffffff; font-size: 20px;"></i></div>
-                <h3>Event</h3>
-                <p>Posting dan daftar event kampus yang menarik</p>
-            </div>
-
-            <div class="feature-card" data-aos="fade-up" data-aos-delay="800">
-                <div class="feature-icon icon-blue"><i class="bi bi-chat-left"
-                        style="color: #ffffff; font-size: 20px;"></i></div>
-                <h3>Forum</h3>
-                <p>Diskusi dan berbagi informasi dengan komunitas</p>
-            </div>
+            <?php if (!empty($features)): ?>
+                <?php foreach ($features as $index => $feature): ?>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="<?= 200 + ($index * 200) ?>">
+                    <div class="feature-icon <?= $feature['icon_color_class'] ?>"><i class="<?= $feature['icon'] ?>"
+                            style="color: #ffffff; font-size: 20px;"></i></div>
+                    <h3><?= htmlspecialchars($feature['title']) ?></h3>
+                    <p><?= htmlspecialchars($feature['description']) ?></p>
+                </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>Belum ada fitur yang ditampilkan.</p>
+            <?php endif; ?>
         </div>
     </section>
 
@@ -96,9 +81,17 @@
         </div>
 
         <div class="stats-card" data-aos="fade-right" data-aos-delay="800">
-            <div class="stats-number">1000+</div>
-            <div class="stats-label">Pengguna Aktif</div>
-            <p class="stats-description">Bergabung dengan komunitas yang terus berkembang</p>
+            <?php if (!empty($stats)): ?>
+                <?php foreach ($stats as $stat): ?>
+                <div class="stats-number"><?= htmlspecialchars($stat['number']) ?></div>
+                <div class="stats-label"><?= htmlspecialchars($stat['label']) ?></div>
+                <p class="stats-description"><?= htmlspecialchars($stat['description']) ?></p>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="stats-number">0+</div>
+                <div class="stats-label">Pengguna</div>
+                <p class="stats-description">Data belum tersedia</p>
+            <?php endif; ?>
         </div>
     </section>
 
@@ -109,46 +102,33 @@
         </div>
 
         <div class="testimonial-grid">
-            <div class="testimonial-card" data-aos="zoom-in" data-aos-delay="200">
-                <div class="card-header">
-                    <div class="avatar blue1">AM</div>
-                    <div class="user-info">
-                        <h3>Ahmad Maulana</h3>
-                        <p>Teknologi Informasi</p>
+            <?php if (!empty($testimonials)): ?>
+                <?php foreach ($testimonials as $index => $testimonial): ?>
+                <div class="testimonial-card" data-aos="zoom-in" data-aos-delay="<?= 200 + ($index * 200) ?>">
+                    <div class="card-header">
+                        <div class="avatar <?= $testimonial['avatar_class'] ?>">
+                            <?php
+                            $parts = explode(' ', $testimonial['name']);
+                            $initials = '';
+                            foreach ($parts as $part) {
+                                $initials .= strtoupper(substr($part, 0, 1));
+                            }
+                            echo substr($initials, 0, 2);
+                            ?>
+                        </div>
+                        <div class="user-info">
+                            <h3><?= htmlspecialchars($testimonial['name']) ?></h3>
+                            <p><?= htmlspecialchars($testimonial['major']) ?></p>
+                        </div>
+                    </div>
+                    <div class="testimonial-text">
+                        <?= htmlspecialchars($testimonial['text']) ?>
                     </div>
                 </div>
-                <div class="testimonial-text">
-                    "YouNiFirst sangat membantu saya menemukan tim untuk kompetisi. Sekarang lebih mudah berkolaborasi
-                    dengan mahasiswa lain!"
-                </div>
-            </div>
-
-            <div class="testimonial-card" data-aos="zoom-in" data-aos-delay="400">
-                <div class="card-header">
-                    <div class="avatar blue2">SP</div>
-                    <div class="user-info">
-                        <h3>Siti Permata</h3>
-                        <p>Sistem Informasi</p>
-                    </div>
-                </div>
-                <div class="testimonial-text">
-                    "Fitur Lost & Found-nya sangat berguna! Saya berhasil menemukan dompet yang hilang dalam 2 hari."
-                </div>
-            </div>
-
-            <div class="testimonial-card" data-aos="zoom-in" data-aos-delay="600">
-                <div class="card-header">
-                    <div class="avatar blue3">RP</div>
-                    <div class="user-info">
-                        <h3>Rizki Pratama</h3>
-                        <p>Teknik Elektro</p>
-                    </div>
-                </div>
-                <div class="testimonial-text">
-                    "Platform yang lengkap dan mudah digunakan. Forum diskusinya aktif dan membantu dalam belajar
-                    kelompok."
-                </div>
-            </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>Belum ada testimoni.</p>
+            <?php endif; ?>
         </div>
     </section>
 
@@ -159,37 +139,18 @@
         </div>
 
         <div class="faq-container">
-            <div class="faq-item" data-aos="fade-up">
-                <div class="faq-question">Apakah YouNiFirst gratis?</div>
-                <div class="faq-answer">
-                    Ya, YouNiFirst sepenuhnya gratis untuk semua mahasiswa. Anda dapat mengakses semua fitur tanpa biaya
-                    apapun.
+            <?php if (!empty($faqs)): ?>
+                <?php foreach ($faqs as $faq): ?>
+                <div class="faq-item" data-aos="fade-up">
+                    <div class="faq-question"><?= htmlspecialchars($faq['question']) ?></div>
+                    <div class="faq-answer">
+                        <?= htmlspecialchars($faq['answer']) ?>
+                    </div>
                 </div>
-            </div>
-
-            <div class="faq-item" data-aos="fade-up">
-                <div class="faq-question">Bagaimana cara bergabung dengan tim kompetisi?</div>
-                <div class="faq-answer">
-                    Buka halaman Kompetisi, cari tim yang sesuai dengan minat Anda, lalu klik tombol "Daftar". Pembuat
-                    tim akan meninjau aplikasi Anda.
-                </div>
-            </div>
-
-            <div class="faq-item" data-aos="fade-up">
-                <div class="faq-question">Siapa yang bisa melihat postingan saya di forum?</div>
-                <div class="faq-answer">
-                    Untuk forum jurusan, hanya mahasiswa dari jurusan yang sama yang dapat melihat. Forum global dapat
-                    dilihat oleh semua pengguna.
-                </div>
-            </div>
-
-            <div class="faq-item" data-aos="fade-up">
-                <div class="faq-question">Bagaimana cara melaporkan barang hilang?</div>
-                <div class="faq-answer">
-                    Kunjungi halaman Lost & Found, klik tombol "Laporkan", pilih kategori "Kehilangan", lalu isi detail
-                    barang yang hilang dengan lengkap.
-                </div>
-            </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>Belum ada FAQ.</p>
+            <?php endif; ?>
         </div>
     </section>
 

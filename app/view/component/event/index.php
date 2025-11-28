@@ -92,8 +92,6 @@
 
         .menu-item.active {
             background: #EBF2FF;
-            color: #4F87FF;
-            border-right: 3px solid #4F87FF;
         }
 
         .menu-item i {
