@@ -14,6 +14,7 @@ use App\Controller\UserController;
 use App\Controller\Api\KompetisiApiController;
 use App\Controller\Api\TeamApiController;
 use App\Controller\Api\EventApiController;
+use App\Controller\Api\LostFoundApiController;
 use App\Config\Database;
 use App\App\Router;
 use App\Middleware\MustLoginMiddleware;
@@ -55,8 +56,13 @@ Router::add('POST', '/api/kompetisi/create-lomba', KompetisiApiController::class
 Router::add('POST', '/api/kompetisi/create-team', KompetisiApiController::class, 'createTeam');
 
 // Lost & Found Routes
-Router::add('GET', '/lost_found', LostnFoundController::class, 'lost_found', [MustLoginMiddleware::class]);
-Router::add('POST', '/lost_found/create', LostnFoundController::class, 'create', [MustLoginMiddleware::class]);
+Router::add('GET', '/lost_found', LostnFoundController::class, 'index', [MustLoginMiddleware::class]);
+Router::add('GET', '/lost_found/create', LostnFoundController::class, 'create', [MustLoginMiddleware::class]);
+Router::add('POST', '/lost_found/store', LostnFoundController::class, 'store', [MustLoginMiddleware::class]);
+Router::add('GET', '/lost_found/edit/{id}', LostnFoundController::class, 'edit', [MustLoginMiddleware::class]);
+Router::add('POST', '/lost_found/update/{id}', LostnFoundController::class, 'update', [MustLoginMiddleware::class]);
+Router::add('DELETE', '/lost_found/delete/{id}', LostnFoundController::class, 'delete', [MustLoginMiddleware::class]);
+Router::add('POST', '/lost_found/complete/{id}', LostnFoundController::class, 'markComplete', [MustLoginMiddleware::class]);
 
 // Event Routes
 Router::add('GET', '/event', EventController::class, 'index', [MustLoginMiddleware::class]);
@@ -96,5 +102,13 @@ Router::add('DELETE', '/api/events/{id}', EventApiController::class, 'deleteEven
 Router::add('POST', '/api/events/{id}/confirm', EventApiController::class, 'confirmEvent', [MustLoginMiddleware::class]);
 Router::add('POST', '/api/events/{id}/register', EventApiController::class, 'registerForEvent', [MustLoginMiddleware::class]);
 Router::add('GET', '/api/events/{id}/registrations', EventApiController::class, 'getEventRegistrations', []);
+
+// Lost & Found API Routes
+Router::add('GET', '/api/lostfound', LostFoundApiController::class, 'getAllItems', []);
+Router::add('GET', '/api/lostfound/{id}', LostFoundApiController::class, 'getItem', []);
+Router::add('POST', '/api/lostfound', LostFoundApiController::class, 'createItem', [MustLoginMiddleware::class]);
+Router::add('PUT', '/api/lostfound/{id}', LostFoundApiController::class, 'updateItem', [MustLoginMiddleware::class]);
+Router::add('DELETE', '/api/lostfound/{id}', LostFoundApiController::class, 'deleteItem', [MustLoginMiddleware::class]);
+Router::add('POST', '/api/lostfound/{id}/complete', LostFoundApiController::class, 'markComplete', [MustLoginMiddleware::class]);
 
 Router::run();
