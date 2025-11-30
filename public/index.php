@@ -13,6 +13,7 @@ use App\Controller\TeamController;
 use App\Controller\UserController;
 use App\Controller\Api\KompetisiApiController;
 use App\Controller\Api\TeamApiController;
+use App\Controller\Api\EventApiController;
 use App\Config\Database;
 use App\App\Router;
 use App\Middleware\MustLoginMiddleware;
@@ -58,7 +59,13 @@ Router::add('GET', '/lost_found', LostnFoundController::class, 'lost_found', [Mu
 Router::add('POST', '/lost_found/create', LostnFoundController::class, 'create', [MustLoginMiddleware::class]);
 
 // Event Routes
-Router::add('GET', '/event', EventController::class, 'event', [MustLoginMiddleware::class]);
+Router::add('GET', '/event', EventController::class, 'index', [MustLoginMiddleware::class]);
+Router::add('GET', '/event/create', EventController::class, 'create', [MustLoginMiddleware::class]);
+Router::add('POST', '/event/store', EventController::class, 'store', [MustLoginMiddleware::class]);
+Router::add('GET', '/event/edit/{id}', EventController::class, 'edit', [MustLoginMiddleware::class]);
+Router::add('POST', '/event/update/{id}', EventController::class, 'update', [MustLoginMiddleware::class]);
+Router::add('DELETE', '/event/delete/{id}', EventController::class, 'delete', [MustLoginMiddleware::class]);
+Router::add('POST', '/event/confirm/{id}', EventController::class, 'confirm', [MustLoginMiddleware::class]);
 
 // Forum Routes
 Router::add('GET', '/forum', ForumController::class, 'forum', [MustLoginMiddleware::class]);
@@ -79,5 +86,15 @@ Router::add('PUT', '/api/teams/{teamId}/members/{userId}/role', TeamApiControlle
 Router::add('GET', '/api/teams/search', TeamApiController::class, 'searchTeams', []);
 Router::add('GET', '/api/teams/user/{userId}', TeamApiController::class, 'getUserTeams', []);
 Router::add('GET', '/api/teams/competition/{competitionId}', TeamApiController::class, 'getTeamsByCompetition', []);
+
+// Event API Routes
+Router::add('GET', '/api/events', EventApiController::class, 'getAllEvents', []);
+Router::add('GET', '/api/events/{id}', EventApiController::class, 'getEvent', []);
+Router::add('POST', '/api/events', EventApiController::class, 'createEvent', [MustLoginMiddleware::class]);
+Router::add('PUT', '/api/events/{id}', EventApiController::class, 'updateEvent', [MustLoginMiddleware::class]);
+Router::add('DELETE', '/api/events/{id}', EventApiController::class, 'deleteEvent', [MustLoginMiddleware::class]);
+Router::add('POST', '/api/events/{id}/confirm', EventApiController::class, 'confirmEvent', [MustLoginMiddleware::class]);
+Router::add('POST', '/api/events/{id}/register', EventApiController::class, 'registerForEvent', [MustLoginMiddleware::class]);
+Router::add('GET', '/api/events/{id}/registrations', EventApiController::class, 'getEventRegistrations', []);
 
 Router::run();
