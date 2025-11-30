@@ -16,15 +16,12 @@ class EventDummyRepository
         $this->faker = Factory::create('id_ID');
     }
 
-    /**
-     * Generate events.
-     * event_id format requested: E0001, E0002, ...
-     */
+
     public function generateEvents(int $total = 10): array
     {
         $insert = $this->db->prepare("
-            INSERT INTO public.event (event_id, nama_event, tanggal_selsai, status, poster_event, tanggal_mulai, lokasi)
-            VALUES (:event_id, :nama_event, :tanggal_selsai, :status, :poster_event, :tanggal_mulai, :lokasi)
+            INSERT INTO public.event (event_id, nama_event, tanggal_selsai, status, poster_event, tanggal_mulai, lokasi, organizer, kapasitas, peserta_terdaftar, deskripsi)
+            VALUES (:event_id, :nama_event, :tanggal_selsai, :status, :poster_event, :tanggal_mulai, :lokasi,  :organizer, :kapasitas, :peserta_terdaftar, :deskripsi)
         ");
 
         $created = [];
@@ -41,7 +38,11 @@ class EventDummyRepository
                 ':status' => 'confirm',
                 ':poster_event' => null,
                 ':tanggal_mulai' => $mulai,
-                ':lokasi' => $this->faker->city()
+                ':lokasi' => $this->faker->city(),
+                ':organizer' => $this->faker->company(),
+                ':kapasitas' => $this->faker->numberBetween(50, 500),
+                ':peserta_terdaftar' => $this->faker->numberBetween(0, 500),
+                ':deskripsi' => $this->faker->paragraph(3)
             ]);
 
             $created[] = $eventId;

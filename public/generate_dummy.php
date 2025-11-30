@@ -17,22 +17,22 @@ try {
     $db = Database::getConnection('prod');
 
     // 1) users
-    echo "Generating users...<br>";
-    $userRepo = new UserDummyRepository($db);
-    $userIds = $userRepo->generateUsers(50); // create 50 users
-    echo "Generated " . count($userIds) . " users.<br>";
+    // echo "Generating users...<br>";
+    // $userRepo = new UserDummyRepository($db);
+    // $userIds = $userRepo->generateUsers(50); // create 50 users
+    // echo "Generated " . count($userIds) . " users.<br>";
 
     // 2) teams + detail_anggota
-    echo "Generating teams...<br>";
-    $teamRepo = new TeamDummyRepository($db);
-    $teamIds = $teamRepo->generateTeams($userIds, 15, 4);
-    echo "Generated " . count($teamIds) . " teams.<br>";
+    // echo "Generating teams...<br>";
+    // $teamRepo = new TeamDummyRepository($db);
+    // $teamIds = $teamRepo->generateTeams($userIds, 15, 4);
+    // echo "Generated " . count($teamIds) . " teams.<br>";
 
     // 3) lomba
-    echo "Generating lomba...<br>";
-    $lombaRepo = new LombaDummyRepository($db);
-    $lombaRepo->generateLomba($userIds, 30);
-    echo "Generated lomba entries.<br>";
+    // echo "Generating lomba...<br>";
+    // $lombaRepo = new LombaDummyRepository($db);
+    // $lombaRepo->generateLomba($userIds, 30);
+    // echo "Generated lomba entries.<br>";
 
     // 4) events
     echo "Generating events...<br>";
@@ -41,16 +41,16 @@ try {
     echo "Generated " . count($eventIds) . " events.<br>";
 
     // 5) lost & found
-    echo "Generating lost & found...<br>";
-    $lostRepo = new LostFoundDummyRepository($db);
-    $lostIds = $lostRepo->generateLostFound($userIds, 20);
-    echo "Generated " . count($lostIds) . " lost&found items.<br>";
+    // echo "Generating lost & found...<br>";
+    // $lostRepo = new LostFoundDummyRepository($db);
+    // $lostIds = $lostRepo->generateLostFound($userIds, 20);
+    // echo "Generated " . count($lostIds) . " lost&found items.<br>";
 
     // 6) forum
-    echo "Generating forum komunitas, anggota & messages...<br>";
-    $forumRepo = new ForumDummyRepository($db);
-    $forumRepo->generateForum($userIds, 6, 6);
-    echo "Forum data generated.<br>";
+    // echo "Generating forum komunitas, anggota & messages...<br>";
+    // $forumRepo = new ForumDummyRepository($db);
+    // $forumRepo->generateForum($userIds, 6, 6);
+    // echo "Forum data generated.<br>";
 
     echo "<br><strong>ALL DONE! ✅</strong>";
 } catch (\Exception $e) {

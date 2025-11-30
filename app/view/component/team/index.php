@@ -7,276 +7,149 @@
     <title>Team Search Management - Campus Nexus</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/team.css">
+
     <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
+    /* Force light theme */
     body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        background: #f9fafb;
-        display: flex;
+        background: #f9fafb !important;
+        color: #1f2937 !important;
     }
 
-    /* Sidebar */
-    .sidebar {
-        width: 280px;
-        height: 100vh;
-        background: #ffffff;
-        border-right: 1px solid #e5e7eb;
-        display: flex;
-        flex-direction: column;
-        position: fixed;
-        left: 0;
-        top: 0;
-    }
-
-    .logo-section {
-        padding: 24px 20px;
-        border-bottom: 1px solid #e5e7eb;
-    }
-
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .logo-icon {
-        width: 40px;
-        height: 40px;
-        background: #4F87FF;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 20px;
-    }
-
-    .logo-text h1 {
-        font-size: 18px;
-        font-weight: 600;
-        color: #1f2937;
-    }
-
-    .logo-text p {
-        font-size: 12px;
-        color: #6b7280;
-    }
-
-    .menu {
-        flex: 1;
-        padding: 20px 0;
-        overflow-y: auto;
-    }
-
-    .menu-item {
-        padding: 12px 20px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: #4b5563;
-        text-decoration: none;
-        transition: all 0.2s;
-        font-size: 14px;
-        font-weight: 500;
-    }
-
-    .menu-item:hover {
-        background: #f3f4f6;
-    }
-
-    .menu-item.active {
-        background: #EBF2FF;
-        color: #4F87FF;
-        border-right: 3px solid #4F87FF;
-    }
-
-    .menu-item i {
-        width: 20px;
-        text-align: center;
-        font-size: 18px;
-    }
-
-    .user-section {
-        padding: 16px 20px;
-        border-top: 1px solid #e5e7eb;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .user-avatar {
-        width: 40px;
-        height: 40px;
-        background: #4F87FF;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 600;
-    }
-
-    .user-info {
-        flex: 1;
-    }
-
-    .user-info h3 {
-        font-size: 14px;
-        font-weight: 600;
-        color: #1f2937;
-    }
-
-    .user-info p {
-        font-size: 12px;
-        color: #6b7280;
-    }
-
-    .logout-icon {
-        color: #6b7280;
-        cursor: pointer;
-        font-size: 18px;
-    }
-
-    /* Main Content */
     .main-content {
-        margin-left: 280px;
-        flex: 1;
-        padding: 32px;
-        min-height: 100vh;
+        background: #f9fafb !important;
     }
 
-    .header {
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #ccc;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 2rem;
+        color: #666;
+    }
+
+    .stats-bar {
         display: flex;
-        justify-content: space-between;
-        align-items: start;
-        margin-bottom: 32px;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 0.5rem;
     }
 
-    .header h1 {
-        font-size: 32px;
-        font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 8px;
-    }
-
-    .header p {
-        font-size: 14px;
-        color: #6b7280;
-    }
-
-    .btn-primary {
-        background: #4F87FF;
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
+    .stat-item {
         display: flex;
         align-items: center;
-        gap: 8px;
-        transition: all 0.2s;
-    }
-
-    .btn-primary:hover {
-        background: #3B6FDD;
-    }
-
-    /* Filters */
-    .filters {
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
         background: white;
-        padding: 20px;
-        border-radius: 12px;
-        border: 1px solid #e5e7eb;
-        margin-bottom: 24px;
-        display: flex;
-        gap: 16px;
-        align-items: center;
+        border-radius: 0.375rem;
+        border: 1px solid #e9ecef;
     }
 
-    .search-box {
-        flex: 1;
-        position: relative;
+    .stat-item i {
+        color: #1976d2;
     }
 
-    .search-box i {
-        position: absolute;
-        left: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #9ca3af;
+    .stat-value {
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: #1976d2;
     }
 
-    .search-box input {
-        width: 100%;
-        padding: 12px 16px 12px 44px;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        font-size: 14px;
+    /* Style untuk badge status */
+    .badge-aktif {
+        background-color: #e8f5e8;
+        color: #2e7d32;
+        border: 1px solid #c8e6c9;
     }
 
-    .search-box input:focus {
-        outline: none;
-        border-color: #4F87FF;
+    .badge-urgent {
+        background-color: #ffebee;
+        color: #c62828;
+        border: 1px solid #ffcdd2;
     }
 
+    .badge-need {
+        background-color: #fff3e0;
+        color: #ef6c00;
+        border: 1px solid #ffe0b2;
+    }
+
+    /* Style untuk filter tabs */
     .filter-tabs {
         display: flex;
-        gap: 8px;
+        gap: 0.5rem;
     }
 
     .filter-tab {
-        padding: 10px 20px;
-        border: none;
-        background: transparent;
-        color: #6b7280;
-        font-size: 14px;
-        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 0.375rem;
         cursor: pointer;
-        border-radius: 8px;
         transition: all 0.2s;
     }
 
-    .filter-tab:hover {
-        background: #f3f4f6;
-    }
-
     .filter-tab.active {
-        background: #4F87FF;
+        background: #1976d2;
         color: white;
+        border-color: #1976d2;
     }
 
-    /* Team Cards */
-    .team-list {
+    .filter-tab:hover:not(.active) {
+        background: #f5f5f5;
+    }
+
+    /* Style untuk tags */
+    .team-tags {
         display: flex;
-        flex-direction: column;
-        gap: 16px;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 1rem 0;
     }
 
+    .tag {
+        background: #e3f2fd;
+        color: #1976d2;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        border: 1px solid #bbdefb;
+    }
+
+    /* Style untuk team card */
     .team-card {
         background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 24px;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e9ecef;
         transition: all 0.2s;
     }
 
     .team-card:hover {
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
     }
 
     .team-header {
         display: flex;
         justify-content: space-between;
-        align-items: start;
-        margin-bottom: 12px;
+        align-items: flex-start;
+        margin-bottom: 1rem;
     }
 
     .team-title-section {
@@ -284,325 +157,306 @@
     }
 
     .team-title {
-        font-size: 18px;
+        font-size: 1.25rem;
         font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 6px;
+        color: #2c3e50;
+        margin-bottom: 0.25rem;
     }
 
     .team-creator {
-        font-size: 14px;
-        color: #6b7280;
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+
+    .header-badges {
+        display: flex;
+        gap: 0.5rem;
     }
 
     .team-description {
-        font-size: 14px;
-        color: #4b5563;
-        margin-bottom: 16px;
+        color: #495057;
         line-height: 1.5;
-    }
-
-    .team-tags {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 16px;
-        flex-wrap: wrap;
-    }
-
-    .tag {
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 12px;
-        background: #f3f4f6;
-        color: #4b5563;
-        font-weight: 500;
+        margin-bottom: 1rem;
     }
 
     .team-meta {
         display: flex;
-        gap: 24px;
-        padding-top: 16px;
-        border-top: 1px solid #f3f4f6;
-        align-items: center;
+        gap: 1.5rem;
+        margin: 1rem 0;
     }
 
     .meta-item {
         display: flex;
         align-items: center;
-        gap: 8px;
-        font-size: 13px;
-        color: #6b7280;
-    }
-
-    .meta-item i {
-        color: #9ca3af;
+        gap: 0.5rem;
+        color: #6c757d;
+        font-size: 0.875rem;
     }
 
     .team-contact {
-        margin-top: 12px;
-        font-size: 14px;
-        color: #6b7280;
-    }
-
-    .team-contact strong {
-        color: #4b5563;
-    }
-
-    .badge {
-        padding: 6px 12px;
-        border-radius: 16px;
-        font-size: 12px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .badge-aktif {
-        background: #4F87FF;
-        color: white;
-    }
-
-    .badge-need {
-        background: #f3f4f6;
-        color: #6b7280;
-        margin-left: auto;
+        margin: 1rem 0;
+        padding: 0.75rem;
+        background: #f8f9fa;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
     }
 
     .team-actions {
         display: flex;
-        gap: 12px;
-        margin-top: 16px;
+        gap: 0.5rem;
+        justify-content: flex-end;
     }
 
     .action-btn {
-        width: 40px;
-        height: 40px;
-        border: 1px solid #e5e7eb;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
         background: white;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        border-radius: 0.375rem;
         cursor: pointer;
-        color: #6b7280;
         transition: all 0.2s;
     }
 
     .action-btn:hover {
-        background: #f3f4f6;
+        background: #f8f9fa;
     }
 
-    .action-btn.view:hover {
-        color: #4F87FF;
-        border-color: #4F87FF;
+    .action-btn.view {
+        color: #1976d2;
+        border-color: #1976d2;
     }
 
-    .action-btn.edit:hover {
-        color: #4F87FF;
-        border-color: #4F87FF;
+    .action-btn.edit {
+        color: #ffa000;
+        border-color: #ffa000;
     }
 
-    .action-btn.delete:hover {
-        color: #EF4444;
-        border-color: #EF4444;
-    }
-
-    .header-badges {
-        display: flex;
-        gap: 8px;
-        align-items: center;
+    .action-btn.delete {
+        color: #d32f2f;
+        border-color: #d32f2f;
     }
     </style>
 </head>
 
 <body>
     <?php require_once __DIR__ . "/../../layouts/sidebar.php"; ?>
-
-    <!-- Main Content -->
     <div class="main-content">
         <div class="header">
             <div>
                 <h1>Team Search Management</h1>
                 <p>Kelola pencarian anggota tim untuk lomba dan kompetisi</p>
             </div>
-            <button class="btn-primary">
+            <button class="btn-primary" onclick="openCreateModal()">
                 <i class="fas fa-plus"></i>
                 Tambah Pencarian Tim
             </button>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <i class="fas fa-users"></i>
+                <div>
+                    <div class="stat-value"><?= $total_teams ?? 0 ?></div>
+                    <div>Total Tim</div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <div class="stat-value"><?= $active_teams ?? 0 ?></div>
+                    <div>Tim Aktif</div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <div class="stat-value"><?= $urgent_teams ?? 0 ?></div>
+                    <div>Butuh Segera</div>
+                </div>
+            </div>
         </div>
 
         <!-- Filters -->
         <div class="filters">
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Cari tim, creator, atau jurusan...">
+                <input type="text" id="searchInput" placeholder="Cari tim, creator, atau jurusan..."
+                    onkeyup="filterTeams()">
             </div>
             <div class="filter-tabs">
-                <button class="filter-tab active">Semua</button>
-                <button class="filter-tab">Aktif</button>
-                <button class="filter-tab">Urgent</button>
-                <button class="filter-tab">Selesai</button>
+                <button class="filter-tab active" onclick="filterByStatus('all')">Semua</button>
+                <button class="filter-tab" onclick="filterByStatus('active')">Aktif</button>
+                <button class="filter-tab" onclick="filterByStatus('urgent')">Urgent</button>
+                <button class="filter-tab" onclick="filterByStatus('completed')">Selesai</button>
             </div>
         </div>
 
         <!-- Team List -->
-        <div class="team-list">
-            <!-- Team Card 1 -->
-            <div class="team-card">
+        <div class="team-list" id="teamList">
+            <?php if (empty($teams)): ?>
+            <div class="empty-state">
+                <i class="fas fa-users-slash"></i>
+                <h3>Tidak ada tim yang aktif</h3>
+                <p>Belum ada tim yang sedang mencari anggota. Mulai dengan membuat pencarian tim pertama Anda.</p>
+            </div>
+            <?php else: ?>
+            <?php foreach ($teams as $team): ?>
+            <div class="team-card" data-priority="<?= htmlspecialchars($team['priority_status']) ?>">
                 <div class="team-header">
                     <div class="team-title-section">
-                        <div class="team-title">Tim Lomba Mobile App Development</div>
-                        <div class="team-creator">Ahmad Ridwan • Teknik Informatika • Semester 6</div>
+                        <div class="team-title"><?= htmlspecialchars($team['nama_team']) ?></div>
+                        <div class="team-creator">
+                            <?= htmlspecialchars($team['creator_name']) ?> •
+                            <?= htmlspecialchars($team['creator_jurusan']) ?> •
+                            Semester <?= htmlspecialchars($team['creator_semester']) ?>
+                        </div>
                     </div>
                     <div class="header-badges">
-                        <span class="badge badge-aktif">Aktif</span>
-                        <span class="badge badge-need">Butuh 2 orang</span>
+                        <span class="badge badge-<?= $team['priority_status'] === 'urgent' ? 'urgent' : 'aktif' ?>">
+                            <?= $team['priority_status'] === 'urgent' ? 'Urgent' : 'Aktif' ?>
+                        </span>
+                        <span class="badge badge-need">
+                            Butuh <?= $team['members_needed'] ?> orang
+                        </span>
                     </div>
                 </div>
                 <div class="team-description">
-                    Mencari anggota tim untuk lomba mobile app development tingkat nasional. Butuh developer Flutter dan
-                    UI/UX designer.
+                    <?= htmlspecialchars($team['deskripsi']) ?>
                 </div>
                 <div class="team-tags">
-                    <span class="tag">Flutter</span>
-                    <span class="tag">UI/UX Design</span>
-                    <span class="tag">Backend Development</span>
+                    <?php if (!empty($team['skills_required'])): ?>
+                    <?php $skills = explode(',', $team['skills_required']); ?>
+                    <?php foreach ($skills as $skill): ?>
+                    <span class="tag"><?= htmlspecialchars(trim($skill)) ?></span>
+                    <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
                 <div class="team-meta">
                     <div class="meta-item">
                         <i class="far fa-calendar"></i>
-                        <span>National Mobile App Competition 2024</span>
+                        <span><?= htmlspecialchars($team['competition_name'] ?? 'Tidak ada lomba') ?></span>
                     </div>
                     <div class="meta-item">
                         <i class="far fa-clock"></i>
-                        <span>Deadline: 2024-01-25</span>
+                        <span>Deadline: <?= date('Y-m-d', strtotime($team['deadline'])) ?></span>
                     </div>
                     <div class="meta-item">
                         <i class="fas fa-users"></i>
-                        <span>8 pelamar</span>
+                        <span><?= $team['total_applicants'] ?> pelamar</span>
                     </div>
                 </div>
                 <div class="team-contact">
-                    <strong>Kontak:</strong> ahmad.ridwan@student.univ.ac.id
+                    <strong>Kontak:</strong> <?= htmlspecialchars($team['creator_email']) ?>
                 </div>
+                <?php if (isset($userRole) && $userRole === 'admin'): ?>
                 <div class="team-actions">
-                    <button class="action-btn view">
+                    <button class="action-btn view" onclick="viewTeam(<?= $team['id'] ?>)">
                         <i class="far fa-eye"></i>
                     </button>
-                    <button class="action-btn edit">
+                    <button class="action-btn edit" onclick="editTeam(<?= $team['id'] ?>)">
                         <i class="far fa-edit"></i>
                     </button>
-                    <button class="action-btn delete">
+                    <button class="action-btn delete" onclick="deleteTeam(<?= $team['id'] ?>)">
                         <i class="far fa-trash-alt"></i>
                     </button>
                 </div>
+                <?php endif; ?>
             </div>
-
-            <!-- Team Card 2 -->
-            <div class="team-card">
-                <div class="team-header">
-                    <div class="team-title-section">
-                        <div class="team-title">Tim Business Plan Competition</div>
-                        <div class="team-creator">Sarah Putri • Manajemen • Semester 4</div>
-                    </div>
-                    <div class="header-badges">
-                        <span class="badge badge-aktif">Aktif</span>
-                        <span class="badge badge-need">Butuh 1 orang</span>
-                    </div>
-                </div>
-                <div class="team-description">
-                    Tim bisnis plan sudah ada 2 orang, butuh 1 orang lagi yang ahli di financial modeling untuk
-                    melengkapi tim.
-                </div>
-                <div class="team-tags">
-                    <span class="tag">Business Analysis</span>
-                    <span class="tag">Financial Modeling</span>
-                    <span class="tag">Presentation</span>
-                </div>
-                <div class="team-meta">
-                    <div class="meta-item">
-                        <i class="far fa-calendar"></i>
-                        <span>Young Entrepreneur Challenge 2024</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="far fa-clock"></i>
-                        <span>Deadline: 2024-01-30</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-users"></i>
-                        <span>5 pelamar</span>
-                    </div>
-                </div>
-                <div class="team-contact">
-                    <strong>Kontak:</strong> sarah.putri@student.univ.ac.id
-                </div>
-                <div class="team-actions">
-                    <button class="action-btn view">
-                        <i class="far fa-eye"></i>
-                    </button>
-                    <button class="action-btn edit">
-                        <i class="far fa-edit"></i>
-                    </button>
-                    <button class="action-btn delete">
-                        <i class="far fa-trash-alt"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Team Card 3 -->
-            <div class="team-card">
-                <div class="team-header">
-                    <div class="team-title-section">
-                        <div class="team-title">Tim Hackathon Data Science</div>
-                        <div class="team-creator">Budi Santoso • Teknik Informatika • Semester 5</div>
-                    </div>
-                    <div class="header-badges">
-                        <span class="badge badge-aktif">Aktif</span>
-                        <span class="badge badge-need">Butuh 3 orang</span>
-                    </div>
-                </div>
-                <div class="team-description">
-                    Mencari anggota tim untuk hackathon data science. Butuh yang bisa machine learning, data
-                    visualization, dan web development.
-                </div>
-                <div class="team-tags">
-                    <span class="tag">Machine Learning</span>
-                    <span class="tag">Data Visualization</span>
-                    <span class="tag">Python</span>
-                    <span class="tag">Web Development</span>
-                </div>
-                <div class="team-meta">
-                    <div class="meta-item">
-                        <i class="far fa-calendar"></i>
-                        <span>National Data Science Hackathon 2024</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="far fa-clock"></i>
-                        <span>Deadline: 2024-02-05</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-users"></i>
-                        <span>12 pelamar</span>
-                    </div>
-                </div>
-                <div class="team-contact">
-                    <strong>Kontak:</strong> budi.santoso@student.univ.ac.id
-                </div>
-                <div class="team-actions">
-                    <button class="action-btn view">
-                        <i class="far fa-eye"></i>
-                    </button>
-                    <button class="action-btn edit">
-                        <i class="far fa-edit"></i>
-                    </button>
-                    <button class="action-btn delete">
-                        <i class="far fa-trash-alt"></i>
-                    </button>
-                </div>
-            </div>
+            <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </div>
+
+    <!-- JavaScript untuk filtering dan modal -->
+    <script>
+    function filterTeams() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const teamCards = document.querySelectorAll('.team-card');
+
+        teamCards.forEach(card => {
+            const title = card.querySelector('.team-title').textContent.toLowerCase();
+            const creator = card.querySelector('.team-creator').textContent.toLowerCase();
+            const description = card.querySelector('.team-description').textContent.toLowerCase();
+
+            if (title.includes(searchTerm) || creator.includes(searchTerm) || description.includes(
+                    searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function filterByStatus(status) {
+        const teamCards = document.querySelectorAll('.team-card');
+        const tabs = document.querySelectorAll('.filter-tab');
+
+        // Update active tab
+        tabs.forEach(tab => tab.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+
+        teamCards.forEach(card => {
+            const priority = card.getAttribute('data-priority');
+
+            if (status === 'all') {
+                card.style.display = 'block';
+            } else if (status === 'active') {
+                card.style.display = priority === 'active' ? 'block' : 'none';
+            } else if (status === 'urgent') {
+                card.style.display = priority === 'urgent' ? 'block' : 'none';
+            } else if (status === 'completed') {
+                // Logic untuk tim yang sudah selesai
+                card.style.display = 'none'; // Sesuaikan dengan data yang ada
+            }
+        });
+    }
+
+    function viewTeam(id) {
+        // Implement view team functionality
+        window.location.href = `/teams/${id}`;
+    }
+
+    function editTeam(id) {
+        // Implement edit team functionality
+        window.location.href = `/teams/edit/${id}`;
+    }
+
+    function deleteTeam(id) {
+        if (confirm('Apakah Anda yakin ingin menghapus pencarian tim ini?')) {
+            // Implement delete team functionality
+            fetch(`/api/teams/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Tim berhasil dihapus!');
+                        location.reload();
+                    } else {
+                        alert('Gagal menghapus tim: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat menghapus tim');
+                });
+        }
+    }
+
+    function openCreateModal() {
+        window.location.href = '/team/create';
+    }
+
+    // Real-time search dengan debounce
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(filterTeams, 300);
+    });
+    </script>
 </body>
 
 </html>

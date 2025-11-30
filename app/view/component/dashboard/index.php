@@ -15,13 +15,11 @@
 <body>
     <?php require_once __DIR__ . "/../../layouts/sidebar.php"; ?>
 
-
     <div class="main-content">
         <div class="header">
             <h1>Dashboard</h1>
             <p>Selamat datang di Campus Nexus Grid Admin Panel</p>
         </div>
-
 
         <div class="stats-grid">
             <div class="stat-card">
@@ -31,7 +29,7 @@
                         <i class="far fa-calendar"></i>
                     </div>
                 </div>
-                <div class="stat-value">45</div>
+                <div class="stat-value"><?= $stat_event ?></div>
                 <div class="stat-change positive">
                     <i class="fas fa-arrow-up"></i>
                     <span>+12% dari bulan lalu</span>
@@ -45,7 +43,7 @@
                         <i class="fas fa-users"></i>
                     </div>
                 </div>
-                <div class="stat-value">23</div>
+                <div class="stat-value"><?= $stat_kompetisi ?></div>
                 <div class="stat-change positive">
                     <i class="fas fa-arrow-up"></i>
                     <span>+5% dari bulan lalu</span>
@@ -73,7 +71,7 @@
                         <i class="fas fa-search"></i>
                     </div>
                 </div>
-                <div class="stat-value">8</div>
+                <div class="stat-value"><?= $stat_lost ?></div>
                 <div class="stat-change negative">
                     <i class="fas fa-arrow-down"></i>
                     <span>-2% dari bulan lalu</span>
@@ -93,65 +91,37 @@
                     </div>
                 </div>
 
+                <?php if (!empty($events_latest)): ?>
+                <?php foreach ($events_latest as $event): ?>
                 <div class="event-item">
                     <div class="event-header">
                         <div>
-                            <div class="event-title">Workshop React JS untuk Pemula</div>
-                            <div class="event-organizer">Himpunan Informatika</div>
+                            <div class="event-title"><?= htmlspecialchars($event['nama_event']) ?></div>
+                            <div class="event-organizer"><?= htmlspecialchars($event['lokasi']) ?></div>
                         </div>
                         <span class="badge badge-upcoming">Upcoming</span>
                     </div>
                     <div class="event-details">
                         <div class="event-detail">
                             <i class="far fa-clock"></i>
-                            <span>2024-01-15 • 14:00</span>
+                            <span><?= date('Y-m-d', strtotime($event['tanggal_mulai'])) ?></span>
                         </div>
                         <div class="event-detail">
-                            <i class="fas fa-users"></i>
-                            <span>45 peserta</span>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span><?= htmlspecialchars($event['lokasi']) ?></span>
                         </div>
                     </div>
                 </div>
-
+                <?php endforeach; ?>
+                <?php else: ?>
                 <div class="event-item">
                     <div class="event-header">
                         <div>
-                            <div class="event-title">Seminar Digital Marketing</div>
-                            <div class="event-organizer">BEM Fakultas Ekonomi</div>
-                        </div>
-                        <span class="badge badge-upcoming">Upcoming</span>
-                    </div>
-                    <div class="event-details">
-                        <div class="event-detail">
-                            <i class="far fa-clock"></i>
-                            <span>2024-01-18 • 09:00</span>
-                        </div>
-                        <div class="event-detail">
-                            <i class="fas fa-users"></i>
-                            <span>67 peserta</span>
+                            <div class="event-title">Tidak ada event yang akan datang</div>
                         </div>
                     </div>
                 </div>
-
-                <div class="event-item">
-                    <div class="event-header">
-                        <div>
-                            <div class="event-title">Lomba Programming Competition</div>
-                            <div class="event-organizer">UKM Programming Club</div>
-                        </div>
-                        <span class="badge badge-registration">Registrasi</span>
-                    </div>
-                    <div class="event-details">
-                        <div class="event-detail">
-                            <i class="far fa-clock"></i>
-                            <span>2024-01-20 • 08:00</span>
-                        </div>
-                        <div class="event-detail">
-                            <i class="fas fa-users"></i>
-                            <span>89 peserta</span>
-                        </div>
-                    </div>
-                </div>
+                <?php endif; ?>
 
                 <div class="view-all">
                     <i class="fas fa-eye"></i>
@@ -164,50 +134,42 @@
                 <div class="card-header">
                     <i class="fas fa-users"></i>
                     <div>
-                        <h2>Pencarian Tim Aktif</h2>
-                        <p class="card-subtitle">Mahasiswa yang sedang mencari anggota tim</p>
+                        <h2>Kompetisi Terbaru</h2>
+                        <p class="card-subtitle">Kompetisi yang akan datang</p>
                     </div>
                 </div>
 
+                <?php if (!empty($kompetisi_latest)): ?>
+                <?php foreach ($kompetisi_latest as $kompetisi): ?>
                 <div class="team-item">
                     <div class="team-header">
                         <div>
-                            <div class="team-title">Tim Lomba Mobile App Development</div>
-                            <div class="team-creator">Ahmad Ridwan (Informatika)</div>
+                            <div class="team-title"><?= htmlspecialchars($kompetisi['nama_lomba']) ?></div>
+                            <div class="team-creator"><?= htmlspecialchars($kompetisi['kategori']) ?></div>
                         </div>
                         <span class="badge badge-upcoming">Aktif</span>
                     </div>
                     <div class="team-tags">
-                        <span class="tag">Flutter</span>
-                        <span class="tag">UI/UX Design</span>
+                        <span class="tag"><?= htmlspecialchars($kompetisi['kategori']) ?></span>
                     </div>
                     <div class="team-footer">
-                        <span>Deadline: 2024-01-25</span>
-                        <span>Butuh 2 orang</span>
+                        <span>Tanggal: <?= date('Y-m-d', strtotime($kompetisi['tanggal_lomba'])) ?></span>
                     </div>
                 </div>
-
+                <?php endforeach; ?>
+                <?php else: ?>
                 <div class="team-item">
                     <div class="team-header">
                         <div>
-                            <div class="team-title">Tim Business Plan Competition</div>
-                            <div class="team-creator">Sarah Putri (Manajemen)</div>
+                            <div class="team-title">Tidak ada kompetisi yang akan datang</div>
                         </div>
-                        <span class="badge badge-upcoming">Aktif</span>
-                    </div>
-                    <div class="team-tags">
-                        <span class="tag">Business Analysis</span>
-                        <span class="tag">Financial Modeling</span>
-                    </div>
-                    <div class="team-footer">
-                        <span>Deadline: 2024-01-30</span>
-                        <span>Butuh 1 orang</span>
                     </div>
                 </div>
+                <?php endif; ?>
 
                 <div class="view-all">
                     <i class="fas fa-eye"></i>
-                    <span>Lihat Semua Pencarian</span>
+                    <span>Lihat Semua Kompetisi</span>
                 </div>
             </div>
         </div>
