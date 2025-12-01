@@ -42,7 +42,7 @@ class LostFoundRepository
                 u.email as user_email
             FROM lost_found lf
             LEFT JOIN users u ON lf.user_id = u.user_id
-            WHERE lf.id = ?
+            WHERE lf.id_barang = ?
         ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
@@ -67,8 +67,8 @@ class LostFoundRepository
     {
         $sql = "
             INSERT INTO lost_found 
-            (id_barang, user_id, kategori, nama_barang, deskripsi, lokasi, no_hp, email, foto_barang, status) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (id_barang, user_id, kategori, nama_barang, deskripsi, lokasi, tanggal, no_hp, email, foto_barang, status) 
+            VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?)
         ";
         $stmt = $this->db->prepare($sql);
         $result = $stmt->execute([
@@ -84,7 +84,7 @@ class LostFoundRepository
             $data['status'] ?? 'aktif'
         ]);
         
-        return $result ? $this->db->lastInsertId() : false;
+        return $result ? $data['id_barang'] : false;
     }
 
     /**
@@ -112,7 +112,7 @@ class LostFoundRepository
         }
         
         $params[] = $id;
-        $sql = "UPDATE lost_found SET " . implode(', ', $fields) . " WHERE id = ?";
+        $sql = "UPDATE lost_found SET " . implode(', ', $fields) . " WHERE id_barang = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($params);
     }
@@ -122,7 +122,7 @@ class LostFoundRepository
      */
     public function deleteItem($id)
     {
-        $sql = "DELETE FROM lost_found WHERE id = ?";
+        $sql = "DELETE FROM lost_found WHERE id_barang = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$id]);
     }
@@ -132,7 +132,7 @@ class LostFoundRepository
      */
     public function updateStatus($id, $status)
     {
-        $sql = "UPDATE lost_found SET status = ? WHERE id = ?";
+        $sql = "UPDATE lost_found SET status = ? WHERE id_barang = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$status, $id]);
     }
@@ -146,8 +146,7 @@ class LostFoundRepository
             SELECT 
                 lf.*,
                 u.username,
-                u.email as user_email,
-                u.nama
+                u.email as user_email
             FROM lost_found lf
             LEFT JOIN users u ON lf.user_id = u.user_id
             WHERE lf.kategori = ?
@@ -167,8 +166,7 @@ class LostFoundRepository
             SELECT 
                 lf.*,
                 u.username,
-                u.email as user_email,
-                u.nama
+                u.email as user_email
             FROM lost_found lf
             LEFT JOIN users u ON lf.user_id = u.user_id
             WHERE lf.status = ?
@@ -214,8 +212,7 @@ class LostFoundRepository
             SELECT 
                 lf.*,
                 u.username,
-                u.email as user_email,
-                u.nama
+                u.email as user_email
             FROM lost_found lf
             LEFT JOIN users u ON lf.user_id = u.user_id
             WHERE lf.nama_barang ILIKE ? 
@@ -261,8 +258,7 @@ class LostFoundRepository
             SELECT 
                 lf.*,
                 u.username,
-                u.email as user_email,
-                u.nama
+                u.email as user_email
             FROM lost_found lf
             LEFT JOIN users u ON lf.user_id = u.user_id
             $whereClause

@@ -103,7 +103,6 @@ Router::add('POST', '/api/events/{id}/confirm', EventApiController::class, 'conf
 Router::add('POST', '/api/events/{id}/register', EventApiController::class, 'registerForEvent', [MustLoginMiddleware::class]);
 Router::add('GET', '/api/events/{id}/registrations', EventApiController::class, 'getEventRegistrations', []);
 
-// Lost & Found API Routes
 Router::add('GET', '/api/lostfound', LostFoundApiController::class, 'getAllItems', []);
 Router::add('GET', '/api/lostfound/{id}', LostFoundApiController::class, 'getItem', []);
 Router::add('POST', '/api/lostfound', LostFoundApiController::class, 'createItem', [MustLoginMiddleware::class]);

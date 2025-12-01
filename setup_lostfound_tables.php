@@ -43,6 +43,12 @@ try {
     } else {
         echo "✓ Lost_found table already exists\n";
         
+        // Add missing id column if needed (for existing tables)
+        if (!in_array('id', $existingColumns)) {
+            $db->exec("ALTER TABLE lost_found ADD COLUMN id SERIAL PRIMARY KEY");
+            echo "✓ Added id column\n";
+        }
+        
         // Add missing columns if needed
         if (!in_array('foto_barang', $existingColumns)) {
             $db->exec("ALTER TABLE lost_found ADD COLUMN foto_barang VARCHAR(255)");

@@ -170,14 +170,14 @@
                     <?php if ($userRole === 'admin'): ?>
                     <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #f3f4f6;">
                         <?php if ($item['status'] === 'aktif'): ?>
-                        <button class="action-btn complete" onclick="markComplete(<?= $item['id'] ?>)">
+                        <button class="action-btn complete" onclick="markComplete('<?= $item['id_barang'] ?>')">
                             <i class="fas fa-check"></i> Tandai Selesai
                         </button>
                         <?php endif; ?>
-                        <button class="action-btn edit" onclick="window.location.href='/lost_found/edit/<?= $item['id'] ?>'">
+                        <button class="action-btn edit" onclick="window.location.href='/lost_found/edit/<?= $item['id_barang'] ?>'">
                             <i class="far fa-edit"></i> Edit
                         </button>
-                        <button class="action-btn delete" onclick="deleteItem(<?= $item['id'] ?>)">
+                        <button class="action-btn delete" onclick="deleteItem('<?= $item['id_barang'] ?>')">
                             <i class="far fa-trash-alt"></i> Hapus
                         </button>
                     </div>

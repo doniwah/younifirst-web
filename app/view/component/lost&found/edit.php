@@ -19,7 +19,7 @@
         </div>
 
         <div class="form-container" style="background: white; border-radius: 12px; padding: 32px; max-width: 800px; margin: 0 auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <form action="/lost_found/update/<?= $item['id'] ?>" method="POST" enctype="multipart/form-data">
+            <form action="/lost_found/update/<?= $item['id_barang'] ?>" method="POST" enctype="multipart/form-data">
                 <div class="form-group" style="margin-bottom: 24px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: 500;">Kategori <span style="color: #ef4444;">*</span></label>
                     <select name="kategori" required style="width: 100%; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 8px;">

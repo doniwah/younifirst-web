@@ -22,13 +22,13 @@ class KompetisiApiController
         $db = Database::getConnection('prod');
 
         $competitions = $db->query("
-            SELECT lomba_id, nama_lomba, tanggal_lomba, kategori, lokasi, deskripsi, hadiah
+            SELECT lomba_id, nama_lomba, tanggal_lomba, kategori, lokasi, deskripsi, hadiah, status
             FROM lomba
             ORDER BY tanggal_lomba DESC
         ")->fetchAll();
 
         $teams = $db->query("
-            SELECT team_id, nama_team, nama_kegiatan, deskripsi_anggota, max_anggota, role_required
+            SELECT team_id, nama_team, nama_kegiatan, deskripsi_anggota, max_anggota, role_required, status
             FROM team
             ORDER BY team_id DESC
         ")->fetchAll();
