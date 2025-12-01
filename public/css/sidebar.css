@@ -1,28 +1,76 @@
+/* ===== Sidebar Styles with Dark Mode Support ===== */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-}
-
+/* Sidebar Container */
 .sidebar {
   width: 280px;
   height: 100vh;
-  background: #ffffff;
-  border-right: 1px solid #e5e7eb;
+  background: var(--bg-secondary, #ffffff);
+  border-right: 1px solid var(--border-color, #e5e7eb);
   display: flex;
   flex-direction: column;
   position: fixed;
   left: 0;
   top: 0;
+  transition: all 0.3s ease;
+  z-index: 1000;
 }
 
+/* Collapsed State */
+.sidebar.collapsed {
+  width: 70px;
+}
+
+.sidebar.collapsed .logo-text,
+.sidebar.collapsed .menu-item span,
+.sidebar.collapsed .user-info {
+  display: none;
+}
+
+.sidebar.collapsed .menu-item {
+  justify-content: center;
+  padding: 12px;
+}
+
+.sidebar.collapsed .menu-item.active {
+  margin-left: 5px;
+  width: 60px;
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+  position: absolute;
+  right: -15px;
+  top: 20px;
+  width: 30px;
+  height: 30px;
+  background: var(--primary-color, #4f87ff);
+  border: 2px solid var(--bg-secondary, #ffffff);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.sidebar-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(79, 135, 255, 0.3);
+}
+
+/* Logo Section */
 .logo-section {
   padding: 24px 20px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
 }
 
 .logo {
@@ -34,31 +82,44 @@ body {
 .logo-icon {
   width: 40px;
   height: 40px;
-  background: #4f87ff;
+  background: var(--primary-color, #4f87ff);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-size: 20px;
+  flex-shrink: 0;
 }
 
 .logo-text h1 {
   font-size: 18px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-primary, #1f2937);
   margin-bottom: 2px;
+  white-space: nowrap;
 }
 
 .logo-text p {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-secondary, #6b7280);
 }
 
+/* Menu */
 .menu {
   flex: 1;
   padding: 20px 0;
   overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.menu::-webkit-scrollbar-thumb {
+  background: var(--border-color, #e5e7eb);
+  border-radius: 4px;
 }
 
 .menu-item {
@@ -66,35 +127,48 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #4b5563;
+  color: var(--text-secondary, #4b5563);
   text-decoration: none;
   transition: all 0.2s;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
+  position: relative;
 }
 
 .menu-item:hover {
-  background: #f3f4f6;
+  background: var(--bg-primary, #f3f4f6);
 }
 
 .menu-item.active {
   background: #ebf2ff;
-  color: #4f87ff;
+  color: var(--primary-color, #4f87ff);
   width: 90%;
   border-radius: 8px;
   margin-left: 10px;
+}
+
+[data-theme="dark"] .menu-item.active {
+  background: rgba(79, 135, 255, 0.2);
 }
 
 .menu-item i {
   width: 20px;
   text-align: center;
   font-size: 18px;
+  flex-shrink: 0;
 }
 
+.menu-item span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* User Section */
 .user-section {
   padding: 16px 20px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color, #e5e7eb);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -103,36 +177,108 @@ body {
 .user-avatar {
   width: 40px;
   height: 40px;
-  background: #4f87ff;
+  background: var(--primary-color, #4f87ff);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: 600;
+  font-size: 16px;
+  flex-shrink: 0;
 }
 
 .user-info {
   flex: 1;
+  overflow: hidden;
 }
 
 .user-info h3 {
   font-size: 14px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-primary, #1f2937);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .user-info p {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-secondary, #6b7280);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .logout-icon {
-  color: #6b7280;
+  color: var(--text-secondary, #6b7280);
   cursor: pointer;
   font-size: 18px;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
 }
 
 .logout-icon:hover {
   color: #ef4444;
+  transform: scale(1.1);
+}
+
+/* Main Content Adjustment */
+.main-content {
+  margin-left: 280px;
+  transition: margin-left 0.3s ease;
+  min-height: 100vh;
+  background: var(--bg-primary, #f9fafb);
+}
+
+.sidebar.collapsed~.main-content {
+  margin-left: 70px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+  }
+
+  .sidebar-toggle {
+    right: auto;
+    left: 10px;
+    top: 10px;
+  }
+}
+
+/* Dark Mode Specific Styles */
+[data-theme="dark"] .sidebar {
+  background: var(--bg-secondary);
+  border-right-color: var(--border-color);
+}
+
+[data-theme="dark"] .logo-text h1 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .menu-item {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .menu-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .user-info h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .user-info p {
+  color: var(--text-secondary);
 }

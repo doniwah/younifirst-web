@@ -649,10 +649,7 @@ class TeamApiController
         }
     }
 
-    /**
-     * Reject member - ketua team reject anggota
-     * POST /api/team/{teamId}/member/{userId}/reject
-     */
+    
     public function rejectMember($teamId, $userId)
     {
         header('Content-Type: application/json');
