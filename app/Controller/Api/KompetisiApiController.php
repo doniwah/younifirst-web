@@ -19,7 +19,7 @@ class KompetisiApiController
         $db = Database::getConnection('prod');
 
         $competitions = $db->query("
-            SELECT lomba_id, nama_lomba, tanggal_lomba, kategori, lokasi, deskripsi, hadiah, status, poster_lomba
+            SELECT lomba_id, nama_lomba, tanggal_lomba, kategori, lokasi, deskripsi, hadiah, status, poster_lomba, lomba_type, biaya, scope
             FROM lomba
             ORDER BY tanggal_lomba DESC
         ")->fetchAll();
