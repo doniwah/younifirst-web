@@ -93,7 +93,6 @@ Router::add('GET', '/api/teams/search', TeamApiController::class, 'searchTeams',
 Router::add('GET', '/api/teams/user/{userId}', TeamApiController::class, 'getUserTeams', []);
 Router::add('GET', '/api/teams/competition/{competitionId}', TeamApiController::class, 'getTeamsByCompetition', []);
 
-// Event API Routes
 Router::add('GET', '/api/events', EventApiController::class, 'getAllEvents', []);
 Router::add('GET', '/api/events/{id}', EventApiController::class, 'getEvent', []);
 Router::add('POST', '/api/events', EventApiController::class, 'createEvent', [MustLoginMiddleware::class]);

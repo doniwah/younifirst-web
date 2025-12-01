@@ -29,7 +29,6 @@ class EventApiController
             $limit = max(1, min(100, (int)($_GET['limit'] ?? 10)));
             $status = $_GET['status'] ?? '';
             
-            // Get user role if authenticated
             $userRole = 'user';
             $userId = $this->session->current();
             if ($userId) {
@@ -139,7 +138,7 @@ class EventApiController
             }
 
             // Validation
-            $requiredFields = ['nama_event', 'deskripsi', 'tanggal_mulai', 'tanggal_selsai', 'lokasi', 'organizer', 'kapasitas'];
+            $requiredFields = ['nama_event', 'deskripsi', 'tanggal_mulai', 'tanggal_selsai', 'lokasi', 'organizer', 'kapasitas', 'kategori', 'harga'];
             $missingFields = [];
 
             foreach ($requiredFields as $field) {
@@ -176,6 +175,8 @@ class EventApiController
                 'lokasi' => trim($data['lokasi']),
                 'organizer' => trim($data['organizer']),
                 'kapasitas' => (int)$data['kapasitas'],
+                'kategori' => trim($data['kategori']),
+                'harga' => (int)$data['harga'],
                 'poster_event' => $data['poster_event'] ?? null,
                 'status' => $userRole === 'admin' ? 'confirm' : 'waiting'
             ];
@@ -279,7 +280,7 @@ class EventApiController
             $updateData = [];
             $allowedFields = [
                 'nama_event', 'deskripsi', 'tanggal_mulai', 'tanggal_selsai',
-                'lokasi', 'organizer', 'kapasitas', 'poster_event', 'status'
+                'lokasi', 'organizer', 'kapasitas', 'kategori', 'harga', 'poster_event', 'status'
             ];
 
             foreach ($allowedFields as $field) {

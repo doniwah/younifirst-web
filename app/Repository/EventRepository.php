@@ -34,6 +34,8 @@ class EventRepository
                 organizer,
                 kapasitas,
                 peserta_terdaftar,
+                kategori,
+                harga,
                 status,
                 poster_event,
                 created_at
@@ -63,8 +65,8 @@ class EventRepository
     {
         $sql = "
             INSERT INTO event 
-            (nama_event, deskripsi, tanggal_mulai, tanggal_selsai, lokasi, organizer, kapasitas, poster_event, status) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (nama_event, deskripsi, tanggal_mulai, tanggal_selsai, lokasi, organizer, kapasitas, kategori, harga, poster_event, status) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ";
         $stmt = $this->db->prepare($sql);
         $result = $stmt->execute([
@@ -75,6 +77,8 @@ class EventRepository
             $data['lokasi'],
             $data['organizer'],
             $data['kapasitas'],
+            $data['kategori'] ?? '',
+            $data['harga'] ?? 0,
             $data['poster_event'] ?? null,
             $data['status'] ?? 'waiting'
         ]);
@@ -92,7 +96,7 @@ class EventRepository
         
         $allowedFields = [
             'nama_event', 'deskripsi', 'tanggal_mulai', 'tanggal_selsai',
-            'lokasi', 'organizer', 'kapasitas', 'poster_event', 'status'
+            'lokasi', 'organizer', 'kapasitas', 'kategori', 'harga', 'poster_event', 'status'
         ];
         
         foreach ($allowedFields as $field) {
