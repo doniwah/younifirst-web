@@ -13,7 +13,7 @@ class TeamRepository
         $this->db = Database::getConnection('prod');
     }
 
-    // Get teams with filters and pagination
+    // Get team with filters and pagination
     public function getTeamsWithFilters($filters = [])
     {
         $page = $filters['page'] ?? 1;
@@ -45,19 +45,19 @@ class TeamRepository
         $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
 
         // Count total
-        $countSql = "SELECT COUNT(*) as total FROM teams t $whereClause";
+        $countSql = "SELECT COUNT(*) as total FROM team t $whereClause";
         $countStmt = $this->db->prepare($countSql);
         $countStmt->execute($params);
         $totalItems = $countStmt->fetch()['total'];
 
-        // Get teams
+        // Get team
         $sql = "
-            SELECT t.*, COUNT(tm.id) as current_members
-            FROM teams t
-            LEFT JOIN team_members tm ON t.id = tm.team_id
+            SELECT t.*, COUNT(tm.team_id) as current_members
+            FROM team t
+            LEFT JOIN detail_anggota tm ON t.team_id = tm.team_id
             $whereClause
-            GROUP BY t.id
-            ORDER BY t.created_at DESC
+            GROUP BY t.team_id
+            ORDER BY t.team_id DESC
             LIMIT ? OFFSET ?
         ";
         $params[] = $limit;
@@ -65,10 +65,10 @@ class TeamRepository
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
-        $teams = $stmt->fetchAll();
+        $team = $stmt->fetchAll();
 
         return [
-            'teams' => $teams,
+            'team' => $team,
             'total_items' => $totalItems,
             'total_pages' => ceil($totalItems / $limit)
         ];
@@ -78,11 +78,11 @@ class TeamRepository
     public function getTeamById($id)
     {
         $sql = "
-            SELECT t.*, COUNT(tm.id) as current_members
-            FROM teams t
-            LEFT JOIN team_members tm ON t.id = tm.team_id
-            WHERE t.id = ?
-            GROUP BY t.id
+            SELECT t.*, COUNT(tm.team_id) as current_members
+            FROM team t
+            LEFT JOIN detail_anggota tm ON t.team_id = tm.team_id
+            WHERE t.team_id = ?
+            GROUP BY t.team_id
         ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
@@ -93,7 +93,7 @@ class TeamRepository
     public function createTeam($data)
     {
         $sql = "
-            INSERT INTO teams (nama_team, deskripsi, competition_id, user_id, max_members, skills_required, contact_info, status, deadline)
+            INSERT INTO team (nama_team, deskripsi, competition_id, user_id, max_members, skills_required, contact_info, status, deadline)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ";
         $stmt = $this->db->prepare($sql);
@@ -123,7 +123,7 @@ class TeamRepository
         }
 
         $params[] = $id;
-        $sql = "UPDATE teams SET " . implode(', ', $fields) . " WHERE id = ?";
+        $sql = "UPDATE team SET " . implode(', ', $fields) . " WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($params);
     }
@@ -131,7 +131,7 @@ class TeamRepository
     // Delete team
     public function deleteTeam($id)
     {
-        $sql = "DELETE FROM teams WHERE id = ?";
+        $sql = "DELETE FROM team WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$id]);
     }
@@ -141,10 +141,10 @@ class TeamRepository
     {
         $sql = "
             SELECT tm.*, u.nama, u.email, u.nim, u.jurusan
-            FROM team_members tm
+            FROM detail_anggota tm
             LEFT JOIN users u ON tm.user_id = u.user_id
             WHERE tm.team_id = ?
-            ORDER BY tm.joined_at ASC
+            ORDER BY tm.tanggal_gabung ASC
         ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$teamId]);
@@ -154,7 +154,7 @@ class TeamRepository
     // Get team members count
     public function getTeamMembersCount($teamId)
     {
-        $sql = "SELECT COUNT(*) as total FROM team_members WHERE team_id = ?";
+        $sql = "SELECT COUNT(*) as total FROM detail_anggota WHERE team_id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$teamId]);
         return $stmt->fetch()['total'];
@@ -163,7 +163,7 @@ class TeamRepository
     // Get specific team member
     public function getTeamMember($teamId, $userId)
     {
-        $sql = "SELECT * FROM team_members WHERE team_id = ? AND user_id = ?";
+        $sql = "SELECT * FROM detail_anggota WHERE team_id = ? AND user_id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$teamId, $userId]);
         return $stmt->fetch();
@@ -172,7 +172,7 @@ class TeamRepository
     // Add team member
     public function addTeamMember($teamId, $userId, $role = 'member')
     {
-        $sql = "INSERT INTO team_members (team_id, user_id, role) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO detail_anggota (team_id, user_id, role) VALUES (?, ?, ?)";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$teamId, $userId, $role]);
     }
@@ -180,7 +180,7 @@ class TeamRepository
     // Remove team member
     public function removeTeamMember($teamId, $userId)
     {
-        $sql = "DELETE FROM team_members WHERE team_id = ? AND user_id = ?";
+        $sql = "DELETE FROM detail_anggota WHERE team_id = ? AND user_id = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$teamId, $userId]);
     }
@@ -188,12 +188,12 @@ class TeamRepository
     // Update team member role
     public function updateTeamMemberRole($teamId, $userId, $role)
     {
-        $sql = "UPDATE team_members SET role = ? WHERE team_id = ? AND user_id = ?";
+        $sql = "UPDATE detail_anggota SET role = ? WHERE team_id = ? AND user_id = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$role, $teamId, $userId]);
     }
 
-    // Search teams
+    // Search team
     public function searchTeams($filters = [])
     {
         $query = $filters['query'] ?? '';
@@ -225,19 +225,19 @@ class TeamRepository
         $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
 
         // Count total
-        $countSql = "SELECT COUNT(*) as total FROM teams t $whereClause";
+        $countSql = "SELECT COUNT(*) as total FROM team t $whereClause";
         $countStmt = $this->db->prepare($countSql);
         $countStmt->execute($params);
         $totalItems = $countStmt->fetch()['total'];
 
-        // Get teams
+        // Get team
         $sql = "
-            SELECT t.*, COUNT(tm.id) as current_members
-            FROM teams t
-            LEFT JOIN team_members tm ON t.id = tm.team_id
+            SELECT t.*, COUNT(tm.team_id) as current_members
+            FROM team t
+            LEFT JOIN detail_anggota tm ON t.team_id = tm.team_id
             $whereClause
-            GROUP BY t.id
-            ORDER BY t.created_at DESC
+            GROUP BY t.team_id
+            ORDER BY t.team_id DESC
             LIMIT ? OFFSET ?
         ";
         $params[] = $limit;
@@ -245,59 +245,59 @@ class TeamRepository
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
-        $teams = $stmt->fetchAll();
+        $team = $stmt->fetchAll();
 
         return [
-            'teams' => $teams,
+            'team' => $team,
             'total_items' => $totalItems,
             'total_pages' => ceil($totalItems / $limit)
         ];
     }
 
-    // Get user's teams
+    // Get user's team
     public function getUserTeams($userId)
     {
         $sql = "
             SELECT t.*, tm.role, COUNT(tm2.id) as current_members
-            FROM teams t
-            JOIN team_members tm ON t.id = tm.team_id
-            LEFT JOIN team_members tm2 ON t.id = tm2.team_id
+            FROM team t
+            JOIN detail_anggota tm ON t.team_id = tm.team_id
+            LEFT JOIN detail_anggota tm2 ON t.team_id = tm2.team_id
             WHERE tm.user_id = ?
-            GROUP BY t.id, tm.role
-            ORDER BY t.created_at DESC
+            GROUP BY t.team_id, tm.role
+            ORDER BY t.team_id DESC
         ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$userId]);
         return $stmt->fetchAll();
     }
 
-    // Get teams by competition
+    // Get team by competition
     public function getTeamsByCompetition($competitionId, $page = 1, $limit = 10)
     {
         $offset = ($page - 1) * $limit;
 
         // Count total
-        $countSql = "SELECT COUNT(*) as total FROM teams WHERE competition_id = ?";
+        $countSql = "SELECT COUNT(*) as total FROM team WHERE competition_id = ?";
         $countStmt = $this->db->prepare($countSql);
         $countStmt->execute([$competitionId]);
         $totalItems = $countStmt->fetch()['total'];
 
-        // Get teams
+        // Get team
         $sql = "
-            SELECT t.*, COUNT(tm.id) as current_members
-            FROM teams t
-            LEFT JOIN team_members tm ON t.id = tm.team_id
+            SELECT t.*, COUNT(tm.team_id) as current_members
+            FROM team t
+            LEFT JOIN detail_anggota tm ON t.team_id = tm.team_id
             WHERE t.competition_id = ?
-            GROUP BY t.id
-            ORDER BY t.created_at DESC
+            GROUP BY t.team_id
+            ORDER BY t.team_id DESC
             LIMIT ? OFFSET ?
         ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$competitionId, $limit, $offset]);
-        $teams = $stmt->fetchAll();
+        $team = $stmt->fetchAll();
 
         return [
-            'teams' => $teams,
+            'team' => $team,
             'total_items' => $totalItems,
             'total_pages' => ceil($totalItems / $limit)
         ];
@@ -305,7 +305,7 @@ class TeamRepository
 
     public function getAllTeamsWithDetails($userRole = 'user')
     {
-        // Admin can see all teams (active), non-admin only sees confirmed teams
+        // Admin can see all team (active), non-admin only sees confirmed team
         $statusCondition = ($userRole === 'admin') 
             ? "t.status = 'active'" 
             : "t.status = 'active' AND (t.approval_status = 'confirm' OR t.approval_status IS NULL)";
@@ -318,24 +318,24 @@ class TeamRepository
                 u.jurusan as creator_jurusan,
                 '' as creator_semester,
                 l.nama_lomba as competition_name,
-                COUNT(tm.id) as current_members,
+                COUNT(tm.team_id) as current_members,
                 COUNT(ta.id) as total_applicants,
-                (t.max_members - COUNT(tm.id)) as members_needed,
+                (t.max_members - COUNT(tm.team_id)) as members_needed,
                 CASE 
-                    WHEN (t.max_members - COUNT(tm.id)) <= 1 THEN 'urgent'
+                    WHEN (t.max_members - COUNT(tm.team_id)) <= 1 THEN 'urgent'
                     ELSE 'active'
                 END as priority_status
-            FROM teams t
+            FROM team t
             LEFT JOIN users u ON t.user_id = u.user_id
             LEFT JOIN lomba l ON t.competition_id = l.lomba_id
-            LEFT JOIN team_members tm ON t.id = tm.team_id
-            LEFT JOIN team_applications ta ON t.id = ta.team_id AND ta.status = 'pending'
+            LEFT JOIN detail_anggota tm ON t.team_id = tm.team_id
+            LEFT JOIN team_applications ta ON t.team_id = ta.team_id AND ta.status = 'pending'
             WHERE $statusCondition
-            GROUP BY t.id, u.username, u.email, u.jurusan, l.nama_lomba
+            GROUP BY t.team_id, u.username, u.email, u.jurusan, l.nama_lomba
             ORDER BY 
                 priority_status DESC,
                 t.deadline ASC,
-                t.created_at DESC
+                t.team_id DESC
         ";
         return $this->db->query($sql)->fetchAll();
     }
@@ -350,16 +350,16 @@ class TeamRepository
                 u.jurusan as creator_jurusan,
                 '' as creator_semester,
                 l.nama_lomba as competition_name,
-                COUNT(tm.id) as current_members,
+                COUNT(tm.team_id) as current_members,
                 COUNT(ta.id) as total_applicants,
-                (t.max_members - COUNT(tm.id)) as members_needed
-            FROM teams t
+                (t.max_members - COUNT(tm.team_id)) as members_needed
+            FROM team t
             LEFT JOIN users u ON t.user_id = u.user_id
             LEFT JOIN lomba l ON t.competition_id = l.lomba_id
-            LEFT JOIN team_members tm ON t.id = tm.team_id
-            LEFT JOIN team_applications ta ON t.id = ta.team_id AND ta.status = 'pending'
-            WHERE t.id = ?
-            GROUP BY t.id, u.username, u.email, u.jurusan, l.nama_lomba
+            LEFT JOIN detail_anggota tm ON t.team_id = tm.team_id
+            LEFT JOIN team_applications ta ON t.team_id = ta.team_id AND ta.status = 'pending'
+            WHERE t.team_id = ?
+            GROUP BY t.team_id, u.username, u.email, u.jurusan, l.nama_lomba
         ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
@@ -372,7 +372,7 @@ class TeamRepository
             ? "status = 'active'" 
             : "status = 'active' AND (approval_status = 'confirm' OR approval_status IS NULL)";
         
-        $sql = "SELECT COUNT(*) as total FROM teams WHERE $statusCondition";
+        $sql = "SELECT COUNT(*) as total FROM team WHERE $statusCondition";
         return $this->db->query($sql)->fetch()['total'];
     }
 
@@ -384,11 +384,11 @@ class TeamRepository
         
         $sql = "
             SELECT COUNT(*) as total 
-            FROM teams t
-            LEFT JOIN team_members tm ON t.id = tm.team_id
+            FROM team t
+            LEFT JOIN detail_anggota tm ON t.team_id = tm.team_id
             WHERE $statusCondition
-            GROUP BY t.id
-            HAVING (t.max_members - COUNT(tm.id)) <= 1
+            GROUP BY t.team_id
+            HAVING (t.max_members - COUNT(tm.team_id)) <= 1
         ";
         $result = $this->db->query($sql)->fetchAll();
         return count($result);

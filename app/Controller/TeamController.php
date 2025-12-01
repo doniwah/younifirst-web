@@ -8,16 +8,19 @@ use App\Model\Competition;
 use App\App\View;
 use App\Service\SessionService;
 use App\Repository\TeamRepository;
+use App\Repository\DetailAnggotaRepository;
 
 class TeamController
 {
     private SessionService $session;
     private TeamRepository $teamRepository;
+    private DetailAnggotaRepository $detailAnggotaRepository;
 
     public function __construct()
     {
         $this->session = new SessionService();
         $this->teamRepository = new TeamRepository();
+        $this->detailAnggotaRepository = new DetailAnggotaRepository();
     }
 
     public function index()
@@ -141,6 +144,203 @@ class TeamController
             echo json_encode(['success' => true, 'message' => 'Team berhasil dihapus']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Gagal menghapus team']);
+        }
+    }
+
+    /**
+     * Join team - user bergabung ke team dengan status waiting
+     */
+    public function joinTeam($teamId)
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /team');
+            exit;
+        }
+
+        $userId = $this->session->current();
+        
+        if (!$userId) {
+            header('Location: /users/login');
+            exit;
+        }
+
+        // Check if team exists
+        $team = $this->teamRepository->getTeamById($teamId);
+        if (!$team) {
+            echo json_encode(['success' => false, 'message' => 'Team tidak ditemukan']);
+            exit;
+        }
+
+        // Check if user already in team
+        if ($this->detailAnggotaRepository->isUserInTeam($teamId, $userId)) {
+            echo json_encode(['success' => false, 'message' => 'Anda sudah terdaftar di team ini']);
+            exit;
+        }
+
+        // Check if team is full
+        $currentMembers = $this->detailAnggotaRepository->countConfirmedAnggota($teamId);
+        if ($currentMembers >= $team['max_members']) {
+            echo json_encode(['success' => false, 'message' => 'Team sudah penuh']);
+            exit;
+        }
+
+        // Add user to team with waiting status
+        $success = $this->detailAnggotaRepository->addAnggota($teamId, $userId, 'anggota');
+
+        if ($success) {
+            echo json_encode(['success' => true, 'message' => 'Permintaan bergabung berhasil dikirim, menunggu konfirmasi ketua team']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal mengirim permintaan bergabung']);
+        }
+    }
+
+    /**
+     * Confirm member - ketua team konfirmasi anggota
+     */
+    public function confirmMember($teamId, $userId)
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /team');
+            exit;
+        }
+
+        $currentUserId = $this->session->current();
+        
+        if (!$currentUserId) {
+            header('Location: /users/login');
+            exit;
+        }
+
+        // Check if current user is team leader
+        if (!$this->detailAnggotaRepository->isTeamLeader($teamId, $currentUserId)) {
+            echo json_encode(['success' => false, 'message' => 'Hanya ketua team yang dapat mengkonfirmasi anggota']);
+            exit;
+        }
+
+        // Check if team is full
+        $team = $this->teamRepository->getTeamById($teamId);
+        $currentMembers = $this->detailAnggotaRepository->countConfirmedAnggota($teamId);
+        
+        if ($currentMembers >= $team['max_members']) {
+            echo json_encode(['success' => false, 'message' => 'Team sudah penuh']);
+            exit;
+        }
+
+        // Confirm member
+        $success = $this->detailAnggotaRepository->updateStatusAnggota($teamId, $userId, 'confirm');
+
+        if ($success) {
+            echo json_encode(['success' => true, 'message' => 'Anggota berhasil dikonfirmasi']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal mengkonfirmasi anggota']);
+        }
+    }
+
+    /**
+     * Reject member - ketua team reject anggota
+     */
+    public function rejectMember($teamId, $userId)
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /team');
+            exit;
+        }
+
+        $currentUserId = $this->session->current();
+        
+        if (!$currentUserId) {
+            header('Location: /users/login');
+            exit;
+        }
+
+        // Check if current user is team leader
+        if (!$this->detailAnggotaRepository->isTeamLeader($teamId, $currentUserId)) {
+            echo json_encode(['success' => false, 'message' => 'Hanya ketua team yang dapat menolak anggota']);
+            exit;
+        }
+
+        // Remove member (or update status to rejected)
+        $success = $this->detailAnggotaRepository->removeAnggota($teamId, $userId);
+
+        if ($success) {
+            echo json_encode(['success' => true, 'message' => 'Anggota berhasil ditolak']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal menolak anggota']);
+        }
+    }
+
+    /**
+     * Get team members - view all members and pending requests
+     */
+    public function getTeamMembers($teamId)
+    {
+        $userId = $this->session->current();
+        
+        if (!$userId) {
+            header('Location: /users/login');
+            exit;
+        }
+
+        // Get team details
+        $team = $this->teamRepository->getTeamWithDetails($teamId);
+        
+        if (!$team) {
+            header('Location: /team?error=Team tidak ditemukan');
+            exit;
+        }
+
+        // Check if user is team leader
+        $isLeader = $this->detailAnggotaRepository->isTeamLeader($teamId, $userId);
+
+        // Get confirmed members
+        $confirmedMembers = $this->detailAnggotaRepository->getConfirmedAnggota($teamId);
+
+        // Get pending requests (only for team leader)
+        $pendingRequests = [];
+        if ($isLeader) {
+            $pendingRequests = $this->detailAnggotaRepository->getPendingRequests($teamId);
+        }
+
+        View::render('component/team/members', [
+            'title' => 'Anggota Team - ' . $team['nama_team'],
+            'user' => $userId,
+            'team' => $team,
+            'isLeader' => $isLeader,
+            'confirmedMembers' => $confirmedMembers,
+            'pendingRequests' => $pendingRequests
+        ]);
+    }
+
+    /**
+     * Leave team - user keluar dari team
+     */
+    public function leaveTeam($teamId)
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /team');
+            exit;
+        }
+
+        $userId = $this->session->current();
+        
+        if (!$userId) {
+            header('Location: /users/login');
+            exit;
+        }
+
+        // Check if user is team leader (leader cannot leave)
+        if ($this->detailAnggotaRepository->isTeamLeader($teamId, $userId)) {
+            echo json_encode(['success' => false, 'message' => 'Ketua team tidak dapat keluar dari team. Hapus team jika ingin keluar.']);
+            exit;
+        }
+
+        // Remove user from team
+        $success = $this->detailAnggotaRepository->removeAnggota($teamId, $userId);
+
+        if ($success) {
+            echo json_encode(['success' => true, 'message' => 'Berhasil keluar dari team']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal keluar dari team']);
         }
     }
 }

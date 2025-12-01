@@ -17,9 +17,6 @@ class LostFoundApiController
         $this->lostFoundRepository = new LostFoundRepository();
     }
 
-    /**
-     * Get all items with filters
-     */
     public function getAllItems()
     {
         header('Content-Type: application/json');
@@ -48,9 +45,6 @@ class LostFoundApiController
         }
     }
 
-    /**
-     * Get item by ID
-     */
     public function getItem($id)
     {
         header('Content-Type: application/json');
