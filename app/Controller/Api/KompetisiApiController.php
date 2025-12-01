@@ -14,15 +14,12 @@ class KompetisiApiController
         exit;
     }
 
-    // ====================================
-    // GET: /api/kompetisi
-    // ====================================
     public function index()
     {
         $db = Database::getConnection('prod');
 
         $competitions = $db->query("
-            SELECT lomba_id, nama_lomba, tanggal_lomba, kategori, lokasi, deskripsi, hadiah, status
+            SELECT lomba_id, nama_lomba, tanggal_lomba, kategori, lokasi, deskripsi, hadiah, status, poster_lomba
             FROM lomba
             ORDER BY tanggal_lomba DESC
         ")->fetchAll();

@@ -64,17 +64,27 @@ class KompetisiController
             exit;
         }
 
+        $posterPath = null;
+        if (isset($_FILES['poster_lomba']) && $_FILES['poster_lomba']['error'] === UPLOAD_ERR_OK) {
+            $posterPath = $this->handleImageUpload($_FILES['poster_lomba']);
+            if (!$posterPath) {
+                header('Location: /kompetisi/create?error=Gagal mengupload gambar');
+                exit;
+            }
+        }
+
         $nama = $_POST['nama_lomba'];
         $kategori = $_POST['kategori'] ?? '';
         $lokasi = $_POST['lokasi'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
         $hadiah = isset($_POST['hadiah']) ? (int)$_POST['hadiah'] : 0;
-        $user_id = $_SESSION['user_id'] ?? 1; // Default jika session tidak ada
+        $user_id = $_SESSION['user_id'] ?? 1;
+        
 
         try {
             $stmt = $db->prepare("
-                INSERT INTO lomba (lomba_id, nama_lomba, deskripsi, status, tanggal_lomba, hadiah, kategori, user_id, lokasi)
-                VALUES (:id, :nama, :desk, 'waiting', :tanggal, :hadiah, :kategori, :user_id, :lokasi)
+                INSERT INTO lomba (lomba_id, nama_lomba, deskripsi, status, tanggal_lomba, hadiah, kategori, user_id, lokasi, poster_lomba)
+                VALUES (:id, :nama, :desk, 'waiting', :tanggal, :hadiah, :kategori, :user_id, :lokasi, :poster)
             ");
 
             $stmt->execute([
@@ -85,7 +95,8 @@ class KompetisiController
                 ':hadiah' => $hadiah,
                 ':kategori' => $kategori,
                 ':user_id' => $user_id,
-                ':lokasi' => $lokasi
+                ':lokasi' => $lokasi,
+                ':poster' => $posterPath
             ]);
 
             header("Location: /kompetisi?status=success&message=Lomba berhasil dibuat");
@@ -104,7 +115,8 @@ class KompetisiController
                         ':hadiah' => $hadiah,
                         ':kategori' => $kategori,
                         ':user_id' => $user_id,
-                        ':lokasi' => $lokasi
+                        ':lokasi' => $lokasi,
+                        ':poster' => $posterPath
                     ]);
                     header("Location: /kompetisi?status=success&message=Lomba berhasil dibuat");
                     exit;
@@ -193,5 +205,37 @@ class KompetisiController
                 exit;
             }
         }
+    }
+
+    /**
+     * Handle image upload
+     */
+    private function handleImageUpload($file)
+    {
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+        $maxSize = 5 * 1024 * 1024; // 5MB
+        
+        if (!in_array($file['type'], $allowedTypes)) {
+            return false;
+        }
+        
+        if ($file['size'] > $maxSize) {
+            return false;
+        }
+        
+        $uploadDir = __DIR__ . '/../../public/uploads/kompetisi/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        
+        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $filename = 'lomba_' . time() . '_' . uniqid() . '.' . $extension;
+        $uploadPath = $uploadDir . $filename;
+        
+        if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+            return '/uploads/kompetisi/' . $filename;
+        }
+        
+        return false;
     }
 }
