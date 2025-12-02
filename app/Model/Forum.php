@@ -28,10 +28,10 @@ class Forum
                      LIMIT 1) as latest_message,
                     (SELECT CONCAT(u.username, ' - ', 
                             CASE 
-                                WHEN TIMESTAMPDIFF(MINUTE, fm.created_at, NOW()) < 1 THEN 'Baru saja'
-                                WHEN TIMESTAMPDIFF(MINUTE, fm.created_at, NOW()) < 60 THEN CONCAT(TIMESTAMPDIFF(MINUTE, fm.created_at, NOW()), ' menit lalu')
-                                WHEN TIMESTAMPDIFF(HOUR, fm.created_at, NOW()) < 24 THEN CONCAT(TIMESTAMPDIFF(HOUR, fm.created_at, NOW()), ' jam lalu')
-                                ELSE CONCAT(TIMESTAMPDIFF(DAY, fm.created_at, NOW()), ' hari lalu')
+                                WHEN EXTRACT(EPOCH FROM (NOW() - fm.created_at)) < 60 THEN 'Baru saja'
+                                WHEN EXTRACT(EPOCH FROM (NOW() - fm.created_at)) < 3600 THEN CONCAT(TRUNC(EXTRACT(EPOCH FROM (NOW() - fm.created_at)) / 60), ' menit lalu')
+                                WHEN EXTRACT(EPOCH FROM (NOW() - fm.created_at)) < 86400 THEN CONCAT(TRUNC(EXTRACT(EPOCH FROM (NOW() - fm.created_at)) / 3600), ' jam lalu')
+                                ELSE CONCAT(TRUNC(EXTRACT(EPOCH FROM (NOW() - fm.created_at)) / 86400), ' hari lalu')
                             END)
                      FROM forum_messages fm
                      JOIN users u ON fm.user_id = u.user_id
@@ -202,5 +202,51 @@ class Forum
         $stmt->bindParam(':message_id', $message_id);
         $stmt->execute();
         return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    public static function getTrendingTopics($limit = 5)
+    {
+        $db = self::getConnection();
+        // Asumsi: Topik adalah pesan utama (reply_to_message_id IS NULL)
+        // Diurutkan berdasarkan jumlah balasan dan waktu
+        $query = "SELECT 
+                    m.message_id,
+                    m.message_text as title,
+                    LEFT(m.message_text, 100) as excerpt,
+                    u.username as user_name,
+                    u.user_id,
+                    m.created_at,
+                    (SELECT COUNT(*) FROM forum_messages r WHERE r.reply_to_message_id = m.message_id) as comments,
+                    (SELECT COUNT(*) * 10 + (EXTRACT(EPOCH FROM NOW()) - EXTRACT(EPOCH FROM m.created_at))/3600) as score -- Simple ranking score
+                  FROM forum_messages m
+                  JOIN users u ON m.user_id = u.user_id
+                  WHERE m.reply_to_message_id IS NULL
+                  ORDER BY m.created_at DESC
+                  LIMIT :limit";
+
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public static function getUserForums($user_id)
+    {
+        $db = self::getConnection();
+        $query = "SELECT 
+                    k.komunitas_id,
+                    k.nama_komunitas as name,
+                    k.deskripsi as code, -- Menggunakan deskripsi sebagai 'code' atau subtitle
+                    k.icon_type,
+                    (SELECT COUNT(*) FROM forum_anggota WHERE komunitas_id = k.komunitas_id) as members,
+                    (SELECT COUNT(*) FROM forum_messages WHERE komunitas_id = k.komunitas_id) as messages
+                  FROM forum_komunitas k
+                  JOIN forum_anggota a ON k.komunitas_id = a.komunitas_id
+                  WHERE a.user_id = :user_id";
+
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 }

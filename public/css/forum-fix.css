@@ -1,0 +1,29 @@
+/* Fix for forum name link clickability */
+.forum-name-link {
+    text-decoration: none;
+    color: inherit;
+    display: inline-block;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.forum-name-link:hover {
+    color: #2563eb;
+}
+
+.forum-name-link:hover .forum-name-small {
+    color: #2563eb;
+}
+
+.forum-name-small {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 2px;
+    transition: color 0.2s;
+}
+
+/* Ensure the card has hover effect */
+.forum-card-small:hover {
+    background: #e0e7ff;
+}

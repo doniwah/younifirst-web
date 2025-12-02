@@ -132,11 +132,26 @@ class DashboardRepository
             $competitions = $stmt->fetchAll();
             
             foreach ($competitions as $comp) {
+                // Calculate time ago without calling function to avoid potential loop
+                $timestamp = strtotime($comp['tanggal_lomba']);
+                $diff = time() - $timestamp;
+                $timeAgo = 'Baru saja';
+                
+                if ($diff >= 60 && $diff < 3600) {
+                    $timeAgo = floor($diff / 60) . ' menit lalu';
+                } elseif ($diff >= 3600 && $diff < 86400) {
+                    $timeAgo = floor($diff / 3600) . ' jam lalu';
+                } elseif ($diff >= 86400 && $diff < 604800) {
+                    $timeAgo = floor($diff / 86400) . ' hari lalu';
+                } elseif ($diff >= 604800) {
+                    $timeAgo = date('d M Y', $timestamp);
+                }
+                
                 $posts[] = [
                     'type' => 'competition',
                     'user_name' => 'Admin Kompetisi',
                     'user_avatar' => '/images/avatar-default.png',
-                    'time_ago' => $this->getTimeAgo($comp['tanggal_lomba']),
+                    'time_ago' => $timeAgo,
                     'title' => $comp['nama_lomba'],
                     'content' => $comp['deskripsi'] ?? '',
                     'image' => $comp['poster_lomba'] ?? '/images/competition-placeholder.jpg',

@@ -24,27 +24,21 @@ class ForumController
      * -------------------------- */
     private function requireLogin()
     {
-        // Ambil user dari session (User object)
-        $user = $this->session->current();
+        $userId = $this->session->current();
+
+        if (!$userId) {
+            View::redirect('/users/login');
+            exit();
+        }
+
+        $user = $this->userRepo->findById($userId);
 
         if (!$user) {
             View::redirect('/users/login');
             exit();
         }
 
-        // Jika session menyimpan user_id saja, bisa di-handle di sini:
-        if (is_array($user) && isset($user->user_id)) {
-            // berarti session lama → ambil user dari repo
-            $user = $this->userRepo->findById($user->user_id);
-        }
-
-        // Jika masih null berarti gagal ambil dari DB
-        if (!$user) {
-            View::redirect('/users/login');
-            exit();
-        }
-
-        return $user; // Ini object App\Domain\User
+        return $user;
     }
 
     /* --------------------------
@@ -54,10 +48,41 @@ class ForumController
     {
         $user = $this->requireLogin();
         $komunitas_list = Forum::getAllKomunitas();
+
+        // Real Data for Trending Topics
+        $trending_topics_data = Forum::getTrendingTopics(5);
+        $trending_topics = array_map(function($topic) {
+            return [
+                'title' => $topic['title'],
+                'excerpt' => $topic['excerpt'],
+                'user_name' => '@' . $topic['user_name'],
+                'user_avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . $topic['user_name'],
+                'views' => rand(100, 2000) . 'rb', // Mock views for now
+                'comments' => $topic['comments'],
+                'thumbnail' => 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=200&h=200&fit=crop' // Default thumbnail
+            ];
+        }, $trending_topics_data);
+
+        // Real Data for User Forums
+        $user_forums_data = Forum::getUserForums($user->user_id);
+        $user_forums = array_map(function($forum) use ($user) {
+            return [
+                'id' => $forum['komunitas_id'],
+                'name' => $forum['name'],
+                'code' => $forum['code'] ?? 'Komunitas',
+                'user_handle' => '@' . $user->username, // Showing current user as member
+                'members' => $forum['members'],
+                'messages' => $forum['messages'],
+                'thumbnail' => 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=100&h=100&fit=crop' // Default thumbnail
+            ];
+        }, $user_forums_data);
+
         View::render('component/forum/index', [
             'title'     => 'Forum',
             'user'      => $user,
-            'komunitas_list' => $komunitas_list
+            'komunitas_list' => $komunitas_list,
+            'trending_topics' => $trending_topics,
+            'user_forums' => $user_forums
         ]);
     }
 
@@ -76,7 +101,8 @@ class ForumController
             exit();
         }
 
-        if (!Forum::canUserAccessKomunitas($komunitas_id, $user->jurusan)) {
+        // Allow access if user is already a member OR if they meet the criteria
+        if (!Forum::isUserMember($komunitas_id, $userId) && !Forum::canUserAccessKomunitas($komunitas_id, $user->jurusan)) {
             View::redirect('/forum?error=access_denied');
             exit();
         }
@@ -125,7 +151,8 @@ class ForumController
             exit();
         }
 
-        if (!Forum::canUserAccessKomunitas($komunitas_id, $user->jurusan)) {
+        // Allow access if user is already a member OR if they meet the criteria
+        if (!Forum::isUserMember($komunitas_id, $userId) && !Forum::canUserAccessKomunitas($komunitas_id, $user->jurusan)) {
             echo json_encode(['success' => false, 'message' => 'Access denied']);
             exit();
         }
@@ -137,11 +164,23 @@ class ForumController
             exit();
         }
 
+        $replyData = null;
+        if ($reply_to) {
+            $replyMessage = Forum::getMessageById($reply_to);
+            if ($replyMessage) {
+                $replyData = [
+                    'username' => $replyMessage['username'],
+                    'text' => $replyMessage['message_text']
+                ];
+            }
+        }
+
         echo json_encode([
             'success'     => true,
             'message_id'  => $messageId,
             'username'    => $user->username,
-            'time'        => date('H:i')
+            'time'        => date('H:i'),
+            'reply_to'    => $replyData
         ]);
 
         exit();

@@ -654,12 +654,25 @@
                         const initials = currentUsername.substring(0, 2).toUpperCase();
 
                         let replyHTML = '';
-                        if (data.reply_to) {
+                        // Check if reply_to exists and has the expected structure
+                        if (data.reply_to && data.reply_to.username) {
                             replyHTML = `
                             <div class="message-reply-info">
                                 <i class="bi bi-reply"></i>
                                 <strong>${escapeHtml(data.reply_to.username)}</strong>
                                 <p>${escapeHtml(data.reply_to.text.substring(0, 50))}${data.reply_to.text.length > 50 ? '...' : ''}</p>
+                            </div>
+                        `;
+                        } else if (replyToMessageId) {
+                             // Fallback if server doesn't return full reply object but we know we replied
+                            const replyPreviewName = document.getElementById('replyUsername').textContent;
+                            const replyPreviewText = document.getElementById('replyText').textContent;
+                            
+                            replyHTML = `
+                            <div class="message-reply-info">
+                                <i class="bi bi-reply"></i>
+                                <strong>${escapeHtml(replyPreviewName)}</strong>
+                                <p>${escapeHtml(replyPreviewText.substring(0, 50))}${replyPreviewText.length > 50 ? '...' : ''}</p>
                             </div>
                         `;
                         }

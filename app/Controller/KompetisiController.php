@@ -13,7 +13,7 @@ class KompetisiController
 
         // Get competitions
         $query = $db->query("
-            SELECT lomba_id, nama_lomba, tanggal_lomba, kategori, lokasi, deskripsi, hadiah
+            SELECT lomba_id, nama_lomba, tanggal_lomba, kategori, lokasi, deskripsi, hadiah, poster_lomba
             FROM lomba
             ORDER BY tanggal_lomba DESC
         ");
@@ -22,7 +22,7 @@ class KompetisiController
 
         // Get teams
         $queryTeam = $db->query("
-            SELECT team_id, nama_team, nama_kegiatan, deskripsi_anggota, max_anggota, role_required
+            SELECT team_id, nama_team, nama_kegiatan, deskripsi_anggota, max_anggota, role_required, status, poster_lomba
             FROM team
             ORDER BY team_id DESC
         ");

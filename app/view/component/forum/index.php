@@ -7,9 +7,12 @@
     <title>Forum - YouNiFirst</title>
     <link rel="stylesheet" href="/css/index.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/dashboard-modern.css">
     <link rel="stylesheet" href="/css/forum.css">
+    <link rel="stylesheet" href="/css/forum-modern.css">`r`n    <link rel="stylesheet" href="/css/forum-fix.css">
     <style>
-        /* Toast Notification */
+        
         .toast-notification {
             position: fixed;
             bottom: -100px;
@@ -108,14 +111,22 @@
 </head>
 
 <body>
-    <?php require_once __DIR__ . "/../../layouts/navbar.php"; ?>
+    <?php require_once __DIR__ . "/../../layouts/sidebar.php"; ?>
 
-    <?php require __DIR__ . "/main.php"; ?>
+    <div class="main-content">
+        <div class="dashboard-container">
+            <?php 
+            $page_title = 'Forum';
+            require_once __DIR__ . "/../../layouts/page-header.php"; 
+            ?>
+
+            <?php require __DIR__ . "/main.php"; ?>
+        </div>
+    </div>
 
     <div id="toastContainer"></div>
 
     <script>
-        // Show toast notification
         function showToast(message, icon = '⚠️', duration = 3000) {
             const container = document.getElementById('toastContainer');
 

@@ -1,103 +1,275 @@
-<div class="container">
-    <div class="header">
-        <h1>Kompetisi</h1>
-        <p>Temukan lomba dan tim untuk berkompetisi bersama</p>
-    </div>
+<div class="kompetisi-layout">
+    <!-- Left Column: Main Content -->
+    <div class="kompetisi-main">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <h1>Kompetisi dan Tim</h1>
+        </header>
 
-    <?php if (isset($_GET['status']) && isset($_GET['message'])): ?>
-    <div class="alert alert-<?= $_GET['status'] === 'success' ? 'success' : 'error' ?>"
-        style="padding: 15px; margin: 20px 0; border-radius: 8px; background: <?= $_GET['status'] === 'success' ? '#d4edda' : '#f8d7da' ?>; color: <?= $_GET['status'] === 'success' ? '#155724' : '#721c24' ?>; border: 1px solid <?= $_GET['status'] === 'success' ? '#c3e6cb' : '#f5c6cb' ?>;">
-        <?= htmlspecialchars($_GET['message']) ?>
-    </div>
-    <?php endif; ?>
+        <?php if (isset($_GET['status']) && isset($_GET['message'])): ?>
+        <div class="alert alert-<?= $_GET['status'] === 'success' ? 'success' : 'error' ?>">
+            <?= htmlspecialchars($_GET['message']) ?>
+        </div>
+        <?php endif; ?>
 
-    <div class="search-box">
-        <input type="text" id="searchInput" class="input" placeholder="Cari kompetisi atau tim...">
-    </div>
-
-    <div class="tabs">
-        <button class="tab active" data-tab="daftar-lomba">Daftar Lomba</button>
-        <button class="tab" data-tab="cari-tim">Cari Tim</button>
-    </div>
-
-    <div id="daftar-lomba" class="tab-content active">
-        <div class="top-section">
-            <button class="btn-posting" id="openModalBtn" type="button">Posting Lomba</button>
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" data-tab="daftar-lomba">Kompetisi</button>
+            <button class="tab-btn" data-tab="cari-tim">Tim</button>
+            <button class="filter-btn">
+                <i class="bi bi-funnel"></i>
+            </button>
         </div>
 
-        <div class="competitions-grid">
-            <?php if (!empty($competitions)): ?>
-            <?php foreach ($competitions as $comp): ?>
-            <div class="competition-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <span class="trophy-icon"><i class="bi bi-trophy"></i></span>
-                        <h3><?= htmlspecialchars($comp['nama_lomba']) ?></h3>
+        <!-- Kompetisi Tab Content -->
+        <div id="daftar-lomba" class="tab-content active">
+            <!-- Sedang Tren Section -->
+            <div class="section-trending">
+                <div class="competitions-scroll">
+                    <?php if (!empty($competitions)): ?>
+                    <?php foreach (array_slice($competitions, 0, 3) as $comp): ?>
+                    <div class="competition-card-large">
+                        <?php if (!empty($comp['poster_lomba'])): ?>
+                        <img src="<?= htmlspecialchars($comp['poster_lomba']) ?>" alt="Poster" class="comp-poster">
+                        <?php else: ?>
+                        <div class="comp-poster-placeholder">
+                            <i class="bi bi-trophy"></i>
+                        </div>
+                        <?php endif; ?>
+                        
+                        <div class="comp-info">
+                            <div class="comp-meta">
+                                <span class="comp-scope">Berbayar • Nasional</span>
+                                <span class="comp-participants">
+                                    <i class="bi bi-people"></i> Tim + <i class="bi bi-person"></i> Individu
+                                </span>
+                            </div>
+                            
+                            <h3 class="comp-title"><?= htmlspecialchars($comp['nama_lomba']) ?></h3>
+                            
+                            <div class="comp-tags">
+                                <?php 
+                                $tags = !empty($comp['kategori']) ? explode(',', $comp['kategori']) : ['Umum'];
+                                foreach ($tags as $tag): 
+                                ?>
+                                <span class="tag"><?= htmlspecialchars(trim($tag)) ?></span>
+                                <?php endforeach; ?>
+                            </div>
+                            
+                            <div class="comp-details">
+                                <div class="detail-row">
+                                    <i class="bi bi-calendar"></i>
+                                    <span><?= date('d F Y', strtotime($comp['tanggal_lomba'])) ?> - <?= date('d F Y', strtotime($comp['tanggal_lomba'] . ' +15 days')) ?></span>
+                                </div>
+                                <div class="detail-row">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span><?= htmlspecialchars($comp['lokasi']) ?></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <span class="category-badge badge-technology"><?= htmlspecialchars($comp['kategori']) ?></span>
+                    <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
-                <p class="card-description"><?= htmlspecialchars($comp['deskripsi']) ?></p>
-                <div class="card-details">
-                    <div class="detail-item">
-                        <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span>Deadline: <?= date('d F Y', strtotime($comp['tanggal_lomba'])) ?></span>
-                    </div>
-                    <div class="detail-item">
-                        <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span><?= htmlspecialchars($comp['lokasi']) ?></span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="trophy-icon" style="font-size: 1rem;"><i class="bi bi-trophy"></i></span>
-                        <span class="prize-amount">Rp <?= number_format($comp['hadiah'], 0, ',', '.') ?></span>
-                    </div>
-                </div>
-                <button class="btn-detail" data-id="<?= $comp['lomba_id'] ?>">Lihat Detail</button>
             </div>
-            <?php endforeach; ?>
-            <?php else: ?>
-            <div style="text-align: center; padding: 40px; color: #666;">
-                <p>Belum ada kompetisi yang tersedia.</p>
+
+            <!-- Sedang Tren Title -->
+            <h2 class="section-title">Sedang Tren</h2>
+
+            <!-- Trending Competitions List -->
+            <div class="competitions-list">
+                <?php if (!empty($competitions)): ?>
+                <?php foreach ($competitions as $comp): ?>
+                <div class="competition-card-small">
+                    <div class="card-left">
+                        <?php if (!empty($comp['poster_lomba'])): ?>
+                        <img src="<?= htmlspecialchars($comp['poster_lomba']) ?>" alt="Poster" class="comp-thumbnail">
+                        <?php else: ?>
+                        <div class="comp-thumbnail-placeholder">
+                            <i class="bi bi-trophy"></i>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="card-right">
+                        <div class="comp-header-small">
+                            <span class="comp-scope-small">Berbayar • Nasional</span>
+                            <span class="comp-participants-small">
+                                <i class="bi bi-people"></i> Tim + <i class="bi bi-person"></i> Individu
+                            </span>
+                        </div>
+                        
+                        <h4 class="comp-title-small"><?= htmlspecialchars($comp['nama_lomba']) ?></h4>
+                        
+                        <div class="comp-tags-small">
+                            <?php 
+                            $tags = !empty($comp['kategori']) ? explode(',', $comp['kategori']) : ['Umum'];
+                            foreach (array_slice($tags, 0, 3) as $tag): 
+                            ?>
+                            <span class="tag-small"><?= htmlspecialchars(trim($tag)) ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                        
+                        <div class="comp-details-small">
+                            <div class="detail-item-small">
+                                <i class="bi bi-calendar"></i>
+                                <span><?= date('d F Y', strtotime($comp['tanggal_lomba'])) ?> - <?= date('d F Y', strtotime($comp['tanggal_lomba'] . ' +15 days')) ?></span>
+                            </div>
+                            <div class="detail-item-small">
+                                <i class="bi bi-geo-alt"></i>
+                                <span><?= htmlspecialchars($comp['lokasi']) ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+                <?php else: ?>
+                <div class="empty-state">
+                    <p>Belum ada kompetisi yang tersedia.</p>
+                </div>
+                <?php endif; ?>
             </div>
-            <?php endif; ?>
+        </div>
+
+        <!-- Tim Tab Content -->
+        <div id="cari-tim" class="tab-content">
+            <div class="teams-list">
+                <?php if (!empty($teams)): ?>
+                <?php foreach ($teams as $team): ?>
+                <!-- DEBUG: <?php echo 'poster_lomba: ' . ($team['poster_lomba'] ?? 'NULL'); ?> -->
+                <div class="team-card-modern">
+                    <div class="team-card-left">
+                        <?php if (!empty($team['poster_lomba'])): ?>
+                        <img src="<?= htmlspecialchars($team['poster_lomba']) ?>" alt="Team Poster" class="team-poster">
+                        <?php else: ?>
+                        <div class="team-poster-placeholder">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="team-card-right">
+                        <div class="team-meta-header">
+                            <span class="team-scope">Berbayar • Nasional</span>
+                            <span class="team-participants">
+                                <i class="bi bi-people"></i> Tim + <i class="bi bi-person"></i> Individu
+                            </span>
+                        </div>
+                        
+                        <h4 class="team-title-modern"><?= htmlspecialchars($team['nama_kegiatan']) ?></h4>
+                        
+                        <div class="team-info-row">
+                            <div class="team-info-item">
+                                <span class="info-label">Nama Tim:</span>
+                                <span class="info-value"><?= htmlspecialchars($team['nama_team']) ?></span>
+                            </div>
+                            <div class="team-info-item">
+                                <span class="info-label">Ketua:</span>
+                                <span class="info-value">Ketua</span>
+                            </div>
+                        </div>
+                        
+                        <div class="team-tags-modern">
+                            <?php 
+                            $roles = !empty($team['role_dibutuhkan']) ? explode(',', $team['role_dibutuhkan']) : ['Anggota'];
+                            foreach (array_slice($roles, 0, 3) as $role): 
+                            ?>
+                            <span class="team-tag"><?= htmlspecialchars(trim($role)) ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                        
+                        <p class="team-description-modern"><?= htmlspecialchars($team['deskripsi_anggota']) ?></p>
+                        
+                        <div class="team-details-modern">
+                            <div class="team-detail-item">
+                                <i class="bi bi-people"></i>
+                                <span>Butuh <?= $team['max_anggota'] ?> anggota</span>
+                            </div>
+                            <div class="team-detail-item">
+                                <i class="bi bi-check-circle"></i>
+                                <span>Status: <?= htmlspecialchars($team['status'] ?? 'Aktif') ?></span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn-join-team-modern" onclick="openJoinModal('<?= $team['team_id'] ?>', '<?= htmlspecialchars($team['nama_team']) ?>', <?= $team['max_anggota'] ?>)">
+                            Ajukan Bergabung
+                        </button>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+                <?php else: ?>
+                <div class="empty-state">
+                    <p>Belum ada tim yang tersedia.</p>
+                </div>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 
-    <div id="cari-tim" class="tab-content">
-        <div class="top-section">
-            <button class="btn-posting" id="openTimModalBtn" type="button">Buat Tim</button>
-        </div>
-
-        <div class="teams-grid">
-            <?php if (!empty($teams)): ?>
-            <?php foreach ($teams as $team): ?>
-            <div class="team-card" data-team-id="<?= $team['team_id'] ?>">
-                <div class="team-header">
-                    <div class="team-title">
-                        <span class="team-icon"><i class="bi bi-people"></i></span>
-                        <h3><?= htmlspecialchars($team['nama_team']) ?></h3>
-                    </div>
-                    <span class="member-count"><?= $team['max_anggota'] ?> anggota</span>
-                </div>
-                <h4><?= $team['nama_kegiatan'] ?></h4>
-                <p class="team-description"><?= htmlspecialchars($team['deskripsi_anggota']) ?></p>
-                <button class="btn-join"
-                    onclick="openJoinModal('<?= $team['team_id'] ?>', '<?= htmlspecialchars($team['nama_team']) ?>', <?= $team['max_anggota'] ?>)">
-                    Ajukan Bergabung
+    <!-- Right Column: Sidebar -->
+    <div class="kompetisi-sidebar">
+        <!-- Search Section -->
+        <div class="sidebar-search">
+            <label class="search-label">Pencarian</label>
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" placeholder="Cari" class="search-input">
+                <button class="search-btn">
+                    <i class="bi bi-search"></i>
                 </button>
             </div>
+        </div>
+
+        <!-- User Posts Section -->
+        <div class="sidebar-posts">
+            <!-- <h3 class="sidebar-title">Postingan Lomba Anda</h3> -->
+            
+            <?php if (!empty($user_competitions)): ?>
+            <?php foreach ($user_competitions as $userComp): ?>
+            <div class="user-post-card">
+                <?php if (!empty($userComp['poster_lomba'])): ?>
+                <img src="<?= htmlspecialchars($userComp['poster_lomba']) ?>" alt="Poster" class="user-post-thumbnail">
+                <?php else: ?>
+                <div class="user-post-thumbnail-placeholder">
+                    <i class="bi bi-trophy"></i>
+                </div>
+                <?php endif; ?>
+                
+                <div class="user-post-info">
+                    <div class="user-post-header">
+                        <span class="user-post-scope">Berbayar • Nasional</span>
+                        <span class="user-post-participant">
+                            <i class="bi bi-person"></i> Individu
+                        </span>
+                    </div>
+                    
+                    <h4 class="user-post-title"><?= htmlspecialchars($userComp['nama_lomba']) ?></h4>
+                    
+                    <div class="user-post-tags">
+                        <?php 
+                        $tags = !empty($userComp['kategori']) ? explode(',', $userComp['kategori']) : ['Umum'];
+                        foreach (array_slice($tags, 0, 3) as $tag): 
+                        ?>
+                        <span class="tag-badge"><?= htmlspecialchars(trim($tag)) ?></span>
+                        <?php endforeach; ?>
+                    </div>
+                    
+                    <div class="user-post-meta">
+                        <div class="meta-item">
+                            <i class="bi bi-calendar"></i>
+                            <span><?= date('d M Y', strtotime($userComp['tanggal_lomba'])) ?> - <?= date('d M Y', strtotime($userComp['tanggal_lomba'] . ' +15 days')) ?></span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="bi bi-geo-alt"></i>
+                            <span><?= htmlspecialchars($userComp['lokasi']) ?></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <?php endforeach; ?>
             <?php else: ?>
-            <div style="text-align: center; padding: 40px; color: #666;">
-                <p>Belum ada tim yang tersedia.</p>
-            </div>
+            <!-- <div class="empty-user-posts">
+                <p>Belum ada postingan lomba Anda</p>
+            </div> -->
             <?php endif; ?>
         </div>
     </div>
@@ -235,8 +407,8 @@ const openModalBtn = document.getElementById('openModalBtn');
 
 if (openModalBtn) {
     openModalBtn.onclick = function(e) {
-        e.preventDefault(); // Prevent default action
-        e.stopPropagation(); // Stop event bubbling
+        e.preventDefault();
+        e.stopPropagation();
         lombaModal.style.display = 'block';
     }
 }
@@ -251,8 +423,8 @@ const openTimModalBtn = document.getElementById('openTimModalBtn');
 
 if (openTimModalBtn) {
     openTimModalBtn.onclick = function(e) {
-        e.preventDefault(); // Prevent default action
-        e.stopPropagation(); // Stop event bubbling
+        e.preventDefault();
+        e.stopPropagation();
         timModal.style.display = 'block';
     }
 }
@@ -291,12 +463,12 @@ window.addEventListener('click', function(event) {
 });
 
 // Tab switching
-document.querySelectorAll('.tab').forEach(tab => {
+document.querySelectorAll('.tab-btn').forEach(tab => {
     tab.addEventListener('click', function() {
         const targetTab = this.getAttribute('data-tab');
 
         // Remove active class from all tabs and contents
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
         // Add active class to clicked tab and corresponding content
@@ -305,21 +477,4 @@ document.querySelectorAll('.tab').forEach(tab => {
     });
 });
 
-// Search functionality
-document.getElementById('searchInput').addEventListener('input', function() {
-    const searchTerm = this.value.toLowerCase();
-    const activeTab = document.querySelector('.tab-content.active');
-
-    if (activeTab.id === 'daftar-lomba') {
-        document.querySelectorAll('.competition-card').forEach(card => {
-            const text = card.textContent.toLowerCase();
-            card.style.display = text.includes(searchTerm) ? 'block' : 'none';
-        });
-    } else {
-        document.querySelectorAll('.team-card').forEach(card => {
-            const text = card.textContent.toLowerCase();
-            card.style.display = text.includes(searchTerm) ? 'block' : 'none';
-        });
-    }
-});
 </script>

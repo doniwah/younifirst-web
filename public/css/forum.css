@@ -7,7 +7,6 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   background: white;
-  margin-top: 40px;
   color: #333;
 }
 
@@ -15,10 +14,11 @@ body {
   max-width: 1400px;
   margin: 0 auto;
   padding: 40px 20px;
+  margin-top: 40px;
 }
 
 .header {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .header h1 {
@@ -441,12 +441,14 @@ body {
   from {
     width: 100%;
   }
+
   to {
     width: 0%;
   }
 }
 
 @media (max-width: 768px) {
+
   .competitions-grid,
   .teams-grid {
     grid-template-columns: 1fr;

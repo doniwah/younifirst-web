@@ -4,17 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kompetisi - YouNiFirst</title>
-    <link rel="stylesheet" href="/css/index.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <title>Kompetisi dan Tim - YouNiFirst</title>
+    <link rel="stylesheet" href="/css/sidebar.css">
     <link rel="stylesheet" href="/css/kompetisi.css">
+    <link rel="stylesheet" href="/css/team-modern.css">
+    <link rel="stylesheet" href="/css/competition-cards.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
-    <?php
-    require_once __DIR__ . "/../../layouts/navbar.php";
-    require_once __DIR__ . "/main.php";
-    ?>
+    <?php require_once __DIR__ . "/../../layouts/sidebar.php"; ?>
+    
+    <div class="main-content">
+        <?php require_once __DIR__ . "/main.php"; ?>
+    </div>
 
     <style>
         /* Alert styles */
@@ -43,6 +47,12 @@
         /* Prevent body scroll when modal is open */
         body.modal-open {
             overflow: hidden !important;
+        }
+
+        /* Adjust container for sidebar layout */
+        .main-content .container {
+            max-width: 100%;
+            padding: 20px;
         }
     </style>
 

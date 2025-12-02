@@ -24,7 +24,6 @@ Database::getConnection('prod');
 
 Router::add('GET', '/', HomeController::class, 'index', []);
 Router::add('GET', '/team', TeamController::class, 'index', []);
-//User Controller
 Router::add('GET', '/users/logout', UserController::class, 'logout', [MustLoginMiddleware::class]);
 Router::add('GET', '/users/login', UserController::class, 'login', [MustNotLoginMiddleware::class]);
 Router::add('POST', '/users/login', UserController::class, 'postLogin', [MustNotLoginMiddleware::class]);

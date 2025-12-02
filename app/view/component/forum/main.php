@@ -1,84 +1,100 @@
-<div class="container">
-    <div class="header">
-        <h1>Forum Komunitas</h1>
-        <p>Bergabung dan diskusi dengan komunitas kampus</p>
+<!-- Hero Banner -->
+<div class="forum-hero">
+    <div class="forum-hero-content">
+        <h2>Selamat datang di forum! Ayo mulai berdiskusi dan berbagi ide dengan komunitasmu.</h2>
     </div>
+    <img src="https://img.freepik.com/free-vector/flat-design-business-people-working-together_23-2148972580.jpg" alt="Forum Illustration" class="forum-hero-image">
+</div>
 
-    <div class="competitions-grid">
-        <?php foreach ($komunitas_list as $komunitas): ?>
-            <!-- Card Komunitas -->
-            <div class="competition-card"
-                onclick="window.location.href='/forum/chat?id=<?php echo $komunitas['komunitas_id']; ?>'"
-                style="cursor: pointer;">
-                <div class="card-header">
-                    <div class="card-title">
-                        <span class="trophy-icon">
-                            <?php if ($komunitas['icon_type'] == 'globe'): ?>
-                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white"
-                                    style="background-color: #0a1f44; border-radius: 50%; padding: 8px;">
-                                    <circle cx="12" cy="12" r="10" stroke-width="2" />
-                                    <path
-                                        d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
-                                        stroke-width="2" />
-                                </svg>
-                            <?php else: ?>
-                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white"
-                                    style="background-color: #0a1f44; border-radius: 50%; padding: 8px;">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                    <circle cx="9" cy="7" r="4" stroke-width="2" />
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            <?php endif; ?>
-                        </span>
-                        <div>
-                            <h3><?php echo htmlspecialchars($komunitas['nama_komunitas']); ?></h3>
-                            <p class="card-description" style="margin: 0;">
-                                <?php echo htmlspecialchars($komunitas['deskripsi']); ?>
-                            </p>
+<div class="forum-layout">
+    <!-- Main Content: Trending -->
+    <div class="forum-main">
+        <h3 class="section-title">Sedang Tren</h3>
+        
+        <div class="trending-list">
+            <?php if (isset($trending_topics) && !empty($trending_topics)): ?>
+                <?php foreach ($trending_topics as $topic): ?>
+                <div class="trending-card">
+                    <div class="trending-content">
+                        <h4 class="trending-title"><?= htmlspecialchars($topic['title']) ?></h4>
+                        <p class="trending-excerpt"><?= htmlspecialchars($topic['excerpt']) ?></p>
+                        
+                        <div class="trending-meta">
+                            <div class="user-info">
+                                <img src="<?= htmlspecialchars($topic['user_avatar']) ?>" alt="User" class="user-avatar">
+                                <span class="user-name"><?= htmlspecialchars($topic['user_name']) ?></span>
+                            </div>
+                            
+                            <div class="post-stats">
+                                <div class="stat-item">
+                                    <i class="bi bi-people"></i>
+                                    <span><?= htmlspecialchars($topic['views']) ?></span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="bi bi-chat"></i>
+                                    <span><?= htmlspecialchars($topic['comments']) ?></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <img src="<?= htmlspecialchars($topic['thumbnail']) ?>" alt="Thumbnail" class="trending-thumbnail">
                 </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>Belum ada topik trending saat ini.</p>
+            <?php endif; ?>
+        </div>
+    </div>
 
-                <div style="margin: 15px 0;">
-                    <span class="category-badge badge-technology">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            style="display: inline; vertical-align: middle; margin-right: 4px;">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                            <circle cx="9" cy="7" r="4" stroke-width="2" />
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                        <?php echo $komunitas['jumlah_anggota']; ?>
-                    </span>
-
-                    <?php if ($komunitas['jurusan_filter']): ?>
-                        <span class="role-badge" style="margin-left: 8px; font-size: 0.85rem;">
-                            <?php echo htmlspecialchars($komunitas['jurusan_filter']); ?>
-                        </span>
-                    <?php endif; ?>
-                </div>
-
-                <div style="border-top: 1px solid #e0e0e0; padding-top: 15px; margin-top: 15px;">
-                    <?php if ($komunitas['latest_message']): ?>
-                        <p style="margin: 0; color: #495057; font-size: 0.95rem; font-weight: 500;">
-                            <?php echo htmlspecialchars(substr($komunitas['latest_message'], 0, 50)) . (strlen($komunitas['latest_message']) > 50 ? '...' : ''); ?>
-                        </p>
-                        <p style="margin: 5px 0 0 0; color: #6c757d; font-size: 0.85rem;">
-                            <?php
-                            $info = explode(' - ', $komunitas['latest_message_info'] ?? '');
-                            echo count($info) > 1 ? $info[1] : 'Baru saja';
-                            ?>
-                        </p>
-                    <?php else: ?>
-                        <p style="margin: 0; color: #6c757d; font-size: 0.95rem; font-style: italic;">
-                            Belum ada pesan
-                        </p>
-                    <?php endif; ?>
-                </div>
+    <!-- Sidebar -->
+    <div class="forum-sidebar">
+        <!-- Search -->
+        <div class="search-section">
+            <h3 class="section-title">Pencarian</h3>
+            <div class="search-box">
+                <input type="text" placeholder="Cari" class="search-input">
+                <i class="bi bi-search search-icon"></i>
             </div>
-        <?php endforeach; ?>
+        </div>
+
+        <!-- User Forums -->
+        <div class="user-forums-section">
+            <h3 class="section-title">Forum Anda</h3>
+            
+            <div class="user-forums-list">
+                <?php if (isset($user_forums) && !empty($user_forums)): ?>
+                    <?php foreach ($user_forums as $forum): ?>
+                    <div class="forum-card-small">
+                        <div class="forum-info-small">
+                            <a href="/forum/chat?id=<?= $forum['id'] ?>" class="forum-name-link">
+                                <h4 class="forum-name-small"><?= htmlspecialchars($forum['name']) ?></h4>
+                            </a>
+                            <p class="forum-code"><?= htmlspecialchars($forum['code']) ?></p>
+                            
+                            <div class="forum-meta-small">
+                                <div class="user-info">
+                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=<?= htmlspecialchars($forum['user_handle']) ?>" alt="User" class="user-avatar" style="width: 20px; height: 20px;">
+                                    <span class="user-name" style="font-size: 0.75rem;"><?= htmlspecialchars($forum['user_handle']) ?></span>
+                                </div>
+                                <div class="post-stats" style="margin-left: 0; gap: 8px;">
+                                    <div class="stat-item">
+                                        <i class="bi bi-people"></i>
+                                        <span><?= htmlspecialchars($forum['members']) ?></span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <i class="bi bi-chat"></i>
+                                        <span><?= htmlspecialchars($forum['messages']) ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <img src="<?= htmlspecialchars($forum['thumbnail']) ?>" alt="Thumbnail" class="forum-thumbnail-small">
+                    </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p>Anda belum bergabung dengan forum apapun.</p>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
 </div>
