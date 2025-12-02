@@ -104,50 +104,53 @@ class DashboardRepository
 
     public function getFeedPosts($limit = 10)
     {
-        // Get content from lomba (competitions)
+        // Get content from lomba (competitions) with correct column names
         $posts = [];
         
         try {
-            // Get recent competitions as posts (removed status filter to show all)
             $sql = "
                 SELECT 
-                    'competition' as type,
-                    nama_lomba as title,
-                    deskripsi as content,
-                    tanggal_lomba as date,
-                    kategori,
-                    poster_url as image,
+                    lomba_id,
+                    nama_lomba,
+                    deskripsi,
+                    tanggal_lomba,
                     hadiah,
-                    link_pendaftaran,
+                    kategori,
+                    poster_lomba,
+                    lokasi,
+                    lomba_type,
+                    biaya,
                     status
                 FROM lomba
+                WHERE status = 'confirm'
                 ORDER BY tanggal_lomba DESC
                 LIMIT ?
             ";
+            
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$limit]);
             $competitions = $stmt->fetchAll();
-            
-            // Debug: log how many competitions found
-            error_log("Found " . count($competitions) . " competitions in lomba table");
             
             foreach ($competitions as $comp) {
                 $posts[] = [
                     'type' => 'competition',
                     'user_name' => 'Admin Kompetisi',
                     'user_avatar' => '/images/avatar-default.png',
-                    'time_ago' => $this->getTimeAgo($comp['date']),
-                    'title' => $comp['title'],
-                    'content' => $comp['content'] ?? '',
-                    'image' => $comp['image'] ?? '/images/competition-placeholder.jpg',
+                    'time_ago' => $this->getTimeAgo($comp['tanggal_lomba']),
+                    'title' => $comp['nama_lomba'],
+                    'content' => $comp['deskripsi'] ?? '',
+                    'image' => $comp['poster_lomba'] ?? '/images/competition-placeholder.jpg',
                     'category' => $comp['kategori'] ?? 'Kompetisi',
                     'prize' => $comp['hadiah'] ?? '',
-                    'registration_link' => $comp['link_pendaftaran'] ?? '',
-                    'status' => $comp['status'] ?? 'unknown'
+                    'location' => $comp['lokasi'] ?? '',
+                    'type_lomba' => $comp['lomba_type'] ?? '',
+                    'fee' => $comp['biaya'] ?? 'Gratis',
+                    'date' => date('d M Y', strtotime($comp['tanggal_lomba'])),
+                    'status' => $comp['status']
                 ];
             }
         } catch (\PDOException $e) {
-            error_log("Error fetching feed posts: " . $e->getMessage());
+            error_log("Error fetching feed posts from lomba: " . $e->getMessage());
             // Return empty array on error
         }
         
@@ -194,11 +197,15 @@ class DashboardRepository
         try {
             $sql = "
                 SELECT 
-                    nama_lomba as title,
-                    tanggal_lomba as deadline,
+                    lomba_id,
+                    nama_lomba,
+                    tanggal_lomba,
                     kategori,
                     deskripsi,
-                    poster_url as image
+                    poster_lomba,
+                    hadiah,
+                    lokasi,
+                    biaya
                 FROM lomba
                 WHERE status = 'confirm' AND tanggal_lomba >= CURRENT_DATE
                 ORDER BY tanggal_lomba ASC
@@ -210,11 +217,15 @@ class DashboardRepository
             
             return array_map(function($comp) {
                 return [
-                    'title' => $comp['title'],
-                    'deadline' => date('d M Y', strtotime($comp['deadline'])),
+                    'id' => $comp['lomba_id'],
+                    'title' => $comp['nama_lomba'],
+                    'deadline' => date('d M Y', strtotime($comp['tanggal_lomba'])),
                     'category' => $comp['kategori'] ?? 'Kompetisi',
                     'description' => $comp['deskripsi'] ?? '',
-                    'image' => $comp['image'] ?? '/images/competition-placeholder.jpg'
+                    'image' => $comp['poster_lomba'] ?? '/images/competition-placeholder.jpg',
+                    'prize' => $comp['hadiah'] ?? '',
+                    'location' => $comp['lokasi'] ?? '',
+                    'fee' => $comp['biaya'] ?? 'Gratis'
                 ];
             }, $competitions);
         } catch (\PDOException $e) {
