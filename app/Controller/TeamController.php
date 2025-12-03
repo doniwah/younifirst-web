@@ -50,52 +50,127 @@ class TeamController
 
     public function create()
     {
+        $userId = $this->session->current();
+        
+        if (!$userId) {
+            header('Location: /users/login');
+            exit;
+        }
+
         View::render('component/team/create', [
-            'title' => 'Tambah Pencarian Tim',
-            'user' => $this->session->current()
+            'title' => 'Buat Tim Baru',
+            'user' => $userId
         ]);
     }
 
     public function store()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /team');
+            header('Location: /team/create');
             exit;
         }
 
-        $userId = $this->session->current(); // Returns string user_id
+        $userId = $this->session->current();
         
         if (!$userId) {
-            header('Location: /users/login');
+            header('Location: /users/login?error=' . urlencode('Silakan login terlebih dahulu'));
             exit;
         }
-        
-        $teamData = [
-            'nama_team' => $_POST['nama_team'] ?? '',
-            'deskripsi' => $_POST['deskripsi'] ?? '',
-            'competition_id' => !empty($_POST['competition_id']) ? (int)$_POST['competition_id'] : null,
-            'user_id' => $userId,
-            'max_members' => (int)($_POST['max_members'] ?? 5),
-            'skills_required' => $_POST['skills_required'] ?? '',
-            'contact_info' => $_POST['contact_info'] ?? '',
-            'status' => 'active',
-            'deadline' => !empty($_POST['deadline']) ? $_POST['deadline'] : null
-        ];
 
-        $teamId = $this->teamRepository->createTeam($teamData);
+        try {
+            // Validate required fields
+            if (empty($_POST['nama_team'])) {
+                header('Location: /team/create?error=' . urlencode('Nama team harus diisi'));
+                exit;
+            }
 
-        if ($teamId) {
-            // Add creator as team leader
-            $this->teamRepository->addTeamMember($teamId, $userId, 'leader');
-            header('Location: /team?success=Team berhasil dibuat');
-        } else {
-            header('Location: /team/create?error=Gagal membuat team');
+            if (empty($_POST['max_members'])) {
+                header('Location: /team/create?error=' . urlencode('Jumlah member maksimal harus diisi'));
+                exit;
+            }
+
+            if (empty($_POST['deadline'])) {
+                header('Location: /team/create?error=' . urlencode('Batas tanggal pendaftaran harus diisi'));
+                exit;
+            }
+
+            if (empty($_POST['nama_lomba'])) {
+                header('Location: /team/create?error=' . urlencode('Nama lomba harus diisi'));
+                exit;
+            }
+
+            // Collect positions data
+            $positions = [];
+            if (!empty($_POST['position_name']) && is_array($_POST['position_name'])) {
+                foreach ($_POST['position_name'] as $index => $name) {
+                    if (!empty($name)) {
+                        $positions[] = [
+                            'nama' => trim($name),
+                            'jumlah' => (int)($_POST['position_qty'][$index] ?? 1),
+                            'requirements' => trim($_POST['position_req'][$index] ?? '')
+                        ];
+                    }
+                }
+            }
+
+            if (empty($positions)) {
+                header('Location: /team/create?error=' . urlencode('Minimal satu posisi harus diisi'));
+                exit;
+            }
+
+            // Collect extra info
+            $extraInfo = [
+                'penyelenggara' => trim($_POST['penyelenggara'] ?? ''),
+                'link_postingan' => trim($_POST['link_postingan'] ?? '')
+            ];
+
+            // Prepare team data
+            $teamData = [
+                'nama_team' => trim($_POST['nama_team']),
+                'nama_kegiatan' => trim($_POST['nama_lomba']),
+                'max_anggota' => (int)$_POST['max_members'],
+                'role_required' => json_encode($positions),
+                'keterangan_tambahan' => json_encode($extraInfo),
+                'status' => 'waiting',
+                'tenggat_join' => $_POST['deadline'],
+                'deskripsi_anggota' => ''
+            ];
+
+            // Create team
+            $teamId = $this->teamRepository->createTeam($teamData);
+
+            if ($teamId) {
+                // Add creator as team leader
+                $addLeaderSuccess = $this->detailAnggotaRepository->addAnggotaConfirmed($teamId, $userId, 'ketua');
+                
+                if ($addLeaderSuccess) {
+                    header('Location: /kompetisi?success=' . urlencode('Tim berhasil dibuat! Menunggu konfirmasi dari admin.'));
+                } else {
+                    // Team created but failed to add leader
+                    header('Location: /kompetisi?error=' . urlencode('Tim dibuat tetapi gagal menambahkan ketua. Silakan hubungi admin.'));
+                }
+            } else {
+                header('Location: /team/create?error=' . urlencode('Gagal membuat tim. Silakan coba lagi.'));
+            }
+        } catch (\PDOException $e) {
+            error_log("Database error creating team: " . $e->getMessage());
+            header('Location: /team/create?error=' . urlencode('Gagal membuat tim: ' . $e->getMessage()));
+        } catch (\Exception $e) {
+            error_log("Error creating team: " . $e->getMessage());
+            header('Location: /team/create?error=' . urlencode('Terjadi kesalahan: ' . $e->getMessage()));
         }
         exit;
     }
 
     public function edit($id)
     {
+        $userId = $this->session->current();
+        
+        if (!$userId) {
+            header('Location: /users/login');
+            exit;
+        }
+
         $team = $this->teamRepository->getTeamById($id);
         
         if (!$team) {
@@ -105,7 +180,7 @@ class TeamController
 
         View::render('component/team/edit', [
             'title' => 'Edit Pencarian Tim',
-            'user' => $this->session->current(),
+            'user' => $userId,
             'team' => $team
         ]);
     }
@@ -114,6 +189,13 @@ class TeamController
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /team');
+            exit;
+        }
+
+        $userId = $this->session->current();
+        
+        if (!$userId) {
+            header('Location: /users/login');
             exit;
         }
 

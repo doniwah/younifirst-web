@@ -321,14 +321,28 @@
                     </div>
                 </div>
                 <div class="team-description">
-                    <?= htmlspecialchars($team['deskripsi']) ?>
+                    <?= htmlspecialchars($team['deskripsi_anggota'] ?? '') ?>
                 </div>
                 <div class="team-tags">
-                    <?php if (!empty($team['skills_required'])): ?>
-                    <?php $skills = explode(',', $team['skills_required']); ?>
-                    <?php foreach ($skills as $skill): ?>
-                    <span class="tag"><?= htmlspecialchars(trim($skill)) ?></span>
-                    <?php endforeach; ?>
+                    <?php if (!empty($team['role_required'])): ?>
+                        <?php 
+                        $roles = json_decode($team['role_required'], true);
+                        if (is_array($roles)):
+                            foreach ($roles as $role): 
+                        ?>
+                            <span class="tag"><?= htmlspecialchars($role['nama']) ?> (<?= $role['jumlah'] ?>)</span>
+                        <?php 
+                            endforeach;
+                        elseif (is_string($team['role_required'])):
+                             // Fallback for old data or if not JSON
+                             $skills = explode(',', $team['role_required']);
+                             foreach ($skills as $skill):
+                        ?>
+                            <span class="tag"><?= htmlspecialchars(trim($skill)) ?></span>
+                        <?php 
+                             endforeach;
+                        endif;
+                        ?>
                     <?php endif; ?>
                 </div>
                 <div class="team-meta">
@@ -338,7 +352,7 @@
                     </div>
                     <div class="meta-item">
                         <i class="far fa-clock"></i>
-                        <span>Deadline: <?= date('Y-m-d', strtotime($team['deadline'])) ?></span>
+                        <span>Deadline: <?= date('Y-m-d', strtotime($team['tenggat_join'])) ?></span>
                     </div>
                     <div class="meta-item">
                         <i class="fas fa-users"></i>

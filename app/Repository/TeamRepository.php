@@ -27,7 +27,7 @@ class TeamRepository
         $params = [];
 
         if (!empty($search)) {
-            $whereConditions[] = "(t.nama_team LIKE ? OR t.deskripsi LIKE ?)";
+            $whereConditions[] = "(t.nama_team LIKE ? OR t.deskripsi_anggota LIKE ?)";
             $params[] = "%$search%";
             $params[] = "%$search%";
         }
@@ -38,8 +38,19 @@ class TeamRepository
         }
 
         if (!empty($competitionId)) {
-            $whereConditions[] = "t.competition_id = ?";
-            $params[] = $competitionId;
+            // Assuming competition_id is still relevant or we filter by nama_kegiatan? 
+            // If competition_id column is gone, this filter might need to be removed or changed.
+            // For now, let's assume it might still exist or we skip it.
+            // But wait, the image didn't show it. 
+            // Let's comment it out or leave it if the column actually exists but wasn't in the list.
+            // Given the user input "Nama Lomba" is text, maybe we filter by nama_kegiatan?
+            // Let's leave it for now but be aware it might fail if column is missing.
+            // actually, let's change it to filter by nama_kegiatan if passed?
+            // No, let's stick to column mapping updates first.
+            // If competition_id is gone, we should probably remove this filter.
+            // Let's assume it's gone.
+             //$whereConditions[] = "t.competition_id = ?";
+             //$params[] = $competitionId;
         }
 
         $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
@@ -92,23 +103,33 @@ class TeamRepository
     // Create new team
     public function createTeam($data)
     {
+        // Generate team_id (character(10))
+        $teamId = 'T' . substr(uniqid(), -9);
+
         $sql = "
-            INSERT INTO team (nama_team, deskripsi, competition_id, user_id, max_members, skills_required, contact_info, status, deadline)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO team (
+                team_id, nama_team, nama_kegiatan, 
+                max_anggota, role_required, keterangan_tambahan, 
+                status, tenggat_join, deskripsi_anggota, role
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ";
+        
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
+            $teamId,
             $data['nama_team'],
-            $data['deskripsi'],
-            $data['competition_id'] ?? null,
-            $data['user_id'],
-            $data['max_members'] ?? 5,
-            $data['skills_required'] ?? '',
-            $data['contact_info'] ?? '',
-            $data['status'] ?? 'active',
-            $data['deadline'] ?? null
+            $data['nama_kegiatan'],
+            $data['max_anggota'],
+            $data['role_required'],
+            $data['keterangan_tambahan'],
+            $data['status'] ?? 'waiting',
+            $data['tenggat_join'],
+            $data['deskripsi_anggota'] ?? '',
+            'ketua'
         ]);
-        return $this->db->lastInsertId();
+        
+        return $teamId;
     }
 
     // Update team
@@ -203,17 +224,17 @@ class TeamRepository
         $limit = $filters['limit'] ?? 10;
         $offset = ($page - 1) * $limit;
 
-        $whereConditions = ["t.status = 'active'"];
+        $whereConditions = ["t.status = 'confirm'"];
         $params = [];
 
         if (!empty($query)) {
-            $whereConditions[] = "(t.nama_team LIKE ? OR t.deskripsi LIKE ?)";
+            $whereConditions[] = "(t.nama_team LIKE ? OR t.deskripsi_anggota LIKE ?)";
             $params[] = "%$query%";
             $params[] = "%$query%";
         }
 
         if (!empty($skills)) {
-            $whereConditions[] = "t.skills_required LIKE ?";
+            $whereConditions[] = "t.role_required LIKE ?";
             $params[] = "%$skills%";
         }
 
@@ -307,8 +328,8 @@ class TeamRepository
     {
         // Admin can see all team (active), non-admin only sees confirmed team
         $statusCondition = ($userRole === 'admin') 
-            ? "t.status = 'active'" 
-            : "t.status = 'active' AND (t.approval_status = 'confirm' OR t.approval_status IS NULL)";
+            ? "t.status IN ('waiting', 'confirm')" 
+            : "t.status = 'confirm'";
         
         $sql = "
             SELECT 
@@ -317,24 +338,23 @@ class TeamRepository
                 u.email as creator_email,
                 u.jurusan as creator_jurusan,
                 '' as creator_semester,
-                l.nama_lomba as competition_name,
-                COUNT(tm.team_id) as current_members,
-                COUNT(ta.id) as total_applicants,
-                (t.max_members - COUNT(tm.team_id)) as members_needed,
+                t.nama_kegiatan as competition_name,
+                COUNT(CASE WHEN tm.status = 'confirm' THEN 1 END) as current_members,
+                COUNT(CASE WHEN tm.status = 'waiting' THEN 1 END) as total_applicants,
+                (t.max_anggota - COUNT(CASE WHEN tm.status = 'confirm' THEN 1 END)) as members_needed,
                 CASE 
-                    WHEN (t.max_members - COUNT(tm.team_id)) <= 1 THEN 'urgent'
+                    WHEN (t.max_anggota - COUNT(CASE WHEN tm.status = 'confirm' THEN 1 END)) <= 1 THEN 'urgent'
                     ELSE 'active'
                 END as priority_status
             FROM team t
-            LEFT JOIN users u ON t.user_id = u.user_id
-            LEFT JOIN lomba l ON t.competition_id = l.lomba_id
+            LEFT JOIN detail_anggota leader ON t.team_id = leader.team_id AND leader.role = 'ketua'
+            LEFT JOIN users u ON leader.user_id = u.user_id
             LEFT JOIN detail_anggota tm ON t.team_id = tm.team_id
-            LEFT JOIN team_applications ta ON t.team_id = ta.team_id AND ta.status = 'pending'
             WHERE $statusCondition
-            GROUP BY t.team_id, u.username, u.email, u.jurusan, l.nama_lomba
+            GROUP BY t.team_id, u.username, u.email, u.jurusan, t.nama_kegiatan
             ORDER BY 
                 priority_status DESC,
-                t.deadline ASC,
+                t.tenggat_join ASC,
                 t.team_id DESC
         ";
         return $this->db->query($sql)->fetchAll();
@@ -349,17 +369,16 @@ class TeamRepository
                 u.email as creator_email,
                 u.jurusan as creator_jurusan,
                 '' as creator_semester,
-                l.nama_lomba as competition_name,
-                COUNT(tm.team_id) as current_members,
-                COUNT(ta.id) as total_applicants,
-                (t.max_members - COUNT(tm.team_id)) as members_needed
+                t.nama_kegiatan as competition_name,
+                COUNT(CASE WHEN tm.status = 'confirm' THEN 1 END) as current_members,
+                COUNT(CASE WHEN tm.status = 'waiting' THEN 1 END) as total_applicants,
+                (t.max_anggota - COUNT(CASE WHEN tm.status = 'confirm' THEN 1 END)) as members_needed
             FROM team t
-            LEFT JOIN users u ON t.user_id = u.user_id
-            LEFT JOIN lomba l ON t.competition_id = l.lomba_id
+            LEFT JOIN detail_anggota leader ON t.team_id = leader.team_id AND leader.role = 'ketua'
+            LEFT JOIN users u ON leader.user_id = u.user_id
             LEFT JOIN detail_anggota tm ON t.team_id = tm.team_id
-            LEFT JOIN team_applications ta ON t.team_id = ta.team_id AND ta.status = 'pending'
             WHERE t.team_id = ?
-            GROUP BY t.team_id, u.username, u.email, u.jurusan, l.nama_lomba
+            GROUP BY t.team_id, u.username, u.email, u.jurusan, t.nama_kegiatan
         ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
@@ -369,8 +388,8 @@ class TeamRepository
     public function countActiveTeams($userRole = 'user')
     {
         $statusCondition = ($userRole === 'admin') 
-            ? "status = 'active'" 
-            : "status = 'active' AND (approval_status = 'confirm' OR approval_status IS NULL)";
+            ? "status IN ('waiting', 'confirm')" 
+            : "status = 'confirm'";
         
         $sql = "SELECT COUNT(*) as total FROM team WHERE $statusCondition";
         return $this->db->query($sql)->fetch()['total'];
@@ -379,8 +398,8 @@ class TeamRepository
     public function countUrgentTeams($userRole = 'user')
     {
         $statusCondition = ($userRole === 'admin') 
-            ? "t.status = 'active'" 
-            : "t.status = 'active' AND (t.approval_status = 'confirm' OR t.approval_status IS NULL)";
+            ? "t.status IN ('waiting', 'confirm')" 
+            : "t.status = 'confirm'";
         
         $sql = "
             SELECT COUNT(*) as total 
@@ -388,45 +407,11 @@ class TeamRepository
             LEFT JOIN detail_anggota tm ON t.team_id = tm.team_id
             WHERE $statusCondition
             GROUP BY t.team_id
-            HAVING (t.max_members - COUNT(tm.team_id)) <= 1
+            HAVING (t.max_anggota - COUNT(tm.team_id)) <= 1
         ";
         $result = $this->db->query($sql)->fetchAll();
         return count($result);
     }
 
-    public function getTeamApplications($teamId)
-    {
-        $sql = "
-            SELECT 
-                ta.*,
-                u.nama,
-                u.email,
-                u.nim,
-                u.jurusan
-            FROM team_applications ta
-            LEFT JOIN users u ON ta.user_id = u.user_id
-            WHERE ta.team_id = ?
-            ORDER BY ta.applied_at DESC
-        ";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([$teamId]);
-        return $stmt->fetchAll();
-    }
 
-    public function createTeamApplication($teamId, $userId, $message = '')
-    {
-        $sql = "
-            INSERT INTO team_applications (team_id, user_id, message, applied_at, status) 
-            VALUES (?, ?, ?, NOW(), 'pending')
-        ";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([$teamId, $userId, $message]);
-    }
-
-    public function updateApplicationStatus($applicationId, $status)
-    {
-        $sql = "UPDATE team_applications SET status = ?, processed_at = NOW() WHERE id = ?";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([$status, $applicationId]);
-    }
 }

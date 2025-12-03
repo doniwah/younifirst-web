@@ -1,208 +1,376 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?> - Campus Nexus</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/css/sidebar.css">
-    <link rel="stylesheet" href="/css/team.css">
-
+    <link rel="stylesheet" href="/css/dashboard-modern.css">
+    
     <style>
-    /* Force light theme */
-    body {
-        background: #f9fafb !important;
-        color: #1f2937 !important;
-    }
+        .create-team-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
 
-    .main-content {
-        background: #f9fafb !important;
-    }
+        .back-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6b7280;
+            cursor: pointer;
+            margin-bottom: 24px;
+            padding: 0;
+        }
 
-    .form-container {
-        background: white;
-        border-radius: 12px;
-        padding: 32px;
-        max-width: 800px;
-        margin: 0 auto;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e5e7eb;
-    }
+        .form-group {
+            margin-bottom: 24px;
+        }
 
-    .form-group {
-        margin-bottom: 24px;
-    }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
 
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 500;
-        color: #374151;
-    }
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group input[type="url"],
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
 
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-        width: 100%;
-        padding: 12px 16px;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        font-size: 14px;
-        transition: all 0.2s;
-    }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
 
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-        outline: none;
-        border-color: #4f87ff;
-        box-shadow: 0 0 0 3px rgba(79, 135, 255, 0.1);
-    }
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
 
-    .form-group textarea {
-        min-height: 120px;
-        resize: vertical;
-    }
+        .member-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
 
-    .form-group small {
-        display: block;
-        margin-top: 4px;
-        color: #6b7280;
-        font-size: 13px;
-    }
+        .member-control {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+        }
 
-    .form-actions {
-        display: flex;
-        gap: 12px;
-        justify-content: flex-end;
-        margin-top: 32px;
-        padding-top: 24px;
-        border-top: 1px solid #e5e7eb;
-    }
+        .member-control label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
 
-    .btn {
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s;
-        border: none;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
+        .number-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-    .btn-primary {
-        background: #4f87ff;
-        color: white;
-    }
+        .number-input button {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #6b7280;
+        }
 
-    .btn-primary:hover {
-        background: #3b6fdd;
-    }
+        .number-input button:hover {
+            background: #f3f4f6;
+        }
 
-    .btn-secondary {
-        background: #f3f4f6;
-        color: #374151;
-    }
+        .number-input input {
+            width: 60px;
+            text-align: center;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            font-weight: 500;
+        }
 
-    .btn-secondary:hover {
-        background: #e5e7eb;
-    }
+        .add-position-btn {
+            width: 100%;
+            padding: 12px;
+            background: #ede9fe;
+            color: #7c3aed;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
 
-    .alert {
-        padding: 12px 16px;
-        border-radius: 8px;
-        margin-bottom: 24px;
-    }
+        .add-position-btn:hover {
+            background: #ddd6fe;
+        }
 
-    .alert-error {
-        background: #fee2e2;
-        color: #991b1b;
-        border: 1px solid #fecaca;
-    }
+        .position-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            position: relative;
+        }
 
-    .required {
-        color: #ef4444;
-    }
+        .position-card .remove-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .position-card .remove-btn:hover {
+            color: #ef4444;
+        }
+
+        .position-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+
+        .position-card input,
+        .position-card textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .position-card .number-input {
+            margin-bottom: 8px;
+        }
+
+        .requirement-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .requirement-item input {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .requirement-item button {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .requirement-item button:hover {
+            color: #ef4444;
+        }
+
+        .add-requirement-btn {
+            width: 100%;
+            padding: 8px;
+            background: #f3f4f6;
+            color: #6b7280;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .add-requirement-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 24px;
+        }
+
+        .submit-btn:hover {
+            background: #7c3aed;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .positions-container {
+            margin-bottom: 24px;
+        }
     </style>
 </head>
-
 <body>
     <?php require_once __DIR__ . "/../../layouts/sidebar.php"; ?>
+
     <div class="main-content">
-        <div class="header">
-            <div>
-                <h1><?= $title ?></h1>
-                <p>Buat pencarian anggota tim untuk lomba atau kompetisi</p>
-            </div>
-        </div>
+        <div class="create-team-container">
+            <button class="back-button" onclick="window.location.href='/team'">
+                <i class="bi bi-arrow-left"></i>
+            </button>
 
-        <div class="form-container">
-            <?php if (isset($_GET['error'])): ?>
-            <div class="alert alert-error">
-                <i class="fas fa-exclamation-circle"></i>
-                <?= htmlspecialchars($_GET['error']) ?>
-            </div>
-            <?php endif; ?>
+            <form action="/team/store" method="POST" id="teamForm">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <!-- Nama Tim -->
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Nama Tim</label>
+                        <input type="text" name="nama_team" id="namaTeam" maxlength="50" required placeholder="Masukkan nama tim">
+                        <div class="char-counter"><span id="namaCounter">0</span>/50</div>
+                    </div>
 
-            <form action="/team/store" method="POST">
-                <div class="form-group">
-                    <label for="nama_team">Nama Tim <span class="required">*</span></label>
-                    <input type="text" id="nama_team" name="nama_team" required
-                        placeholder="Contoh: Tim Mobile App Development">
-                    <small>Nama tim yang akan ditampilkan dalam pencarian</small>
+                    <!-- Jumlah Member -->
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Jumlah Member Maksimal</label>
+                        <p class="form-hint">Tentukan jumlah anggota maksimal yang kamu butuhkan.</p>
+                        <div class="member-control" style="max-width: 300px;">
+                            <div class="number-input">
+                                <button type="button" onclick="changeNumber('max', -1)">−</button>
+                                <input type="number" id="maxMembers" name="max_members" value="2" readonly>
+                                <button type="button" onclick="changeNumber('max', 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Batas Tanggal Pendaftaran & Bonus -->
+                    <!-- Batas Tanggal Pendaftaran -->
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Batas Tanggal Pendaftaran</label>
+                        <p class="form-hint">Tentukan kapan pendaftaran kandidat ditutup.</p>
+                        <input type="date" name="deadline" required>
+                    </div>
+
                 </div>
 
+                <!-- Posisi yang dibutuhkan -->
                 <div class="form-group">
-                    <label for="deskripsi">Deskripsi <span class="required">*</span></label>
-                    <textarea id="deskripsi" name="deskripsi" required
-                        placeholder="Jelaskan tentang tim, tujuan, dan apa yang dicari..."></textarea>
-                    <small>Jelaskan secara detail tentang tim dan kebutuhan anggota</small>
-                </div>
+                    <label>Posisi yang dibutuhkan</label>
+                    <p class="form-hint">Tulis posisi/tugas yang kamu butuhkan serta ketentuan dasar untuk posisi tsb.</p>
+                    
+                    <div class="positions-container" id="positionsContainer">
+                        <!-- Position cards will be added here -->
+                    </div>
 
-                <div class="form-group">
-                    <label for="max_members">Jumlah Anggota yang Dibutuhkan <span class="required">*</span></label>
-                    <input type="number" id="max_members" name="max_members" min="1" max="20" value="5" required>
-                    <small>Total anggota yang dibutuhkan (termasuk Anda)</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="skills_required">Skill yang Dibutuhkan</label>
-                    <input type="text" id="skills_required" name="skills_required"
-                        placeholder="Flutter, UI/UX Design, Backend Development">
-                    <small>Pisahkan dengan koma untuk multiple skills</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="contact_info">Informasi Kontak <span class="required">*</span></label>
-                    <input type="text" id="contact_info" name="contact_info" required
-                        placeholder="Email, WhatsApp, atau cara kontak lainnya">
-                    <small>Cara untuk calon anggota menghubungi Anda</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="deadline">Deadline Pendaftaran</label>
-                    <input type="date" id="deadline" name="deadline">
-                    <small>Batas waktu untuk bergabung dengan tim</small>
-                </div>
-
-                <div class="form-actions">
-                    <a href="/team" class="btn btn-secondary">
-                        <i class="fas fa-times"></i>
-                        Batal
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i>
-                        Simpan Pencarian Tim
+                    <button type="button" class="add-position-btn" onclick="addPosition()">
+                        <i class="bi bi-plus-lg"></i> Tambah Posisi
                     </button>
                 </div>
+
+                <!-- Informasi Lomba -->
+                <div class="form-group">
+                    <label>Informasi Lomba</label>
+                    <p class="form-hint">Tulis informasi lomba yang kamu dan tim-mu akan ikuti.</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <input type="text" name="nama_lomba" placeholder="Nama Lomba" required>
+                        <input type="text" name="penyelenggara" placeholder="Nama Penyelenggara">
+                        <input type="url" name="link_postingan" placeholder="Link Postingan Lomba" style="grid-column: 1 / -1;">
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Buat Tim</button>
             </form>
         </div>
     </div>
-</body>
 
+    <script>
+        let positionCount = 0;
+
+        // Character counter
+        document.getElementById('namaTeam').addEventListener('input', function() {
+            document.getElementById('namaCounter').textContent = this.value.length;
+        });
+
+        // Number input controls
+        function changeNumber(type, delta) {
+            const input = document.getElementById('maxMembers');
+            let value = parseInt(input.value) || 2;
+            value = Math.max(1, value + delta);
+            input.value = value;
+        }
+
+        // Add position
+        function addPosition() {
+            positionCount++;
+            const container = document.getElementById('positionsContainer');
+            const positionCard = document.createElement('div');
+            positionCard.className = 'position-card';
+            positionCard.id = `position-${positionCount}`;
+            
+            positionCard.innerHTML = `
+                <button type="button" class="remove-btn" onclick="removePosition(${positionCount})">×</button>
+                <h4>Posisi ${positionCount}</h4>
+                
+                <input type="text" name="position_name[]" placeholder="Nama Posisi/Tugas" required>
+                <input type="hidden" name="position_qty[]" value="1">
+                
+                <label style="font-size: 13px; color: #6b7280; margin-bottom: 8px; display: block;">Ketentuan :</label>
+                <textarea name="position_req[]" rows="3" placeholder="Tulis ketentuan untuk posisi ini (opsional)"></textarea>
+            `;
+            
+            container.appendChild(positionCard);
+        }
+
+        function removePosition(id) {
+            document.getElementById(`position-${id}`).remove();
+        }
+
+
+
+        // Add first position by default
+        addPosition();
+    </script>
+</body>
 </html>
