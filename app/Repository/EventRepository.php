@@ -237,8 +237,8 @@ class EventRepository
     {
         $sql = "
             SELECT * FROM event 
-            WHERE status = 'confirm' AND tanggal_mulai > NOW()
-            ORDER BY tanggal_mulai ASC
+            WHERE status = 'confirm'
+            ORDER BY tanggal_mulai DESC
             LIMIT ?
         ";
         $stmt = $this->db->prepare($sql);
@@ -253,8 +253,8 @@ class EventRepository
     {
         $sql = "
             SELECT * FROM event 
-            WHERE status = 'confirm' AND tanggal_mulai > NOW()
-            ORDER BY peserta_terdaftar DESC
+            WHERE status = 'confirm'
+            ORDER BY peserta_terdaftar DESC, tanggal_mulai DESC
             LIMIT ?
         ";
         $stmt = $this->db->prepare($sql);

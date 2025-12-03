@@ -123,6 +123,14 @@ class EventController
         // Get Instagram URL
         $urlInstagram = $_POST['instagram'] ?? '';
         
+        // Process kapasitas - if "-" then unlimited (store as "-")
+        $kapasitas = $_POST['kapasitas'] ?? '100';
+        if (trim($kapasitas) === '-') {
+            $kapasitas = '-';
+        } else {
+            $kapasitas = is_numeric($kapasitas) ? (int)$kapasitas : 100;
+        }
+        
         $eventData = [
             'nama_event' => $_POST['nama_event'] ?? '',
             'deskripsi' => $_POST['deskripsi'] ?? '',
@@ -130,7 +138,7 @@ class EventController
             'tanggal_selesai' => $tanggalSelesai,
             'lokasi' => $_POST['lokasi'] ?? '',
             'organizer' => $_POST['organizer'] ?? 'Campus Nexus',
-            'kapasitas' => (int)($_POST['kapasitas'] ?? 100),
+            'kapasitas' => $kapasitas,
             'poster_event' => $posterPath,
             'kategori' => $tags,
             'harga' => $_POST['harga'] ?? '0',

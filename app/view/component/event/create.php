@@ -440,6 +440,13 @@
 
                         <!-- Harga & Link Pendaftaran -->
                         <div>
+                            <!-- Kapasitas -->
+                            <div class="form-group">
+                                <label>Kapasitas Peserta</label>
+                                <input type="text" name="kapasitas" placeholder="Contoh: 100 atau - (tanpa batas)" value="100">
+                                <p style="font-size: 11px; color: #6b7280; margin-top: 4px;">Isi dengan angka atau tanda "-" jika tidak ada batasan</p>
+                            </div>
+
                             <div class="form-group">
                                 <label>Harga</label>
                                 <div class="price-toggle">
