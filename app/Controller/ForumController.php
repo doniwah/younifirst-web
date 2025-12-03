@@ -51,9 +51,9 @@ class ForumController
                 'excerpt' => $topic['excerpt'],
                 'user_name' => '@' . $topic['user_name'],
                 'user_avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . $topic['user_name'],
-                'views' => rand(100, 2000) . 'rb',
+                'views' => $topic['member_count'],
                 'comments' => $topic['comments'],
-                'thumbnail' => 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=200&h=200&fit=crop'
+                'thumbnail' => $topic['image_url'] ?? 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=200&h=200&fit=crop'
             ];
         }, $trending_topics_data);
 
@@ -66,7 +66,7 @@ class ForumController
                 'user_handle' => '@' . $user->username,
                 'members' => $forum['members'],
                 'messages' => $forum['messages'],
-                'thumbnail' => 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=100&h=100&fit=crop'
+                'thumbnail' => $forum['image_url'] ?? 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=100&h=100&fit=crop'
             ];
         }, $user_forums_data);
 
@@ -131,6 +131,8 @@ class ForumController
             }
         }
 
+        $members = Forum::getMembers($komunitas_id, 3);
+
         View::render('component/forum/chat', [
             'title'     => $komunitas['nama_komunitas'],
             'user'      => $user,
@@ -138,7 +140,8 @@ class ForumController
             'groups'    => $groups,
             'current_group' => $current_group,
             'messages'  => Forum::getMessages($komunitas_id, $group_id),
-            'current_user' => $user
+            'current_user' => $user,
+            'members'   => $members
         ]);
     }
 
@@ -200,6 +203,58 @@ class ForumController
         }
 
         View::redirect('/forum/chat?id=' . $komunitas_id . '&group_id=' . $group_id);
+    }
+
+    public function create()
+    {
+        $user = $this->requireLogin();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $name = trim($_POST['nama_komunitas'] ?? '');
+            $description = trim($_POST['deskripsi'] ?? '');
+            $status = $_POST['status'] ?? 'public';
+            $tags = trim($_POST['tags'] ?? '');
+            
+            if (empty($name) || empty($description)) {
+                View::redirect('/forum/create?error=missing_fields');
+                exit();
+            }
+
+            $image_url = null;
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = __DIR__ . '/../../public/uploads/forums/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                
+                $fileExtension = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+                
+                if (in_array($fileExtension, $allowedExtensions)) {
+                    $fileName = 'forum_' . time() . '_' . uniqid() . '.' . $fileExtension;
+                    $uploadFile = $uploadDir . $fileName;
+                    
+                    if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadFile)) {
+                        $image_url = '/uploads/forums/' . $fileName;
+                    }
+                }
+            }
+
+            $komunitasId = Forum::createKomunitas($name, $description, $image_url, $status, $tags);
+
+            if ($komunitasId) {
+                Forum::addMember($komunitasId, $user->user_id);
+                View::redirect('/forum/chat?id=' . $komunitasId);
+            } else {
+                View::redirect('/forum/create?error=failed');
+            }
+            exit();
+        }
+
+        View::render('component/forum/create', [
+            'title' => 'Buat Forum Baru',
+            'user' => $user
+        ]);
     }
 
     public function sendMessage()

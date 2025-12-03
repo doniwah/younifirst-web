@@ -107,6 +107,35 @@ class LostnFoundController
     }
 
     /**
+     * Show detail item
+     */
+    public function detail($id)
+    {
+        $userId = $this->session->current();
+        
+        // Get user role
+        $db = Database::getConnection('prod');
+        $stmt = $db->prepare("SELECT role FROM users WHERE user_id = ?");
+        $stmt->execute([$userId]);
+        $user = $stmt->fetch();
+        $userRole = $user['role'] ?? 'user';
+        
+        $item = $this->lostFoundRepository->getItemById($id);
+        
+        if (!$item) {
+            header('Location: /lost_found?error=Item tidak ditemukan');
+            exit;
+        }
+
+        View::render('component/lost&found/detail', [
+            'title' => 'Detail Item - ' . $item['nama_barang'],
+            'user' => $userId,
+            'userRole' => $userRole,
+            'item' => $item
+        ]);
+    }
+
+    /**
      * Show edit form
      */
     public function edit($id)

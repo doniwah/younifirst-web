@@ -1,0 +1,253 @@
+/* Forum Create Page Styles */
+.create-forum-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.create-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.back-button {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #1a1a1a;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.back-button:hover {
+    background: #f3f4f6;
+}
+
+/* Image Upload */
+.image-upload-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.image-preview-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 12px;
+}
+
+.image-preview {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    background: #f0f4ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 2px dashed #e0e7ff;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.default-icon {
+    font-size: 3rem;
+    color: #4f87ff;
+}
+
+.upload-btn {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    width: 36px;
+    height: 36px;
+    background: #4f87ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(79, 135, 255, 0.3);
+    transition: transform 0.2s;
+}
+
+.upload-btn:hover {
+    transform: scale(1.1);
+}
+
+.upload-label {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #1a1a1a;
+    font-size: 0.95rem;
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    background: white;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    border-color: #4f87ff;
+    outline: none;
+}
+
+.form-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.char-count {
+    position: absolute;
+    right: 0;
+    top: -25px;
+    font-size: 0.8rem;
+    color: #999;
+}
+
+/* Radio Options */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 4px 0;
+}
+
+.radio-input {
+    width: 18px;
+    height: 18px;
+    accent-color: #4f87ff;
+}
+
+.radio-label {
+    font-size: 0.95rem;
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+.radio-desc {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 400;
+}
+
+/* Submit Button */
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: #dbe4ff;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: not-allowed;
+    transition: all 0.2s;
+    margin-top: 32px;
+}
+
+.submit-btn.active {
+    background: #4f87ff;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(79, 135, 255, 0.3);
+}
+
+.submit-btn.active:hover {
+    background: #3d70e0;
+    transform: translateY(-1px);
+}
+
+/* Dark Mode */
+[data-theme="dark"] .create-forum-container {
+    background: #1f2937;
+}
+
+[data-theme="dark"] .back-button {
+    color: white;
+}
+
+[data-theme="dark"] .back-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .image-preview {
+    background: #374151;
+    border-color: #4b5563;
+}
+
+[data-theme="dark"] .form-label {
+    color: white;
+}
+
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-textarea {
+    background: #374151;
+    border-color: #4b5563;
+    color: white;
+}
+
+[data-theme="dark"] .form-input:focus,
+[data-theme="dark"] .form-textarea:focus {
+    border-color: #4f87ff;
+}
+
+[data-theme="dark"] .radio-label {
+    color: white;
+}
+
+[data-theme="dark"] .radio-desc {
+    color: #9ca3af;
+}
+
+[data-theme="dark"] .submit-btn {
+    background: #374151;
+    color: #9ca3af;
+}
+
+[data-theme="dark"] .submit-btn.active {
+    background: #4f87ff;
+    color: white;
+}

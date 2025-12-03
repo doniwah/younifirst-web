@@ -57,11 +57,13 @@ Router::add('POST', '/api/kompetisi/create-team', KompetisiApiController::class,
 // Lost & Found Routes
 Router::add('GET', '/lost_found', LostnFoundController::class, 'index', [MustLoginMiddleware::class]);
 Router::add('GET', '/lost_found/create', LostnFoundController::class, 'create', [MustLoginMiddleware::class]);
+Router::add('GET', '/lost_found/detail/([a-zA-Z0-9]+)', LostnFoundController::class, 'detail', [MustLoginMiddleware::class]);
+
 Router::add('POST', '/lost_found/store', LostnFoundController::class, 'store', [MustLoginMiddleware::class]);
-Router::add('GET', '/lost_found/edit/{id}', LostnFoundController::class, 'edit', [MustLoginMiddleware::class]);
-Router::add('POST', '/lost_found/update/{id}', LostnFoundController::class, 'update', [MustLoginMiddleware::class]);
-Router::add('DELETE', '/lost_found/delete/{id}', LostnFoundController::class, 'delete', [MustLoginMiddleware::class]);
-Router::add('POST', '/lost_found/complete/{id}', LostnFoundController::class, 'markComplete', [MustLoginMiddleware::class]);
+Router::add('GET', '/lost_found/edit/([a-zA-Z0-9]+)', LostnFoundController::class, 'edit', [MustLoginMiddleware::class]);
+Router::add('POST', '/lost_found/update/([a-zA-Z0-9]+)', LostnFoundController::class, 'update', [MustLoginMiddleware::class]);
+Router::add('DELETE', '/lost_found/delete/([a-zA-Z0-9]+)', LostnFoundController::class, 'delete', [MustLoginMiddleware::class]);
+Router::add('POST', '/lost_found/complete/([a-zA-Z0-9]+)', LostnFoundController::class, 'markComplete', [MustLoginMiddleware::class]);
 
 // Event Routes
 Router::add('GET', '/event', EventController::class, 'index', [MustLoginMiddleware::class]);
@@ -75,6 +77,8 @@ Router::add('POST', '/event/confirm/{id}', EventController::class, 'confirm', [M
 // Forum Routes
 Router::add('GET', '/forum', ForumController::class, 'forum', [MustLoginMiddleware::class]);
 Router::add('GET', '/forum/chat', ForumController::class, 'chat', [MustLoginMiddleware::class]);
+Router::add('GET', '/forum/create', ForumController::class, 'create', [MustLoginMiddleware::class]);
+Router::add('POST', '/forum/create', ForumController::class, 'create', [MustLoginMiddleware::class]);
 Router::add('POST', '/forum/create-group', ForumController::class, 'createGroup', [MustLoginMiddleware::class]);
 Router::add('POST', '/forum/edit-group', ForumController::class, 'editGroup', [MustLoginMiddleware::class]);
 Router::add('POST', '/forum/send-message', ForumController::class, 'sendMessage', [MustLoginMiddleware::class]);

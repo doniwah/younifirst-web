@@ -5,82 +5,241 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?> - Campus Nexus</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/css/sidebar.css">
-    <link rel="stylesheet" href="/css/team.css">
+    <link rel="stylesheet" href="/css/event.css">
+    <link rel="stylesheet" href="/css/dashboard-modern.css">
+    <style>
+        /* Override/Custom Styles */
+        .main-content {
+            background-color: var(--bg-primary);
+            min-height: 100vh;
+        }
+
+        /* Layout adaptation */
+        .lf-container {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px 20px 20px; /* Reduced top padding */
+        }
+
+        @media (max-width: 1024px) {
+            .lf-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Header Override */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px; /* Reduced margin */
+            padding: 16px 20px;
+            background: transparent;
+            border: none;
+            position: static;
+        }
+
+        /* ... */
+
+        /* Search Box Refinement - Premium Look */
+        .search-box .search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 55px 12px 20px;
+            border: 2px solid #eef2f6;
+            border-radius: 16px;
+            font-size: 15px;
+            background: #ffffff;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            height: 52px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+        }
+
+        .search-box button {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: var(--primary-color);
+            color: #ffffff !important;
+            border: none;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(74, 144, 226, 0.3);
+        }
+
+        .search-box button:hover {
+            background: #3a7bc8;
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .search-box button i {
+            font-size: 18px;
+            color: #ffffff !important;
+            line-height: 1;
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <?php require_once __DIR__ . "/../../layouts/sidebar.php"; ?>
-    <div class="main-content">
-        <div class="header">
-            <div>
-                <h1><?= $title ?></h1>
-                <p>Laporkan barang hilang atau ditemukan</p>
-            </div>
-        </div>
 
-        <div class="form-container" style="background: white; border-radius: 12px; padding: 32px; max-width: 800px; margin: 0 auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <?php if (isset($_GET['error'])): ?>
-            <div class="alert alert-error" style="padding: 12px 16px; border-radius: 8px; margin-bottom: 24px; background: #fee2e2; color: #991b1b;">
-                <i class="fas fa-exclamation-circle"></i>
-                <?= htmlspecialchars($_GET['error']) ?>
-            </div>
-            <?php endif; ?>
-
-            <form action="/lost_found/store" method="POST" enctype="multipart/form-data">
-                <div class="form-group" style="margin-bottom: 24px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Kategori <span style="color: #ef4444;">*</span></label>
-                    <select name="kategori" required style="width: 100%; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 8px;">
-                        <option value="">Pilih Kategori</option>
-                        <option value="hilang">Barang Hilang</option>
-                        <option value="ditemukan">Barang Ditemukan</option>
-                    </select>
-                </div>
-
-                <div class="form-group" style="margin-bottom: 24px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Nama Barang <span style="color: #ef4444;">*</span></label>
-                    <input type="text" name="nama_barang" required placeholder="Contoh: Dompet Kulit Coklat" style="width: 100%; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 8px;">
-                </div>
-
-                <div class="form-group" style="margin-bottom: 24px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Deskripsi <span style="color: #ef4444;">*</span></label>
-                    <textarea name="deskripsi" required placeholder="Jelaskan detail barang..." style="width: 100%; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 8px; min-height: 120px;"></textarea>
-                </div>
-
-                <div class="form-group" style="margin-bottom: 24px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Lokasi <span style="color: #ef4444;">*</span></label>
-                    <input type="text" name="lokasi" required placeholder="Contoh: Perpustakaan Pusat" style="width: 100%; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 8px;">
-                </div>
-
-                <div class="form-group" style="margin-bottom: 24px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">No. HP <span style="color: #ef4444;">*</span></label>
-                    <input type="tel" name="no_hp" required placeholder="08xxxxxxxxxx" style="width: 100%; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 8px;">
-                </div>
-
-                <div class="form-group" style="margin-bottom: 24px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Email</label>
-                    <input type="email" name="email" placeholder="email@example.com" style="width: 100%; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 8px;">
-                </div>
-
-                <div class="form-group" style="margin-bottom: 24px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Foto Barang</label>
-                    <div onclick="document.getElementById('foto_barang').click()" style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 24px; text-align: center; cursor: pointer;">
-                        <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #9ca3af; margin-bottom: 12px;"></i>
-                        <p>Klik untuk upload foto</p>
-                        <small style="color: #6b7280;">JPG, PNG, GIF (Max 5MB)</small>
-                        <img id="imagePreview" style="max-width: 100%; max-height: 300px; margin-top: 16px; border-radius: 8px; display: none;">
-                    </div>
-                    <input type="file" id="foto_barang" name="foto_barang" accept="image/*" style="display: none;" onchange="previewImage(this)">
-                </div>
-
-                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
-                    <a href="/lost_found" style="padding: 12px 24px; border-radius: 8px; background: #f3f4f6; color: #374151; text-decoration: none; display: flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-times"></i> Batal
-                    </a>
-                    <button type="submit" style="padding: 12px 24px; border-radius: 8px; background: #4f87ff; color: white; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-save"></i> Simpan
+    <div class="main-content" style="padding: 0;">
+        <div class="dashboard-container">
+            <!-- Header -->
+            <div class="page-header">
+                <h1 class="header-title">Buat Laporan</h1>
+                <div class="header-actions">
+                    <button class="notification-btn">
+                        <i class="bi bi-bell"></i>
+                        <span class="badge">3</span>
+                    </button>
+                    <button class="mode-toggle">
+                        <i class="bi bi-sun"></i>
+                        <span>MODE SIANG</span>
                     </button>
                 </div>
-            </form>
+            </div>
+
+            <div class="lf-container">
+                <!-- Form Column -->
+                <div class="lf-feed">
+                    <?php if (isset($_GET['error'])): ?>
+                        <div class="alert alert-error" style="padding: 12px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin-bottom: 20px;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <?= htmlspecialchars($_GET['error']) ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="form-card">
+                        <form action="/lost_found/store" method="POST" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label class="form-label">Kategori <span style="color: var(--danger-color);">*</span></label>
+                                <select name="kategori" class="form-control" required>
+                                    <option value="">Pilih Kategori</option>
+                                    <option value="hilang">Barang Hilang</option>
+                                    <option value="ditemukan">Barang Ditemukan</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Nama Barang <span style="color: var(--danger-color);">*</span></label>
+                                <input type="text" name="nama_barang" class="form-control" placeholder="Contoh: Dompet Kulit Coklat" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Deskripsi <span style="color: var(--danger-color);">*</span></label>
+                                <textarea name="deskripsi" class="form-control" rows="5" placeholder="Jelaskan detail barang..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Tanggal Kejadian <span style="color: var(--danger-color);">*</span></label>
+                                <input type="datetime-local" name="tanggal" class="form-control" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Lokasi <span style="color: var(--danger-color);">*</span></label>
+                                <input type="text" name="lokasi" class="form-control" placeholder="Contoh: Perpustakaan Pusat" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">No. HP <span style="color: var(--danger-color);">*</span></label>
+                                <input type="tel" name="no_hp" class="form-control" placeholder="08xxxxxxxxxx" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="e-mail" class="form-control" placeholder="email@example.com">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Foto Barang</label>
+                                <div class="upload-area" onclick="document.getElementById('foto_barang').click()">
+                                    <i class="bi bi-cloud-upload" style="font-size: 32px; color: var(--text-light); margin-bottom: 8px;"></i>
+                                    <p style="color: var(--text-secondary); margin: 0;">Klik untuk upload foto</p>
+                                    <small style="color: var(--text-light);">JPG, PNG, GIF (Max 5MB)</small>
+                                    <img id="imagePreview" style="max-width: 100%; max-height: 300px; margin-top: 16px; border-radius: 8px; display: none;">
+                                </div>
+                                <input type="file" id="foto_barang" name="foto_barang" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                            </div>
+
+                            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                                <a href="/lost_found" class="btn-cancel">Batal</a>
+                                <button type="submit" class="btn-submit">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Sidebar Column -->
+                <aside class="dashboard-sidebar">
+                    <!-- Categories (Moved above Search) -->
+                    <div class="sidebar-section">
+                        <h3>Kategori</h3>
+                        <div class="forum-item">
+                            <div style="width: 40px; height: 40px; background: var(--bg-primary); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-grid" style="color: var(--text-secondary);"></i>
+                            </div>
+                            <div>
+                                <strong>Semua</strong>
+                                <span>Tampilkan semua item</span>
+                            </div>
+                        </div>
+                        <div class="forum-item">
+                            <div style="width: 40px; height: 40px; background: #FFF5F5; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-exclamation-circle" style="color: var(--danger-color);"></i>
+                            </div>
+                            <div>
+                                <strong>Kehilangan</strong>
+                                <span>Barang yang dicari</span>
+                            </div>
+                        </div>
+                        <div class="forum-item">
+                            <div style="width: 40px; height: 40px; background: #F0F7FF; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-check-circle" style="color: var(--primary-color);"></i>
+                            </div>
+                            <div>
+                                <strong>Ditemukan</strong>
+                                <span>Barang yang ditemukan</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search Box -->
+                    <div class="search-box">
+                        <h3>Pencarian</h3>
+                        <div class="search-input-wrapper">
+                            <input type="text" class="search-input" placeholder="Cari...">
+                            <button>
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </aside>
+            </div>
         </div>
     </div>
 

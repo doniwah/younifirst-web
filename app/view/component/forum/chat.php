@@ -471,13 +471,13 @@
                     <span class="tag">Projek</span>
                     <span class="tag">Tim</span>
                 </div>
-
                 <div class="members-preview">
                     <div class="member-avatars">
-                        <!-- Mock avatars -->
-                        <div class="member-avatar-small" style="background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=1'); background-size: cover;"></div>
-                        <div class="member-avatar-small" style="background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=2'); background-size: cover;"></div>
-                        <div class="member-avatar-small" style="background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=3'); background-size: cover;"></div>
+                        <?php if (isset($members) && !empty($members)): ?>
+                            <?php foreach ($members as $member): ?>
+                                <div class="member-avatar-small" style="background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=<?= htmlspecialchars($member['username']) ?>'); background-size: cover;" title="<?= htmlspecialchars($member['username']) ?>"></div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
                     <div class="member-count"><?= htmlspecialchars($komunitas['jumlah_anggota']) ?> anggota</div>
                 </div>

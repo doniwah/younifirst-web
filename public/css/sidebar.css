@@ -282,3 +282,60 @@
 [data-theme="dark"] .user-info p {
   color: var(--text-secondary);
 }
+
+/* Sidebar Dropdown Styles */
+.menu-item-wrapper {
+  width: 100%;
+}
+
+.dropdown-toggle {
+  cursor: pointer;
+  justify-content: space-between !important;
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.dropdown-arrow {
+  font-size: 12px;
+  transition: transform 0.3s ease;
+}
+
+.menu-item-wrapper.expanded>.dropdown-toggle .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.dropdown-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.menu-item-wrapper.expanded>.dropdown-content {
+  max-height: 500px;
+  /* Arbitrary large height for transition */
+}
+
+/* Indentation Levels */
+.dropdown-content .menu-item {
+  padding-left: 48px;
+  font-size: 13px;
+}
+
+.dropdown-content .dropdown-content .menu-item {
+  padding-left: 64px;
+}
+
+.dropdown-content .dropdown-content .dropdown-content .menu-item {
+  padding-left: 80px;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .dropdown-content {
+  background: rgba(255, 255, 255, 0.02);
+}

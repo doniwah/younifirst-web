@@ -99,7 +99,8 @@ class Forum
     {
         $db = self::getConnection();
         $query = "INSERT INTO forum_anggota (komunitas_id, user_id, joined_at) 
-                  VALUES (:komunitas_id, :user_id, NOW())";
+                  VALUES (:komunitas_id, :user_id, NOW())
+                  ON CONFLICT DO NOTHING";
 
         $stmt = $db->prepare($query);
         $stmt->bindParam(':komunitas_id', $komunitas_id);
@@ -224,12 +225,22 @@ class Forum
     public static function getTrendingTopics($limit = 5)
     {
         $db = self::getConnection();
-        $query = "SELECT k.komunitas_id, k.nama_komunitas as title, k.deskripsi as excerpt,
-                         'Admin' as user_name,
+        $query = "SELECT k.komunitas_id, k.nama_komunitas as title, k.deskripsi as excerpt, k.image_url,
+                         COALESCE(
+                            (SELECT u.username 
+                             FROM forum_messages m2 
+                             JOIN users u ON m2.user_id = u.user_id 
+                             WHERE m2.komunitas_id = k.komunitas_id 
+                             GROUP BY u.username 
+                             ORDER BY COUNT(*) DESC 
+                             LIMIT 1), 
+                            'Admin'
+                         ) as user_name,
+                         (SELECT COUNT(*) FROM forum_anggota fa WHERE fa.komunitas_id = k.komunitas_id) as member_count,
                          COUNT(DISTINCT m.message_id) as comments
                   FROM forum_komunitas k
                   LEFT JOIN forum_messages m ON k.komunitas_id = m.komunitas_id
-                  GROUP BY k.komunitas_id, k.nama_komunitas, k.deskripsi
+                  GROUP BY k.komunitas_id, k.nama_komunitas, k.deskripsi, k.image_url
                   ORDER BY comments DESC
                   LIMIT :limit";
 
@@ -342,5 +353,41 @@ class Forum
         }
         
         return $stmt->execute();
+    }
+
+    public static function createKomunitas($name, $description, $imageUrl, $status, $tags)
+    {
+        $db = self::getConnection();
+        $query = "INSERT INTO forum_komunitas (nama_komunitas, deskripsi, image_url, status, tags, created_at, updated_at) 
+                  VALUES (:name, :description, :image_url, :status, :tags, NOW(), NOW())";
+
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':image_url', $imageUrl);
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':tags', $tags);
+
+        if ($stmt->execute()) {
+            return $db->lastInsertId();
+        }
+        return false;
+    }
+
+    public static function getMembers($komunitas_id, $limit = 3)
+    {
+        $db = self::getConnection();
+        $query = "SELECT u.username 
+                  FROM forum_anggota fa
+                  JOIN users u ON fa.user_id = u.user_id
+                  WHERE fa.komunitas_id = :komunitas_id
+                  ORDER BY fa.joined_at DESC
+                  LIMIT :limit";
+
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':komunitas_id', $komunitas_id);
+        $stmt->bindValue(':limit', (int)$limit, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 }
