@@ -110,9 +110,10 @@ class TeamRepository
             INSERT INTO team (
                 team_id, nama_team, nama_kegiatan, 
                 max_anggota, role_required, keterangan_tambahan, 
-                status, tenggat_join, deskripsi_anggota, role
+                status, tenggat_join, deskripsi_anggota, role,
+                penyelenggara, link_postingan, ketentuan
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ";
         
         $stmt = $this->db->prepare($sql);
@@ -126,7 +127,10 @@ class TeamRepository
             $data['status'] ?? 'waiting',
             $data['tenggat_join'],
             $data['deskripsi_anggota'] ?? '',
-            'ketua'
+            'ketua',
+            $data['penyelenggara'] ?? null,
+            $data['link_postingan'] ?? null,
+            $data['ketentuan'] ?? null
         ]);
         
         return $teamId;
