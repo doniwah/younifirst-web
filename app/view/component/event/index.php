@@ -55,7 +55,12 @@
                                 <div class="comp-meta">
                                     <span class="comp-scope"><?= htmlspecialchars($event['kategori'] ?? 'Event') ?></span>
                                     <span class="comp-participants">
-                                        <i class="bi bi-people"></i> <?= $event['peserta_terdaftar'] ?? 0 ?>/<?= $event['kapasitas'] ?>
+                                        <i class="bi bi-people"></i> 
+                                        <?php if ($event['kapasitas'] === '-'): ?>
+                                            <?= $event['peserta_terdaftar'] ?? 0 ?>/∞
+                                        <?php else: ?>
+                                            <?= $event['peserta_terdaftar'] ?? 0 ?>/<?= $event['kapasitas'] ?>
+                                        <?php endif; ?>
                                     </span>
                                 </div>
                                 
@@ -109,7 +114,12 @@
                             <div class="comp-header-small">
                                 <span class="comp-scope-small"><?= htmlspecialchars($event['kategori'] ?? 'Event') ?></span>
                                 <span class="comp-participants-small">
-                                    <i class="bi bi-people"></i> <?= $event['peserta_terdaftar'] ?? 0 ?>/<?= $event['kapasitas'] ?>
+                                    <i class="bi bi-people"></i> 
+                                    <?php if ($event['kapasitas'] === '-'): ?>
+                                        <?= $event['peserta_terdaftar'] ?? 0 ?>/∞
+                                    <?php else: ?>
+                                        <?= $event['peserta_terdaftar'] ?? 0 ?>/<?= $event['kapasitas'] ?>
+                                    <?php endif; ?>
                                 </span>
                             </div>
                             
