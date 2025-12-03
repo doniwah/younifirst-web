@@ -57,24 +57,113 @@ class TeamController
             exit;
         }
 
+        View::render('component/team/create', [
+            'title' => 'Buat Tim Baru',
+            'user' => $userId
+        ]);
+    }   
+
+    public function store()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /team/create');
+            exit;
+        }
+
+        $userId = $this->session->current();
         
         if (!$userId) {
-            header('Location: /users/login');
+            header('Location: /users/login?error=' . urlencode('Silakan login terlebih dahulu'));
             exit;
         }
 
-        $team = $this->teamRepository->getTeamById($id);
-        
-        if (!$team) {
-            header('Location: /team?error=Team tidak ditemukan');
-            exit;
-        }
+        try {
+            // Validate required fields
+            if (empty($_POST['nama_team'])) {
+                header('Location: /team/create?error=' . urlencode('Nama team harus diisi'));
+                exit;
+            }
 
-        View::render('component/team/edit', [
-            'title' => 'Edit Pencarian Tim',
-            'user' => $userId,
-            'team' => $team
-        ]);
+            if (empty($_POST['max_members'])) {
+                header('Location: /team/create?error=' . urlencode('Jumlah member maksimal harus diisi'));
+                exit;
+            }
+
+            if (empty($_POST['deadline'])) {
+                header('Location: /team/create?error=' . urlencode('Batas tanggal pendaftaran harus diisi'));
+                exit;
+            }
+
+            if (empty($_POST['nama_lomba'])) {
+                header('Location: /team/create?error=' . urlencode('Nama lomba harus diisi'));
+                exit;
+            }
+
+            // Collect positions and requirements
+            $positionNames = [];
+            $positionReqs = [];
+            
+            if (!empty($_POST['position_name']) && is_array($_POST['position_name'])) {
+                foreach ($_POST['position_name'] as $index => $name) {
+                    if (!empty(trim($name))) {
+                        $positionNames[] = trim($name);
+                        // Collect requirement for this position if exists
+                        $req = isset($_POST['position_req'][$index]) ? trim($_POST['position_req'][$index]) : '';
+                        if (!empty($req)) {
+                            $positionReqs[] = $req;
+                        }
+                    }
+                }
+            }
+
+            if (empty($positionNames)) {
+                header('Location: /team/create?error=' . urlencode('Minimal satu posisi harus diisi'));
+                exit;
+            }
+
+            // Join with commas
+            $positionsString = implode(', ', $positionNames);
+            $requirementsString = implode(', ', $positionReqs);
+
+            // Prepare team data
+            $teamData = [
+                'nama_team' => trim($_POST['nama_team']),
+                'nama_kegiatan' => trim($_POST['nama_lomba']),
+                'max_anggota' => (int)$_POST['max_members'],
+                'role_required' => $positionsString,
+                'ketentuan' => $requirementsString,
+                'penyelenggara' => trim($_POST['penyelenggara'] ?? ''),
+                'link_postingan' => trim($_POST['link_postingan'] ?? ''),
+                'keterangan_tambahan' => '', // No longer used for extra info
+                'status' => 'waiting',
+                'tenggat_join' => $_POST['deadline'],
+                'deskripsi_anggota' => ''
+            ];
+
+            // Create team
+            $teamId = $this->teamRepository->createTeam($teamData);
+
+            if ($teamId) {
+                // Add creator as team leader
+                $addLeaderSuccess = $this->detailAnggotaRepository->addAnggotaConfirmed($teamId, $userId, 'ketua');
+                
+                if ($addLeaderSuccess) {
+                    header('Location: /kompetisi?success=' . urlencode('Tim berhasil dibuat! Menunggu konfirmasi dari admin.'));
+                } else {
+                    // Team created but failed to add leader
+                    header('Location: /kompetisi?error=' . urlencode('Tim dibuat tetapi gagal menambahkan ketua. Silakan hubungi admin.'));
+                }
+            } else {
+                header('Location: /team/create?error=' . urlencode('Gagal membuat tim. Silakan coba lagi.'));
+            }
+        } catch (\PDOException $e) {
+            error_log("Database error creating team: " . $e->getMessage());
+            header('Location: /team/create?error=' . urlencode('Gagal membuat tim: ' . $e->getMessage()));
+        } catch (\Exception $e) {
+            error_log("Error creating team: " . $e->getMessage());
+            header('Location: /team/create?error=' . urlencode('Terjadi kesalahan: ' . $e->getMessage()));
+        }
+        exit;
     }
 
     public function update($id)

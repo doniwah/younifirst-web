@@ -258,9 +258,6 @@
 
     <div class="main-content">
         <div class="create-team-container">
-            <button class="back-button" onclick="window.location.href='/team'">
-                <i class="bi bi-arrow-left"></i>
-            </button>
 
             <form action="/team/store" method="POST" id="teamForm">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
