@@ -32,6 +32,10 @@ class Router
 
         $method = $_SERVER['REQUEST_METHOD'];
 
+        // Debug logging
+        error_log("Router: Request Path: " . $path);
+        error_log("Router: Request Method: " . $method);
+
         foreach (self::$routes as $route) {
             $pattern = "#^" . $route['path'] . "$#";
             if (preg_match($pattern, $path, $variables) && $method == $route['method']) {

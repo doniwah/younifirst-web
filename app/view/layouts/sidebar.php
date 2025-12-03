@@ -51,7 +51,7 @@
                     <span>Buat Forum</span>
                 </a>
                 
-                <a href="/team/recruit" class="menu-item">
+                <a href="/team/create" class="menu-item">
                     <span>Rekrut Team</span>
                 </a>
 

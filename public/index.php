@@ -97,7 +97,7 @@ Router::add('GET', '/api/teams/competition/{competitionId}', TeamApiController::
 
 Router::add('GET', '/api/events', EventApiController::class, 'getAllEvents', []);
 Router::add('GET', '/api/events/{id}', EventApiController::class, 'getEvent', []);
-Router::add('POST', '/api/events', EventApiController::class, 'createEvent', [MustLoginMiddleware::class]);
+Router::add('POST', '/api/events/create', EventApiController::class, 'createEvent');
 Router::add('PUT', '/api/events/{id}', EventApiController::class, 'updateEvent', [MustLoginMiddleware::class]);
 Router::add('DELETE', '/api/events/{id}', EventApiController::class, 'deleteEvent', [MustLoginMiddleware::class]);
 Router::add('POST', '/api/events/{id}/confirm', EventApiController::class, 'confirmEvent', [MustLoginMiddleware::class]);

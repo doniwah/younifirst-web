@@ -111,104 +111,103 @@ class EventApiController
     /**
      * Create new event
      */
-    public function createEvent()
-    {
-        header('Content-Type: application/json');
+    public function createEvent() {
+    header('Content-Type: application/json');
 
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            http_response_code(405);
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Method not allowed'
+        ], JSON_PRETTY_PRINT);
+        return;
+    }
+
+    try {
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            http_response_code(400);
             echo json_encode([
                 'success' => false,
-                'message' => 'Method not allowed'
+                'message' => 'Invalid JSON data'
             ], JSON_PRETTY_PRINT);
             return;
         }
 
-        try {
-            $input = file_get_contents('php://input');
-            $data = json_decode($input, true);
+        // Validation
+        $requiredFields = ['nama_event', 'deskripsi', 'tanggal_mulai', 'lokasi', 'organizer', 'kapasitas', 'kategori', 'harga', 'user_id'];
+        $missingFields = [];
 
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                http_response_code(400);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Invalid JSON data'
-                ], JSON_PRETTY_PRINT);
-                return;
+        foreach ($requiredFields as $field) {
+            if (empty($data[$field])) {
+                $missingFields[] = $field;
             }
+        }
 
-            // Validation
-            $requiredFields = ['nama_event', 'deskripsi', 'tanggal_mulai', 'tanggal_selsai', 'lokasi', 'organizer', 'kapasitas', 'kategori', 'harga'];
-            $missingFields = [];
+        if (!empty($missingFields)) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Missing required fields: ' . implode(', ', $missingFields)
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+        
+        // Get user role dari user_id yang dikirim
+        $userRole = 'user';
+        $userId = $data['user_id']; // ← Ambil dari data JSON
+        
+        if ($userId) {
+            $db = Database::getConnection('prod');
+            $stmt = $db->prepare("SELECT role FROM users WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            $user = $stmt->fetch();
+            $userRole = $user['role'] ?? 'user';
+        }
 
-            foreach ($requiredFields as $field) {
-                if (empty($data[$field])) {
-                    $missingFields[] = $field;
-                }
-            }
+        $eventData = [
+            'nama_event' => trim($data['nama_event']),
+            'deskripsi' => trim($data['deskripsi']),
+            'tanggal_mulai' => $data['tanggal_mulai'],
+            'lokasi' => trim($data['lokasi']),
+            'organizer' => trim($data['organizer']),
+            'kapasitas' => (int)$data['kapasitas'],
+            'kategori' => trim($data['kategori']),
+            'harga' => (int)$data['harga'],
+            'poster_event' => $data['poster_event'] ?? null,
+            'status' => $userRole === 'admin' ? 'confirm' : 'waiting'
+        ];
 
-            if (!empty($missingFields)) {
-                http_response_code(400);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Missing required fields: ' . implode(', ', $missingFields)
-                ], JSON_PRETTY_PRINT);
-                return;
-            }
-            
-            // Get user role
-            $userRole = 'user';
-            $userId = $this->session->current();
-            if ($userId) {
-                $db = Database::getConnection('prod');
-                $stmt = $db->prepare("SELECT role FROM users WHERE user_id = ?");
-                $stmt->execute([$userId]);
-                $user = $stmt->fetch();
-                $userRole = $user['role'] ?? 'user';
-            }
+        $eventId = $this->eventRepository->createEvent($eventData);
 
-            $eventData = [
-                'nama_event' => trim($data['nama_event']),
-                'deskripsi' => trim($data['deskripsi']),
-                'tanggal_mulai' => $data['tanggal_mulai'],
-                'tanggal_selsai' => $data['tanggal_selsai'],
-                'lokasi' => trim($data['lokasi']),
-                'organizer' => trim($data['organizer']),
-                'kapasitas' => (int)$data['kapasitas'],
-                'kategori' => trim($data['kategori']),
-                'harga' => (int)$data['harga'],
-                'poster_event' => $data['poster_event'] ?? null,
-                'status' => $userRole === 'admin' ? 'confirm' : 'waiting'
-            ];
-
-            $eventId = $this->eventRepository->createEvent($eventData);
-
-            if ($eventId) {
-                http_response_code(201);
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Event created successfully',
-                    'data' => [
-                        'event_id' => $eventId,
-                        'event' => $this->eventRepository->getEventById($eventId)
-                    ]
-                ], JSON_PRETTY_PRINT);
-            } else {
-                http_response_code(500);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Failed to create event'
-                ], JSON_PRETTY_PRINT);
-            }
-        } catch (\Exception $e) {
+        if ($eventId) {
+            http_response_code(201);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Event created successfully',
+                'data' => [
+                    'event_id' => $eventId,
+                    'event' => $this->eventRepository->getEventById($eventId)
+                ]
+            ], JSON_PRETTY_PRINT);
+        } else {
             http_response_code(500);
             echo json_encode([
                 'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage()
+                'message' => 'Failed to create event'
             ], JSON_PRETTY_PRINT);
         }
+    } catch (\Exception $e) {
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Internal server error',
+            'error' => $e->getMessage()
+        ], JSON_PRETTY_PRINT);
     }
+}
 
     /**
      * Update event

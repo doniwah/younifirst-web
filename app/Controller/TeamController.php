@@ -129,7 +129,7 @@ class TeamController
                 'nama_team' => trim($_POST['nama_team']),
                 'nama_kegiatan' => trim($_POST['nama_lomba']),
                 'max_anggota' => (int)$_POST['max_members'],
-                'role_required' => json_encode($positions),
+                'role_required' => $positionsString,
                 'keterangan_tambahan' => json_encode($extraInfo),
                 'status' => 'waiting',
                 'tenggat_join' => $_POST['deadline'],
