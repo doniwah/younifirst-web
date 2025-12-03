@@ -57,11 +57,37 @@ class TeamController
             exit;
         }
 
-        View::render('component/team/create', [
-            'title' => 'Buat Tim Baru',
-            'user' => $userId
-        ]);
-    }   
+        // Check if user wants to create new team explicitly
+        if (isset($_GET['new'])) {
+             View::render('component/team/create', [
+                'title' => 'Buat Tim Baru',
+                'user' => $userId
+            ]);
+            return;
+        }
+
+        // Get user's teams
+        $userTeams = $this->teamRepository->getUserTeams($userId);
+        
+        // Filter for teams where user is leader
+        $myTeams = array_filter($userTeams, function($team) {
+            return isset($team['role']) && $team['role'] === 'ketua';
+        });
+
+        if (!empty($myTeams)) {
+            View::render('component/team/my_teams', [
+                'title' => 'Tim Anda',
+                'user' => $userId,
+                'teams' => $myTeams
+            ]);
+        } else {
+            // No teams, show create form
+            View::render('component/team/create', [
+                'title' => 'Buat Tim Baru',
+                'user' => $userId
+            ]);
+        }
+    }
 
     public function store()
     {
@@ -164,6 +190,29 @@ class TeamController
             header('Location: /team/create?error=' . urlencode('Terjadi kesalahan: ' . $e->getMessage()));
         }
         exit;
+    }
+
+    public function edit($id)
+    {
+        $userId = $this->session->current();
+        
+        if (!$userId) {
+            header('Location: /users/login');
+            exit;
+        }
+
+        $team = $this->teamRepository->getTeamById($id);
+        
+        if (!$team) {
+            header('Location: /team?error=Team tidak ditemukan');
+            exit;
+        }
+
+        View::render('component/team/edit', [
+            'title' => 'Edit Pencarian Tim',
+            'user' => $userId,
+            'team' => $team
+        ]);
     }
 
     public function update($id)
@@ -404,6 +453,64 @@ class TeamController
             echo json_encode(['success' => true, 'message' => 'Berhasil keluar dari team']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Gagal keluar dari team']);
+        }
+    }
+
+    public function uploadPoster($teamId)
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+            exit;
+        }
+
+        $userId = $this->session->current();
+        if (!$userId) {
+            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+            exit;
+        }
+
+        // Verify user is leader of the team
+        if (!$this->detailAnggotaRepository->isTeamLeader($teamId, $userId)) {
+            echo json_encode(['success' => false, 'message' => 'Only team leader can upload poster']);
+            exit;
+        }
+
+        if (!isset($_FILES['poster']) || $_FILES['poster']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['success' => false, 'message' => 'No file uploaded or upload error']);
+            exit;
+        }
+
+        $file = $_FILES['poster'];
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        $maxSize = 5 * 1024 * 1024; // 5MB
+
+        if (!in_array($file['type'], $allowedTypes)) {
+            echo json_encode(['success' => false, 'message' => 'Invalid file type. Only JPG, JPEG, and PNG allowed']);
+            exit;
+        }
+
+        if ($file['size'] > $maxSize) {
+            echo json_encode(['success' => false, 'message' => 'File size too large. Max 5MB']);
+            exit;
+        }
+
+        $uploadDir = __DIR__ . '/../../public/uploads/posters/';
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $filename = 'poster_' . $teamId . '_' . time() . '.' . $extension;
+        $targetPath = $uploadDir . $filename;
+
+        if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+            if ($this->teamRepository->updatePoster($teamId, $filename)) {
+                echo json_encode(['success' => true, 'message' => 'Poster uploaded successfully', 'filename' => $filename]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Failed to update database']);
+            }
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to save file']);
         }
     }
 }

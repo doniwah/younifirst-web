@@ -148,9 +148,16 @@ class TeamRepository
         }
 
         $params[] = $id;
-        $sql = "UPDATE team SET " . implode(', ', $fields) . " WHERE id = ?";
+        $sql = "UPDATE team SET " . implode(', ', $fields) . " WHERE team_id = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($params);
+    }
+
+    public function updatePoster($teamId, $filename)
+    {
+        $sql = "UPDATE team SET poster_lomba = ? WHERE team_id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$filename, $teamId]);
     }
 
     // Delete team
@@ -283,10 +290,10 @@ class TeamRepository
     public function getUserTeams($userId)
     {
         $sql = "
-            SELECT t.*, tm.role, COUNT(tm2.id) as current_members
+            SELECT t.*, tm.role, COUNT(tm2.user_id) as current_members
             FROM team t
             JOIN detail_anggota tm ON t.team_id = tm.team_id
-            LEFT JOIN detail_anggota tm2 ON t.team_id = tm2.team_id
+            LEFT JOIN detail_anggota tm2 ON t.team_id = tm2.team_id AND tm2.status = 'confirm'
             WHERE tm.user_id = ?
             GROUP BY t.team_id, tm.role
             ORDER BY t.team_id DESC
