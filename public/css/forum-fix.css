@@ -5,6 +5,9 @@
     display: inline-block;
     cursor: pointer;
     transition: color 0.2s;
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 100;
 }
 
 .forum-name-link:hover {
@@ -21,9 +24,20 @@
     color: #1a1a1a;
     margin-bottom: 2px;
     transition: color 0.2s;
+    pointer-events: none;
 }
 
 /* Ensure the card has hover effect */
 .forum-card-small:hover {
     background: #e0e7ff;
+}
+
+/* Make sure card doesn't block the link */
+.forum-card-small {
+    position: relative;
+}
+
+.forum-info-small {
+    position: relative;
+    z-index: 10;
 }

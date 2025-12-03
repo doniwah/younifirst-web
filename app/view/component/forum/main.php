@@ -14,7 +14,7 @@
         <div class="trending-list">
             <?php if (isset($trending_topics) && !empty($trending_topics)): ?>
                 <?php foreach ($trending_topics as $topic): ?>
-                <div class="trending-card">
+                <div class="trending-card" onclick="window.location.href='/forum/chat?id=<?= $topic['id'] ?>'" style="cursor: pointer;">
                     <div class="trending-content">
                         <h4 class="trending-title"><?= htmlspecialchars($topic['title']) ?></h4>
                         <p class="trending-excerpt"><?= htmlspecialchars($topic['excerpt']) ?></p>
@@ -57,18 +57,16 @@
             </div>
         </div>
 
-        <!-- User Forums -->
+        <!-- User Forums (Joined) -->
         <div class="user-forums-section">
             <h3 class="section-title">Forum Anda</h3>
             
             <div class="user-forums-list">
                 <?php if (isset($user_forums) && !empty($user_forums)): ?>
                     <?php foreach ($user_forums as $forum): ?>
-                    <div class="forum-card-small">
+                    <div class="forum-card-small" onclick="window.location.href='/forum/chat?id=<?= $forum['id'] ?>'" style="cursor: pointer;">
                         <div class="forum-info-small">
-                            <a href="/forum/chat?id=<?= $forum['id'] ?>" class="forum-name-link">
-                                <h4 class="forum-name-small"><?= htmlspecialchars($forum['name']) ?></h4>
-                            </a>
+                            <h4 class="forum-name-small"><?= htmlspecialchars($forum['name']) ?></h4>
                             <p class="forum-code"><?= htmlspecialchars($forum['code']) ?></p>
                             
                             <div class="forum-meta-small">
@@ -92,9 +90,40 @@
                     </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <p>Anda belum bergabung dengan forum apapun.</p>
+                    <p class="text-muted" style="font-size: 0.9rem;">Anda belum bergabung dengan forum apapun.</p>
                 <?php endif; ?>
             </div>
         </div>
+
+        <!-- Available Forums (Discovery) -->
+        <?php if (isset($available_forums) && !empty($available_forums)): ?>
+        <div class="user-forums-section" style="margin-top: 30px;">
+            <h3 class="section-title">Eksplor Forum</h3>
+            
+            <div class="user-forums-list">
+                <?php foreach ($available_forums as $forum): ?>
+                <div class="forum-card-small" onclick="window.location.href='/forum/chat?id=<?= $forum['id'] ?>'" style="cursor: pointer; border-left: 4px solid #4A90E2;">
+                    <div class="forum-info-small">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <h4 class="forum-name-small"><?= htmlspecialchars($forum['name']) ?></h4>
+                            <span class="badge bg-primary" style="font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: #e0e7ff; color: #4A90E2;">Join</span>
+                        </div>
+                        <p class="forum-code"><?= htmlspecialchars($forum['code']) ?></p>
+                        
+                        <div class="forum-meta-small">
+                            <div class="post-stats" style="margin-left: 0; gap: 8px;">
+                                <div class="stat-item">
+                                    <i class="bi bi-people"></i>
+                                    <span><?= htmlspecialchars($forum['members']) ?> anggota</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <img src="<?= htmlspecialchars($forum['thumbnail']) ?>" alt="Thumbnail" class="forum-thumbnail-small">
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endif; ?>
     </div>
 </div>

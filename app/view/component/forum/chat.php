@@ -7,725 +7,828 @@
     <title><?php echo htmlspecialchars($komunitas['nama_komunitas']); ?> - Forum - YouNiFirst</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/forum.css">
+    <link rel="stylesheet" href="/css/forum-dropdown.css">
+    <style>
+        body {
+            background-color: #f5f7fa;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .forum-layout-container {
+            display: flex;
+            height: 100vh;
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        /* Sidebar Styles */
+        .forum-sidebar-left {
+            width: 350px;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            color: #333;
+        }
+
+        .community-info {
+            padding: 20px;
+        }
+
+        .community-header {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .community-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .community-details h2 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+            color: #1a1a1a;
+        }
+
+        .community-meta {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            background: #f0f2f5;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        .members-preview {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .member-avatars {
+            display: flex;
+        }
+
+        .member-avatar-small {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            margin-left: -8px;
+            background: #ddd;
+        }
+
+        .member-avatar-small:first-child {
+            margin-left: 0;
+        }
+
+        .member-count {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .add-group-btn {
+            width: 100%;
+            padding: 12px;
+            background: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .add-group-btn:hover {
+            background: #357abd;
+        }
+
+        .groups-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 10px;
+        }
+
+        .group-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 5px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .group-item:hover {
+            background: #f5f7fa;
+        }
+
+        .group-item.active {
+            background: #e6f0ff;
+        }
+
+        .group-icon {
+            width: 40px;
+            height: 40px;
+            background: #e1e8ed;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            font-size: 1.2rem;
+        }
+
+        .group-item.active .group-icon {
+            background: #4A90E2;
+            color: white;
+        }
+
+        .group-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .group-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .group-last-msg {
+            font-size: 0.8rem;
+            color: #888;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .group-meta {
+            text-align: right;
+            font-size: 0.75rem;
+            color: #999;
+        }
+
+        .unread-badge {
+            background: #ff3b30;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        /* Chat Main Area */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f9f9f9;
+        }
+
+        .chat-header-main {
+            padding: 15px 25px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header-info h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .chat-header-info span {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .chat-messages-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chat-input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+            background: #f0f2f5;
+            padding: 10px;
+            border-radius: 12px;
+            align-items: center;
+        }
+
+        .chat-input-field {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 8px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .attach-btn, .send-msg-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 1.2rem;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-msg-btn {
+            color: #4A90E2;
+        }
+
+        .send-msg-btn:hover {
+            color: #357abd;
+        }
+
+        /* Message Bubbles */
+        .message {
+            display: flex;
+            gap: 15px;
+            max-width: 70%;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .msg-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ddd;
+            flex-shrink: 0;
+        }
+
+        .msg-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .msg-sender {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #4A90E2;
+        }
+
+        .message.sent .msg-sender {
+            display: none;
+        }
+
+        .msg-bubble {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 0 12px 12px 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .message.sent .msg-bubble {
+            background: #dcf8c6; /* WhatsApp style green/blue */
+            background: #cce5ff;
+            border-radius: 12px 0 12px 12px;
+        }
+
+        .msg-time {
+            font-size: 0.7rem;
+            color: #999;
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 400px;
+        }
+
+        .modal h3 {
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-cancel {
+            background: #f0f0f0;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            background: #4A90E2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Image Styles */
+        .group-icon-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .message-image {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: block;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="chat-container">
-        <!-- Header -->
-        <div class="chat-header">
-            <button class="back-btn" onclick="window.location.href='/forum'">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2">
-                    <path d="M19 12H5M12 19l-7-7 7-7" />
-                </svg>
-            </button>
-            <div class="header-icon">
-                <?php if ($komunitas['icon_type'] == 'globe'): ?>
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path
-                        d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                </svg>
-                <?php else: ?>
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
-                <?php endif; ?>
-            </div>
-            <div class="header-info">
-                <h2><?php echo htmlspecialchars($komunitas['nama_komunitas']); ?></h2>
-                <p><?php echo htmlspecialchars($komunitas['jumlah_anggota']); ?> anggota</p>
-            </div>
-        </div>
-
-        <div class="reply-preview" id="replyPreview" style="display: none;">
-            <div class="reply-content">
-                <div class="reply-to-text">
-                    <strong>Membalas <span id="replyUsername"></span></strong>
-                    <p id="replyText"></p>
-                </div>
-                <button class="cancel-reply" onclick="cancelReply()">
-                    <i class="bi bi-x-lg"></i>
+    <div class="forum-layout-container">
+        <!-- Left Sidebar -->
+        <div class="forum-sidebar-left">
+            <div class="sidebar-header">
+                <button class="back-btn" onclick="window.location.href='/forum'">
+                    <i class="bi bi-arrow-left" style="font-size: 1.2rem;"></i>
                 </button>
+                <h2 style="margin: 0; font-size: 1.2rem;">Forum</h2>
+                <div style="flex: 1;"></div>
+                <button class="back-btn"><i class="bi bi-three-dots-vertical"></i></button>
+            </div>
+
+            <div class="community-info">
+                <div class="community-header">
+                    <img src="<?= htmlspecialchars($komunitas['image_url'] ?? 'https://via.placeholder.com/60') ?>" alt="Icon" class="community-icon">
+                    <div class="community-details">
+                        <h2><?= htmlspecialchars($komunitas['nama_komunitas']) ?></h2>
+                        <div class="community-meta">Forum • <?= count($groups) ?> grup</div>
+                    </div>
+                </div>
+
+                <div class="tags">
+                    <span class="tag">Diskusi</span>
+                    <span class="tag">Projek</span>
+                    <span class="tag">Tim</span>
+                </div>
+
+                <div class="members-preview">
+                    <div class="member-avatars">
+                        <!-- Mock avatars -->
+                        <div class="member-avatar-small" style="background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=1'); background-size: cover;"></div>
+                        <div class="member-avatar-small" style="background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=2'); background-size: cover;"></div>
+                        <div class="member-avatar-small" style="background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=3'); background-size: cover;"></div>
+                    </div>
+                    <div class="member-count"><?= htmlspecialchars($komunitas['jumlah_anggota']) ?> anggota</div>
+                </div>
+
+                <button class="add-group-btn" id="btnAddGroup">Tambah Grup</button>
+            </div>
+
+            <div class="groups-list">
+                <?php foreach ($groups as $group): ?>
+                <a href="/forum/chat?id=<?= $komunitas['komunitas_id'] ?>&group_id=<?= $group['group_id'] ?>" 
+                   class="group-item <?= ($current_group && $current_group['group_id'] == $group['group_id']) ? 'active' : '' ?>">
+                    <div class="group-icon">
+                        <?php if (!empty($group['image_url'])): ?>
+                            <img src="<?= htmlspecialchars($group['image_url']) ?>" class="group-icon-img">
+                        <?php else: ?>
+                            <i class="bi bi-<?= htmlspecialchars($group['icon'] ?? 'hash') ?>"></i>
+                        <?php endif; ?>
+                    </div>
+                    <div class="group-info">
+                        <div class="group-name"><?= htmlspecialchars($group['name']) ?></div>
+                        <div class="group-last-msg">
+                            <?php if ($group['last_message']): ?>
+                                <i class="bi bi-check2-all" style="color: #4A90E2;"></i> <?= htmlspecialchars($group['last_message']) ?>
+                            <?php else: ?>
+                                Belum ada pesan
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="group-meta">
+                        <div><?= $group['last_message_time'] ? date('H:i', strtotime($group['last_message_time'])) : '' ?></div>
+                        <?php if ($group['message_count'] > 0 && false): // Mock unread ?>
+                        <div class="unread-badge">2</div>
+                        <?php endif; ?>
+                    </div>
+                </a>
+                <?php endforeach; ?>
             </div>
         </div>
-        <div class="chat-messages" id="chatMessages">
-            <?php foreach ($messages as $msg): ?>
-            <?php
-                $is_sent = ($msg['user_id'] == $current_user->user_id);
-                $time = date('H:i', strtotime($msg['created_at']));
-                $initials = strtoupper(substr($msg['username'], 0, 2));
-                ?>
-            <div class="message <?php echo $is_sent ? 'sent' : ''; ?>"
-                data-message-id="<?php echo $msg['message_id']; ?>"
-                data-username="<?php echo htmlspecialchars($msg['username']); ?>"
-                data-text="<?php echo htmlspecialchars($msg['message_text']); ?>"
-                data-is-sent="<?php echo $is_sent ? '1' : '0'; ?>">
-                <div class="message-avatar"><?php echo $initials; ?></div>
-                <div class="message-content">
-                    <?php if (!$is_sent): ?>
-                    <div class="message-author"><?php echo htmlspecialchars($msg['username']); ?></div>
-                    <?php endif; ?>
 
-                    <?php if ($msg['reply_to_message_id']): ?>
-                    <div class="message-reply-info">
-                        <i class="bi bi-reply"></i>
-                        <strong><?php echo htmlspecialchars($msg['reply_username']); ?></strong>
-                        <p><?php echo htmlspecialchars(substr($msg['reply_message_text'], 0, 50)) . (strlen($msg['reply_message_text']) > 50 ? '...' : ''); ?>
-                        </p>
+        <!-- Right Chat Area -->
+        <div class="chat-main">
+            <div class="chat-header-main">
+                <div class="chat-header-info">
+                    <h3><?= htmlspecialchars($komunitas['nama_komunitas']) ?></h3>
+                    <span><?= htmlspecialchars($current_group['name'] ?? 'Pilih Grup') ?></span>
+                </div>
+                <div class="dropdown">
+                    <button class="back-btn" onclick="toggleDropdown()" id="dropdownBtn"><i class="bi bi-three-dots-vertical"></i></button>
+                    <div id="myDropdown" class="dropdown-content">
+                        <?php if ($current_group): ?>
+                        <a href="#" onclick="openEditGroupModal('<?= $current_group['group_id'] ?>', '<?= htmlspecialchars($current_group['name']) ?>', '<?= $current_group['image_url'] ?? '' ?>')">
+                            <i class="bi bi-pencil"></i> Edit Group
+                        </a>
+                        <?php else: ?>
+                        <a href="#" style="color: #999; cursor: not-allowed;">Pilih grup dulu</a>
+                        <?php endif; ?>
                     </div>
-                    <?php endif; ?>
-
-                    <div class="message-bubble">
-                        <?php echo htmlspecialchars($msg['message_text']); ?>
-                    </div>
-                    <div class="message-time"><?php echo $time; ?></div>
                 </div>
             </div>
-            <?php endforeach; ?>
-        </div>
 
-
-        <div class="context-menu" id="contextMenu" style="display: none;">
-            <div class="context-menu-item" onclick="replyToMessage()">
-                <i class="bi bi-reply"></i> Balas
+            <div class="chat-messages-area" id="chatMessages">
+                <?php foreach ($messages as $msg): ?>
+                <?php $is_sent = ($msg['user_id'] == $current_user->user_id); ?>
+                <div class="message <?= $is_sent ? 'sent' : '' ?>">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=<?= htmlspecialchars($msg['username']) ?>" class="msg-avatar">
+                    <div class="msg-content">
+                        <div class="msg-sender"><?= htmlspecialchars($msg['username']) ?></div>
+                        <div class="msg-bubble">
+                            <?php if (!empty($msg['image_url'])): ?>
+                                <img src="<?= htmlspecialchars($msg['image_url']) ?>" class="message-image" alt="Image">
+                            <?php endif; ?>
+                            <?php if (!empty($msg['message_text'])): ?>
+                                <?= htmlspecialchars($msg['message_text']) ?>
+                            <?php endif; ?>
+                            <div class="msg-time"><?= date('H:i', strtotime($msg['created_at'])) ?></div>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
             </div>
-            <div class="context-menu-item delete" id="deleteOption" onclick="deleteMessage()" style="display: none;">
-                <i class="bi bi-trash"></i> Hapus
-            </div>
-        </div>
 
-        <!-- Input -->
-        <div class="chat-input-container">
-            <div class="chat-input-wrapper">
-                <input type="text" class="chat-input" placeholder="Ketik pesan..." id="messageInput"
-                    onkeypress="handleKeyPress(event)">
-                <button class="send-btn" onclick="sendMessage()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                        class="bi bi-send" viewBox="0 0 16 16">
-                        <path
-                            d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.201L1.591 6.602l4.339 2.76z" />
-                    </svg>
-                </button>
+            <div class="chat-input-area">
+                <div id="imagePreviewContainer" style="display:none; padding: 10px; background: #f0f0f0; border-radius: 8px; margin-bottom: 10px;">
+                    <img id="imagePreview" style="max-width: 200px; max-height: 200px; border-radius: 8px;">
+                    <button onclick="removeImagePreview()" style="margin-left: 10px; padding: 5px 10px; background: #ff4444; color: white; border: none; border-radius: 4px; cursor: pointer;">×</button>
+                </div>
+                <div class="input-wrapper">
+                    <input type="file" id="messageImage" accept="image/*" style="display:none" onchange="previewMessageImage(this)">
+                    <button class="attach-btn" onclick="document.getElementById('messageImage').click()"><i class="bi bi-paperclip"></i></button>
+                    <input type="text" class="chat-input-field" id="messageInput" placeholder="Ketik Pesan">
+                    <button class="send-msg-btn" id="btnSend"><i class="bi bi-send-fill"></i></button>
+                </div>
             </div>
         </div>
     </div>
 
-    <style>
-    .chat-container {
-        max-width: 1400px;
-        margin: 0 auto;
-        background: white;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        position: relative;
-    }
+    <!-- Add Group Modal -->
+    <div id="addGroupModal" class="modal">
+        <div class="modal-content">
+            <h3>Tambah Grup Baru</h3>
+            <form action="/forum/create-group" method="POST">
+                <input type="hidden" name="komunitas_id" value="<?= $komunitas['komunitas_id'] ?>">
+                <div class="form-group">
+                    <label>Nama Grup</label>
+                    <input type="text" name="group_name" class="form-control" placeholder="Contoh: Diskusi Santai" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="btnCancelModal">Batal</button>
+                    <button type="submit" class="btn-submit">Buat Grup</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    .chat-header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        background: white;
-        padding: 10px 20px;
-        border-bottom: 1px solid #e0e0e0;
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        z-index: 100;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
+    <!-- Edit Group Modal -->
+    <div id="editGroupModal" class="modal">
+        <div class="modal-content">
+            <h3>Edit Grup</h3>
+            <form action="/forum/edit-group" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="komunitas_id" value="<?= $komunitas['komunitas_id'] ?>">
+                <input type="hidden" name="group_id" id="edit_group_id">
+                
+                <div class="image-preview-container" onclick="document.getElementById('group_image').click()" style="cursor: pointer;">
+                    <img id="edit_group_image_preview" src="" style="display: none;">
+                    <i class="bi bi-camera image-preview-placeholder" id="edit_group_image_placeholder"></i>
+                </div>
+                <input type="file" name="group_image" id="group_image" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                <p style="text-align: center; font-size: 12px; color: #666;">Klik gambar untuk mengganti</p>
 
-    .back-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        transition: background-color 0.3s;
-    }
-
-    .back-btn:hover {
-        background-color: #f0f0f0;
-    }
-
-    .header-icon {
-        width: 50px;
-        height: 50px;
-        background-color: #0a1f44;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-    }
-
-    .header-info h2 {
-        font-size: 1.3rem;
-        color: #0a1f44;
-        font-weight: 600;
-        margin-bottom: 2px;
-    }
-
-    .header-info p {
-        font-size: 0.9rem;
-        color: #6c757d;
-    }
-
-    /* Reply Preview */
-    .reply-preview {
-        position: fixed;
-        bottom: 90px;
-        /* Sesuaikan dengan tinggi input container */
-        left: 0;
-        right: 0;
-        background: #f0f2f5;
-        padding: 10px 30px;
-        border-top: 1px solid #e0e0e0;
-        z-index: 99;
-        max-width: 1400px;
-        margin: 0 auto;
-        overflow-y: auto;
-    }
-
-    .reply-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .reply-to-text {
-        flex: 1;
-    }
-
-    .reply-to-text strong {
-        color: #0a1f44;
-        font-size: 0.9rem;
-    }
-
-    .reply-to-text p {
-        margin: 5px 0 0 0;
-        color: #666;
-        font-size: 0.85rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 500px;
-    }
-
-    .cancel-reply {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 5px;
-        color: #666;
-        font-size: 1.2rem;
-    }
-
-    .cancel-reply:hover {
-        color: #333;
-    }
-
-    .context-menu {
-        position: fixed;
-        background: white;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-        min-width: 160px;
-        z-index: 10000;
-        overflow: hidden;
-    }
-
-    .context-menu-item {
-        padding: 12px 20px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        transition: background-color 0.2s;
-        font-size: 0.95rem;
-    }
-
-    .context-menu-item:first-child {
-        border-radius: 8px 8px 0 0;
-    }
-
-    .context-menu-item:last-child {
-        border-radius: 0 0 8px 8px;
-    }
-
-    .context-menu-item:hover {
-        background-color: #f0f2f5;
-    }
-
-    .context-menu-item.delete {
-        color: #dc3545;
-        border-top: 1px solid #f0f0f0;
-    }
-
-    .context-menu-item.delete:hover {
-        background-color: #fff5f5;
-    }
-
-    .context-menu-item i {
-        font-size: 1rem;
-        width: 18px;
-        text-align: center;
-    }
-
-    .message-reply-info {
-        background: rgba(10, 31, 68, 0.1);
-        padding: 8px 12px;
-        border-radius: 8px;
-        margin-bottom: 8px;
-        border-left: 3px solid #0a1f44;
-        font-size: 0.85rem;
-    }
-
-    .message.sent .message-reply-info {
-        background: rgba(255, 255, 255, 0.3);
-        border-left-color: white;
-    }
-
-    .message-reply-info i {
-        margin-right: 5px;
-    }
-
-    .message-reply-info strong {
-        display: block;
-        margin-bottom: 2px;
-    }
-
-    .message-reply-info p {
-        margin: 0;
-        color: #666;
-    }
-
-    .message.sent .message-reply-info p {
-        color: rgba(255, 255, 255, 0.8);
-    }
-
-    .chat-messages {
-        flex: 1;
-        padding: 30px;
-        padding-top: 110px;
-        /* Tambahan padding untuk header yang fixed */
-        padding-bottom: 110px;
-        /* Tambahan padding untuk input yang fixed */
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 25px;
-        max-width: 1400px;
-        margin: 0 auto;
-        width: 100%;
-    }
-
-    .message {
-        display: flex;
-        gap: 15px;
-        align-items: flex-start;
-        cursor: context-menu;
-    }
-
-    .message.sent {
-        flex-direction: row-reverse;
-    }
-
-    .message-avatar {
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
-        background-color: #0a1f44;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        font-size: 0.95rem;
-        flex-shrink: 0;
-    }
-
-    .message-content {
-        max-width: 60%;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .message.sent .message-content {
-        align-items: flex-end;
-    }
-
-    .message-author {
-        font-weight: 600;
-        color: #0a1f44;
-        font-size: 0.95rem;
-        margin-bottom: 5px;
-    }
-
-    .message.sent .message-author {
-        display: none;
-    }
-
-    .message-bubble {
-        background-color: #f0f2f5;
-        padding: 12px 18px;
-        border-radius: 18px;
-        font-size: 0.95rem;
-        line-height: 1.5;
-        color: #333;
-        word-wrap: break-word;
-    }
-
-    .message.sent .message-bubble {
-        background-color: #0a1f44;
-        color: white;
-    }
-
-    .message-time {
-        font-size: 0.8rem;
-        color: #6c757d;
-        margin-top: 5px;
-    }
-
-    .chat-input-container {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: white;
-        padding: 20px 30px;
-        border-top: 1px solid #e0e0e0;
-        z-index: 99;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    .chat-input-wrapper {
-        display: flex;
-        gap: 15px;
-        align-items: center;
-    }
-
-    .chat-input {
-        flex: 1;
-        padding: 14px 20px;
-        border: 1px solid #e0e0e0;
-        border-radius: 25px;
-        font-size: 0.95rem;
-        font-family: inherit;
-        outline: none;
-        transition: border-color 0.3s;
-    }
-
-    .chat-input:focus {
-        border-color: #0a1f44;
-    }
-
-    .send-btn {
-        width: 50px;
-        height: 50px;
-        background-color: #0a1f44;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        flex-shrink: 0;
-    }
-
-    .send-btn:hover {
-        background-color: #162e5a;
-    }
-
-    @media (max-width: 768px) {
-        .message-content {
-            max-width: 75%;
-        }
-
-        .chat-header {
-            padding: 15px 20px;
-        }
-
-        .chat-messages {
-            padding: 20px;
-            padding-top: 90px;
-            padding-bottom: 100px;
-        }
-
-        .chat-input-container {
-            padding: 15px 20px;
-        }
-
-        .reply-preview {
-            padding: 10px 20px;
-            bottom: 80px;
-        }
-    }
-    </style>
+                <div class="form-group">
+                    <label>Nama Grup</label>
+                    <input type="text" name="group_name" id="edit_group_name" class="form-control" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEditGroupModal()">Batal</button>
+                    <button type="submit" class="btn-submit">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script>
-    const currentUsername = '<?php echo addslashes($current_user['username']); ?>';
-    const currentUserId = '<?php echo addslashes($current_user['user_id']); ?>';
-    const komunitas_id = <?php echo $komunitas['komunitas_id']; ?>;
-
-    let selectedMessageId = null;
-    let replyToMessageId = null;
-
-    // Event listener untuk context menu pada messages
-    document.addEventListener('DOMContentLoaded', function() {
-        const chatMessages = document.getElementById('chatMessages');
-
-        // Delegate event untuk semua message elements
-        chatMessages.addEventListener('contextmenu', function(e) {
-            const messageElement = e.target.closest('.message');
-
-            if (messageElement) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const messageId = parseInt(messageElement.getAttribute('data-message-id'));
-                const isSent = messageElement.getAttribute('data-is-sent') === '1';
-
-                showContextMenu(e, messageId, isSent);
-            }
-        }, false);
-
-        // Auto scroll to bottom on load
-        if (chatMessages) {
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-    });
-
-    // Show context menu
-    function showContextMenu(event, messageId, isSent) {
-        const contextMenu = document.getElementById('contextMenu');
-        const deleteOption = document.getElementById('deleteOption');
-
-        selectedMessageId = messageId;
-
-        // Selalu tampilkan reply, hanya tampilkan delete untuk pesan sendiri
-        if (isSent) {
-            deleteOption.style.display = 'flex';
-        } else {
-            deleteOption.style.display = 'none';
+        // Dropdown
+        function toggleDropdown() {
+            document.getElementById("myDropdown").classList.toggle("show");
         }
 
-        contextMenu.style.display = 'block';
-
-        // Gunakan clientX dan clientY untuk posisi relatif terhadap viewport
-        let posX = event.clientX;
-        let posY = event.clientY;
-
-        // Cek apakah context menu keluar dari viewport
-        const menuWidth = 160;
-        const menuHeight = 100;
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-
-        // Adjust jika keluar dari viewport
-        if (posX + menuWidth > windowWidth) {
-            posX = windowWidth - menuWidth - 10;
-        }
-
-        if (posY + menuHeight > windowHeight) {
-            posY = windowHeight - menuHeight - 10;
-        }
-
-        contextMenu.style.left = posX + 'px';
-        contextMenu.style.top = posY + 'px';
-    }
-
-    var chatbox = document.getElementById("reply-preview");
-    chatbox.scrollTop = chatbox.scrollHeight;
-
-    document.addEventListener('click', function(e) {
-        const contextMenu = document.getElementById('contextMenu');
-        if (contextMenu && !contextMenu.contains(e.target)) {
-            contextMenu.style.display = 'none';
-        }
-    });
-
-    document.getElementById('chatMessages').addEventListener('scroll', function() {
-        const contextMenu = document.getElementById('contextMenu');
-        if (contextMenu) {
-            contextMenu.style.display = 'none';
-        }
-    });
-
-    // Reply pesan
-    function replyToMessage() {
-        const messageElement = document.querySelector(`.message[data-message-id="${selectedMessageId}"]`);
-
-        if (!messageElement) {
-            return;
-        }
-
-        const username = messageElement.getAttribute('data-username');
-        const text = messageElement.getAttribute('data-text');
-
-        replyToMessageId = selectedMessageId;
-
-        document.getElementById('replyUsername').textContent = username;
-        document.getElementById('replyText').textContent = text;
-        document.getElementById('replyPreview').style.display = 'block';
-        document.getElementById('messageInput').focus();
-
-        document.getElementById('contextMenu').style.display = 'none';
-    }
-
-
-    function cancelReply() {
-        replyToMessageId = null;
-        document.getElementById('replyPreview').style.display = 'none';
-    }
-
-    // hapus pesan
-    function deleteMessage() {
-        if (!confirm('Hapus pesan ini?')) {
-            return;
-        }
-
-        fetch('/forum/delete-message', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'message_id=' + selectedMessageId
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const messageElement = document.querySelector(
-                        `.message[data-message-id="${selectedMessageId}"]`);
-                    if (messageElement) {
-                        messageElement.style.transition = 'opacity 0.3s';
-                        messageElement.style.opacity = '0';
-                        setTimeout(() => {
-                            messageElement.remove();
-                        }, 300);
+        // Close dropdown if clicked outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.back-btn') && !event.target.matches('.bi-three-dots-vertical')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
                     }
-                } else {
-                    alert('Gagal menghapus pesan');
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan saat menghapus pesan');
+            }
+            if (event.target == document.getElementById('editGroupModal')) {
+                closeEditGroupModal();
+            }
+        }
+
+        // Edit Group Modal
+        function openEditGroupModal(id, name, imageUrl) {
+            document.getElementById('editGroupModal').style.display = 'flex';
+            document.getElementById('edit_group_id').value = id;
+            document.getElementById('edit_group_name').value = name;
+            
+            const preview = document.getElementById('edit_group_image_preview');
+            const placeholder = document.getElementById('edit_group_image_placeholder');
+            
+            if (imageUrl) {
+                preview.src = imageUrl;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+            } else {
+                preview.src = '';
+                preview.style.display = 'none';
+                placeholder.style.display = 'block';
+            }
+        }
+
+        function closeEditGroupModal() {
+            document.getElementById('editGroupModal').style.display = 'none';
+        }
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('edit_group_image_preview').src = e.target.result;
+                    document.getElementById('edit_group_image_preview').style.display = 'block';
+                    document.getElementById('edit_group_image_placeholder').style.display = 'none';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Image message preview
+        function previewMessageImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreviewContainer').style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeImagePreview() {
+            document.getElementById('messageImage').value = '';
+            document.getElementById('imagePreviewContainer').style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Forum Inline JS Loaded');
+            
+            const komunitas_id = <?= json_encode($komunitas['komunitas_id']) ?>;
+            const group_id = <?= json_encode($current_group ? $current_group['group_id'] : 0) ?>;
+            const currentUsername = <?= json_encode($current_user->username) ?>;
+
+            console.log('Komunitas:', komunitas_id, 'Group:', group_id);
+
+            // Elements
+            const addGroupBtn = document.getElementById('btnAddGroup');
+            const modal = document.getElementById('addGroupModal');
+            const btnCancel = document.getElementById('btnCancelModal');
+            const messageInput = document.getElementById('messageInput');
+            const btnSend = document.getElementById('btnSend');
+            const chatMessages = document.getElementById('chatMessages');
+
+            // Modal Logic
+            if (addGroupBtn) {
+                addGroupBtn.addEventListener('click', function() {
+                    console.log('Add Group Clicked');
+                    if (modal) modal.style.display = 'flex';
+                });
+            } else {
+                console.error('Add Group Button Not Found');
+            }
+
+            if (btnCancel) {
+                btnCancel.addEventListener('click', function() {
+                    if (modal) modal.style.display = 'none';
+                });
+            }
+
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
             });
 
-        document.getElementById('contextMenu').style.display = 'none';
-    }
-
-    function sendMessage() {
-        const input = document.getElementById('messageInput');
-        const message = input.value.trim();
-
-        if (message) {
-            let body = 'komunitas_id=' + komunitas_id + '&message=' + encodeURIComponent(message);
-
-            if (replyToMessageId) {
-                body += '&reply_to_message_id=' + replyToMessageId;
+            // Chat Logic
+            if (messageInput) {
+                messageInput.addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        sendMessage();
+                    }
+                });
             }
 
-            fetch('/forum/send-message', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: body
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const messagesContainer = document.getElementById('chatMessages');
-                        const initials = currentUsername.substring(0, 2).toUpperCase();
+            if (btnSend) {
+                btnSend.addEventListener('click', sendMessage);
+            }
 
-                        let replyHTML = '';
-                        // Check if reply_to exists and has the expected structure
-                        if (data.reply_to && data.reply_to.username) {
-                            replyHTML = `
-                            <div class="message-reply-info">
-                                <i class="bi bi-reply"></i>
-                                <strong>${escapeHtml(data.reply_to.username)}</strong>
-                                <p>${escapeHtml(data.reply_to.text.substring(0, 50))}${data.reply_to.text.length > 50 ? '...' : ''}</p>
-                            </div>
-                        `;
-                        } else if (replyToMessageId) {
-                             // Fallback if server doesn't return full reply object but we know we replied
-                            const replyPreviewName = document.getElementById('replyUsername').textContent;
-                            const replyPreviewText = document.getElementById('replyText').textContent;
-                            
-                            replyHTML = `
-                            <div class="message-reply-info">
-                                <i class="bi bi-reply"></i>
-                                <strong>${escapeHtml(replyPreviewName)}</strong>
-                                <p>${escapeHtml(replyPreviewText.substring(0, 50))}${replyPreviewText.length > 50 ? '...' : ''}</p>
-                            </div>
-                        `;
-                        }
+            function sendMessage() {
+                console.log('Sending message...');
+                const message = messageInput.value.trim();
+                const imageFile = document.getElementById('messageImage').files[0];
 
-                        const messageHTML = `
-                        <div class="message sent" 
-                             data-message-id="${data.message_id}" 
-                             data-username="${escapeHtml(currentUsername)}" 
-                             data-text="${escapeHtml(message)}"
-                             data-is-sent="1">
-                            <div class="message-avatar">${initials}</div>
-                            <div class="message-content">
-                                ${replyHTML}
-                                <div class="message-bubble">${escapeHtml(message)}</div>
-                                <div class="message-time">${data.time}</div>
-                            </div>
-                        </div>
-                    `;
-
-                        messagesContainer.insertAdjacentHTML('beforeend', messageHTML);
-                        input.value = '';
-                        cancelReply();
-
-                        // Scroll ke bawah
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    } else {
-                        alert('Gagal mengirim pesan');
+                if ((message || imageFile) && group_id > 0) {
+                    const formData = new FormData();
+                    formData.append('komunitas_id', komunitas_id);
+                    formData.append('group_id', group_id);
+                    formData.append('message', message);
+                    if (imageFile) {
+                        formData.append('message_image', imageFile);
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Terjadi kesalahan saat mengirim pesan');
-                });
-        }
-    }
 
-    function handleKeyPress(event) {
-        if (event.key === 'Enter') {
-            sendMessage();
-        }
-    }
+                    fetch('/forum/send-message', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.text().then(text => {
+                            console.log('Response text:', text);
+                            try {
+                                return JSON.parse(text);
+                            } catch (e) {
+                                console.error('JSON parse error:', e);
+                                console.error('Response was:', text);
+                                throw new Error('Invalid JSON response from server');
+                            }
+                        });
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            let imageHtml = '';
+                            if (data.image_url) {
+                                imageHtml = `<img src="${data.image_url}" class="message-image" alt="Image">`;
+                            }
+                            const html = `
+                                <div class="message sent">
+                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUsername}" class="msg-avatar">
+                                    <div class="msg-content">
+                                        <div class="msg-bubble">
+                                            ${imageHtml}
+                                            ${message ? escapeHtml(message) : ''}
+                                            <div class="msg-time">${data.time}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            chatMessages.insertAdjacentHTML('beforeend', html);
+                            messageInput.value = '';
+                            removeImagePreview();
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        } else {
+                            alert('Gagal mengirim pesan: ' + (data.message || 'Unknown error'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Fetch Error:', error);
+                        console.error('Error details:', error.message, error.stack);
+                        alert('Terjadi kesalahan koneksi: ' + error.message);
+                    });
+                } else {
+                    if (!message && !imageFile) return;
+                    if (group_id <= 0) alert('Error: Group ID tidak valid. Silakan pilih grup terlebih dahulu.');
+                }
+            }
 
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
 
-    //refresh
-    setInterval(function() {
-        location.reload();
-    }, 30000);
+            // Auto scroll
+            if (chatMessages) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
     </script>
 </body>
-
 </html>

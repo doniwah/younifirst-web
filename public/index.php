@@ -75,6 +75,8 @@ Router::add('POST', '/event/confirm/{id}', EventController::class, 'confirm', [M
 // Forum Routes
 Router::add('GET', '/forum', ForumController::class, 'forum', [MustLoginMiddleware::class]);
 Router::add('GET', '/forum/chat', ForumController::class, 'chat', [MustLoginMiddleware::class]);
+Router::add('POST', '/forum/create-group', ForumController::class, 'createGroup', [MustLoginMiddleware::class]);
+Router::add('POST', '/forum/edit-group', ForumController::class, 'editGroup', [MustLoginMiddleware::class]);
 Router::add('POST', '/forum/send-message', ForumController::class, 'sendMessage', [MustLoginMiddleware::class]);
 Router::add('POST', '/forum/delete-message', ForumController::class, 'deleteMessage', [MustLoginMiddleware::class]);
 

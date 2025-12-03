@@ -6,7 +6,7 @@ use App\Model\Forum;
 use App\Service\SessionService;
 use App\App\View;
 use App\Repository\UserRepository;
-use App\Config\Database; // pastikan sesuai folder Database kamu
+use App\Config\Database;
 
 class ForumController
 {
@@ -19,9 +19,6 @@ class ForumController
         $this->userRepo = new UserRepository(Database::getConnection());
     }
 
-    /* --------------------------
-     * Helper untuk cek login
-     * -------------------------- */
     private function requireLogin()
     {
         $userId = $this->session->current();
@@ -41,69 +38,69 @@ class ForumController
         return $user;
     }
 
-    /* --------------------------
-     * Halaman forum
-     * -------------------------- */
     public function forum()
     {
         $user = $this->requireLogin();
         $komunitas_list = Forum::getAllKomunitas();
 
-        // Real Data for Trending Topics
         $trending_topics_data = Forum::getTrendingTopics(5);
         $trending_topics = array_map(function($topic) {
             return [
+                'id' => $topic['komunitas_id'],
                 'title' => $topic['title'],
                 'excerpt' => $topic['excerpt'],
                 'user_name' => '@' . $topic['user_name'],
                 'user_avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . $topic['user_name'],
-                'views' => rand(100, 2000) . 'rb', // Mock views for now
+                'views' => rand(100, 2000) . 'rb',
                 'comments' => $topic['comments'],
-                'thumbnail' => 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=200&h=200&fit=crop' // Default thumbnail
+                'thumbnail' => 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=200&h=200&fit=crop'
             ];
         }, $trending_topics_data);
 
-        // Real Data for User Forums
         $user_forums_data = Forum::getUserForums($user->user_id);
         $user_forums = array_map(function($forum) use ($user) {
             return [
                 'id' => $forum['komunitas_id'],
                 'name' => $forum['name'],
                 'code' => $forum['code'] ?? 'Komunitas',
-                'user_handle' => '@' . $user->username, // Showing current user as member
+                'user_handle' => '@' . $user->username,
                 'members' => $forum['members'],
                 'messages' => $forum['messages'],
-                'thumbnail' => 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=100&h=100&fit=crop' // Default thumbnail
+                'thumbnail' => 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=100&h=100&fit=crop'
             ];
         }, $user_forums_data);
+
+        $available_forums_data = Forum::getAvailableForums($user->user_id);
+        $available_forums = array_map(function($forum) {
+            return [
+                'id' => $forum['komunitas_id'],
+                'name' => $forum['nama_komunitas'],
+                'code' => $forum['deskripsi'] ?? 'Komunitas',
+                'members' => $forum['members'],
+                'thumbnail' => $forum['image_url'] ?? 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=100&h=100&fit=crop'
+            ];
+        }, $available_forums_data);
 
         View::render('component/forum/index', [
             'title'     => 'Forum',
             'user'      => $user,
             'komunitas_list' => $komunitas_list,
             'trending_topics' => $trending_topics,
-            'user_forums' => $user_forums
+            'user_forums' => $user_forums,
+            'available_forums' => $available_forums
         ]);
     }
 
-    /* --------------------------
-     * Halaman chat
-     * -------------------------- */
     public function chat()
     {
         $user = $this->requireLogin();
         $userId = $user->user_id;
 
         $komunitas_id = intval($_GET['id'] ?? 0);
+        $group_id = intval($_GET['group_id'] ?? 0);
 
         if ($komunitas_id <= 0) {
             View::redirect('/forum');
-            exit();
-        }
-
-        // Allow access if user is already a member OR if they meet the criteria
-        if (!Forum::isUserMember($komunitas_id, $userId) && !Forum::canUserAccessKomunitas($komunitas_id, $user->jurusan)) {
-            View::redirect('/forum?error=access_denied');
             exit();
         }
 
@@ -118,18 +115,93 @@ class ForumController
             Forum::addMember($komunitas_id, $userId);
         }
 
+        $groups = Forum::getGroups($komunitas_id);
+        
+        if ($group_id <= 0 && !empty($groups)) {
+            $group_id = $groups[0]['group_id'];
+        }
+
+        $current_group = null;
+        if ($group_id > 0) {
+            foreach ($groups as $g) {
+                if ($g['group_id'] == $group_id) {
+                    $current_group = $g;
+                    break;
+                }
+            }
+        }
+
         View::render('component/forum/chat', [
             'title'     => $komunitas['nama_komunitas'],
             'user'      => $user,
             'komunitas' => $komunitas,
-            'messages'  => Forum::getMessages($komunitas_id),
+            'groups'    => $groups,
+            'current_group' => $current_group,
+            'messages'  => Forum::getMessages($komunitas_id, $group_id),
             'current_user' => $user
         ]);
     }
 
-    /* --------------------------
-     * Kirim pesan (AJAX)
-     * -------------------------- */
+    public function createGroup()
+    {
+        $user = $this->requireLogin();
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            View::redirect('/forum');
+            exit();
+        }
+
+        $komunitas_id = intval($_POST['komunitas_id'] ?? 0);
+        $name = trim($_POST['group_name'] ?? '');
+        
+        if ($komunitas_id > 0 && !empty($name)) {
+            Forum::createGroup($komunitas_id, $name);
+        }
+
+        View::redirect('/forum/chat?id=' . $komunitas_id);
+    }
+
+    public function editGroup()
+    {
+        $user = $this->requireLogin();
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            View::redirect('/forum');
+            exit();
+        }
+
+        $komunitas_id = intval($_POST['komunitas_id'] ?? 0);
+        $group_id = intval($_POST['group_id'] ?? 0);
+        $name = trim($_POST['group_name'] ?? '');
+        
+        if ($group_id > 0 && !empty($name)) {
+            $image_url = null;
+            
+            if (isset($_FILES['group_image']) && $_FILES['group_image']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = __DIR__ . '/../../public/uploads/groups/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                
+                $fileExtension = strtolower(pathinfo($_FILES['group_image']['name'], PATHINFO_EXTENSION));
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+                
+                if (in_array($fileExtension, $allowedExtensions)) {
+                    $fileName = 'group_' . $group_id . '_' . time() . '.' . $fileExtension;
+                    $uploadFile = $uploadDir . $fileName;
+                    
+                    if (move_uploaded_file($_FILES['group_image']['tmp_name'], $uploadFile)) {
+                        $image_url = '/uploads/groups/' . $fileName;
+                    }
+                }
+            }
+            
+            Forum::updateGroup($group_id, $name, $image_url);
+        }
+
+        View::redirect('/forum/chat?id=' . $komunitas_id . '&group_id=' . $group_id);
+    }
+
     public function sendMessage()
     {
         header('Content-Type: application/json');
@@ -143,21 +215,36 @@ class ForumController
         }
 
         $komunitas_id = intval($_POST['komunitas_id'] ?? 0);
+        $group_id = intval($_POST['group_id'] ?? 0);
         $text = trim($_POST['message'] ?? '');
         $reply_to = intval($_POST['reply_to_message_id'] ?? 0) ?: null;
 
-        if ($komunitas_id <= 0 || $text === '') {
+        $image_url = null;
+        if (isset($_FILES['message_image']) && $_FILES['message_image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = __DIR__ . '/../../public/uploads/messages/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            
+            $fileExtension = strtolower(pathinfo($_FILES['message_image']['name'], PATHINFO_EXTENSION));
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            
+            if (in_array($fileExtension, $allowedExtensions)) {
+                $fileName = 'msg_' . $userId . '_' . time() . '.' . $fileExtension;
+                $uploadFile = $uploadDir . $fileName;
+                
+                if (move_uploaded_file($_FILES['message_image']['tmp_name'], $uploadFile)) {
+                    $image_url = '/uploads/messages/' . $fileName;
+                }
+            }
+        }
+
+        if ($komunitas_id <= 0 || ($text === '' && $image_url === null)) {
             echo json_encode(['success' => false, 'message' => 'Invalid data']);
             exit();
         }
 
-        // Allow access if user is already a member OR if they meet the criteria
-        if (!Forum::isUserMember($komunitas_id, $userId) && !Forum::canUserAccessKomunitas($komunitas_id, $user->jurusan)) {
-            echo json_encode(['success' => false, 'message' => 'Access denied']);
-            exit();
-        }
-
-        $messageId = Forum::sendMessage($komunitas_id, $userId, $text, $reply_to);
+        $messageId = Forum::sendMessage($komunitas_id, $userId, $text, $reply_to, $group_id, $image_url);
 
         if (!$messageId) {
             echo json_encode(['success' => false, 'message' => 'Failed to send message']);
@@ -180,15 +267,13 @@ class ForumController
             'message_id'  => $messageId,
             'username'    => $user->username,
             'time'        => date('H:i'),
-            'reply_to'    => $replyData
+            'reply_to'    => $replyData,
+            'image_url'   => $image_url
         ]);
 
         exit();
     }
 
-    /* --------------------------
-     * Hapus pesan
-     * -------------------------- */
     public function deleteMessage()
     {
         header('Content-Type: application/json');
