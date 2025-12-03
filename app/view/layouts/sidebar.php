@@ -72,23 +72,9 @@
                             <span>Posting Lomba</span>
                         </a>
 
-                        <!-- Barang Hilang Dropdown -->
-                        <div class="menu-item-wrapper">
-                            <div class="menu-item dropdown-toggle" onclick="toggleDropdown(this)">
-                                <div class="menu-link">
-                                    <span>Info Barang Hilang</span>
-                                </div>
-                                <i class="bi bi-chevron-down dropdown-arrow"></i>
-                            </div>
-                            <div class="dropdown-content">
-                                <a href="/lost_found/found" class="menu-item">
-                                    <span>Menemukan</span>
-                                </a>
-                                <a href="/lost_found/lost" class="menu-item">
-                                    <span>Kehilangan</span>
-                                </a>
-                            </div>
-                        </div>
+                        <a href="/lost_found/create" class="menu-item">
+                            <span>Info Barang Hilang</span>
+                        </a>
                     </div>
                 </div>
             </div>

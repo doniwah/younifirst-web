@@ -347,6 +347,7 @@ body {
 }
 
 @media (max-width: 768px) {
+
   .competitions-grid,
   .teams-grid {
     grid-template-columns: 1fr;
@@ -556,7 +557,7 @@ textarea {
   margin-top: 2px;
 }
 
-.main-content-add .right-content .row > div {
+.main-content-add .right-content .row>div {
   flex: 1;
 }
 
@@ -653,4 +654,68 @@ textarea {
   display: block;
   margin-top: 4px;
   margin-bottom: 0 !important;
+}
+
+/* Upload Area */
+.upload-area {
+  border: 2px dashed #e0e0e0;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #fafafa;
+  margin-top: 8px;
+}
+
+.upload-area:hover {
+  border-color: #0a1f44;
+  background-color: #f0f4f8;
+}
+
+/* Form Actions */
+.btn-cancel {
+  padding: 12px 24px;
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s;
+  background: transparent;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-cancel:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+.btn-submit {
+  padding: 12px 32px;
+  background-color: #0a1f44;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(10, 31, 68, 0.2);
+  width: auto;
+  /* Override previous width: 100% */
+}
+
+.btn-submit:hover {
+  background-color: #162e5a;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(10, 31, 68, 0.3);
+}
+
+.form-card {
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
 }

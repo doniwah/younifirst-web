@@ -23,6 +23,11 @@ use App\Middleware\MustNotLoginMiddleware;
 Database::getConnection('prod');
 
 Router::add('GET', '/', HomeController::class, 'index', []);
+Router::add('GET', '/dashboard', DashboardController::class, 'index', [MustLoginMiddleware::class]);
+Router::add('GET', '/users/login', UserController::class, 'login', [MustNotLoginMiddleware::class]);
+Router::add('POST', '/users/login', UserController::class, 'postLogin', [MustNotLoginMiddleware::class]);
+Router::add('GET', '/users/register', UserController::class, 'register', [MustNotLoginMiddleware::class]);
+Router::add('POST', '/users/register', UserController::class, 'register', [MustNotLoginMiddleware::class]);
 Router::add('GET', '/users/logout', UserController::class, 'logout', [MustLoginMiddleware::class]);
 
 // Team Routes

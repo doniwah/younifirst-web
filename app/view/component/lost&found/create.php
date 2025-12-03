@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?> - Younifirs</title>
+    <title><?= $title ?> - Younifirst</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/css/sidebar.css">
     <link rel="stylesheet" href="/css/event.css">
     <link rel="stylesheet" href="/css/dashboard-modern.css">
+    <link rel="stylesheet" href="/css/lostnfound.css">
     <style>
         /* Override/Custom Styles */
         .main-content {
@@ -19,7 +20,7 @@
         /* Layout adaptation */
         .lf-container {
             display: grid;
-            grid-template-columns: 1fr 380px;
+            grid-template-columns: 1fr;
             gap: 24px;
             max-width: 1400px;
             margin: 0 auto;
@@ -193,52 +194,6 @@
                         </form>
                     </div>
                 </div>
-
-                <!-- Sidebar Column -->
-                <aside class="dashboard-sidebar">
-                    <!-- Categories (Moved above Search) -->
-                    <div class="sidebar-section">
-                        <h3>Kategori</h3>
-                        <div class="forum-item">
-                            <div style="width: 40px; height: 40px; background: var(--bg-primary); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-grid" style="color: var(--text-secondary);"></i>
-                            </div>
-                            <div>
-                                <strong>Semua</strong>
-                                <span>Tampilkan semua item</span>
-                            </div>
-                        </div>
-                        <div class="forum-item">
-                            <div style="width: 40px; height: 40px; background: #FFF5F5; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-exclamation-circle" style="color: var(--danger-color);"></i>
-                            </div>
-                            <div>
-                                <strong>Kehilangan</strong>
-                                <span>Barang yang dicari</span>
-                            </div>
-                        </div>
-                        <div class="forum-item">
-                            <div style="width: 40px; height: 40px; background: #F0F7FF; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-check-circle" style="color: var(--primary-color);"></i>
-                            </div>
-                            <div>
-                                <strong>Ditemukan</strong>
-                                <span>Barang yang ditemukan</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Search Box -->
-                    <div class="search-box">
-                        <h3>Pencarian</h3>
-                        <div class="search-input-wrapper">
-                            <input type="text" class="search-input" placeholder="Cari...">
-                            <button>
-                                <i class="bi bi-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                </aside>
             </div>
         </div>
     </div>
