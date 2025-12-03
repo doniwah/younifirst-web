@@ -23,10 +23,7 @@
             <i class="bi bi-calendar4"></i>
             <span>Event Management</span>
         </a>
-        <a href="/team" class="menu-item">
-            <i class="bi bi-people"></i>
-            <span>Team Search</span>
-        </a>
+
         <a href="/forum" class="menu-item">
             <i class="bi bi-chat-left"></i>
             <span>Academic Forum</span>
