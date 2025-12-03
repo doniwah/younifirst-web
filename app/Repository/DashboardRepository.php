@@ -84,22 +84,90 @@ class DashboardRepository
 
     public function getUserForums($userId, $limit = 3)
     {
-        // Dummy data for now - replace with actual forum data when available
-        return [
-            [
-                'name' => 'Kelompok 4',
-                'code' => 'AE24',
-                'members' => 6,
-                'posts' => 25,
-                'image' => '/images/forum-placeholder.jpg'
-            ],
-            [
-                'name' => 'Bagi Materi UTS',
-                'members' => 908,
-                'posts' => 142,
-                'image' => '/images/forum-placeholder.jpg'
-            ]
-        ];
+        if (!$userId) return [];
+
+        try {
+            $sql = "
+                SELECT 
+                    k.nama_komunitas as name,
+                    k.image_url as image,
+                    COUNT(DISTINCT fa.user_id) as members,
+                    COUNT(DISTINCT m.message_id) as posts,
+                    'forum' as type
+                FROM forum_komunitas k
+                JOIN forum_anggota a ON k.komunitas_id = a.komunitas_id
+                LEFT JOIN forum_anggota fa ON k.komunitas_id = fa.komunitas_id
+                LEFT JOIN forum_messages m ON k.komunitas_id = m.komunitas_id
+                WHERE a.user_id = ?
+                GROUP BY k.komunitas_id, k.nama_komunitas, k.image_url
+                ORDER BY a.joined_at DESC
+                LIMIT ?
+            ";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$userId, $limit]);
+            $forums = $stmt->fetchAll();
+
+            // Add code field if not present (using first letters of name)
+            return array_map(function($forum) {
+                $words = explode(' ', $forum['name']);
+                $code = '';
+                foreach ($words as $word) {
+                    $code .= strtoupper(substr($word, 0, 1));
+                }
+                $forum['code'] = substr($code, 0, 4);
+                $forum['image'] = $forum['image'] ?? '/images/forum-placeholder.jpg';
+                return $forum;
+            }, $forums);
+
+        } catch (\PDOException $e) {
+            error_log("Error fetching user forums: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function getRecentEventsForNotification($limit = 3)
+    {
+        try {
+            $sql = "
+                SELECT 
+                    nama_event,
+                    created_at,
+                    poster_event
+                FROM event
+                WHERE status = 'confirm' 
+                ORDER BY created_at DESC
+                LIMIT ?
+            ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$limit]);
+            return $stmt->fetchAll();
+        } catch (\PDOException $e) {
+            error_log("Error fetching recent events for notification: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function getRecentLostFoundForNotification($limit = 3)
+    {
+        try {
+            $sql = "
+                SELECT 
+                    nama_barang,
+                    tanggal,
+                    kategori,
+                    lokasi
+                FROM lost_found
+                ORDER BY tanggal DESC
+                LIMIT ?
+            ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$limit]);
+            return $stmt->fetchAll();
+        } catch (\PDOException $e) {
+            error_log("Error fetching recent lost & found for notification: " . $e->getMessage());
+            return [];
+        }
     }
 
     public function getFeedPosts($limit = 10)

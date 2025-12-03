@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="/css/event.css">
     <link rel="stylesheet" href="/css/dashboard-modern.css">
     <style>
-        /* Override/Custom Styles for Lost & Found specific elements */
         .main-content {
             background-color: var(--bg-primary);
             min-height: 100vh;

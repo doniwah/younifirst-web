@@ -620,11 +620,11 @@ body {
 }
 
 /* Sidebar Styles */
-.sidebar-search {
+.sidebar-search { margin-top: 80px;
   background: white;
   border-radius: 12px;
   padding: 20px;
-  margin-top: 60px;
+  
 }
 
 .search-label {

@@ -6,38 +6,57 @@
             <button class="notification-btn" onclick="toggleNotifications()">
                 <i class="bi bi-bell"></i>
                 <?php if (isset($notifications_count) && $notifications_count > 0): ?>
-                    <span class="badge"><?= $notifications_count ?></span>
+                    <span class="badge" id="notificationBadge"><?= $notifications_count ?></span>
                 <?php endif; ?>
             </button>
             
-            <!-- Notification Dropdown -->
             <div class="notification-dropdown" id="notificationDropdown">
                 <div class="notification-tabs">
                     <button class="tab-btn active" onclick="switchNotifTab(event, 'new')">Baru</button>
                     <button class="tab-btn" onclick="switchNotifTab(event, 'today')">Hari ini</button>
                 </div>
-                
-                <!-- Tab: Baru (New Forum Posts) -->
                 <div class="tab-content active" id="tab-new">
                     <div class="notification-list">
-                        <?php if (!empty($user_forums)): ?>
-                            <?php foreach ($user_forums as $forum): ?>
-                                <div class="notification-item">
-                                    <img src="<?= $forum['image'] ?? '/images/avatar-default.png' ?>" 
-                                         alt="Avatar"
+                        <?php 
+                        $notifications = $new_notifications ?? $user_forums ?? [];
+                        if (!empty($notifications)): 
+                        ?>
+                            <?php foreach ($notifications as $notif): ?>
+                                <div class="notification-item" onclick="window.location.href='<?= 
+                                    $notif['type'] === 'event' ? '/event' : 
+                                    ($notif['type'] === 'lost_found' ? '/lost_found' : '/forum') 
+                                ?>'" style="cursor: pointer;">
+                                    <img src="<?= $notif['image'] ?? '/images/avatar-default.png' ?>" 
+                                         alt="Icon"
+                                         style="<?= ($notif['type'] ?? 'forum') === 'event' ? 'border-radius: 8px;' : '' ?>"
                                          onerror="this.style.display='none'">
                                     <div class="notification-content">
                                         <p class="notification-text">
-                                            <strong><?= htmlspecialchars($forum['name']) ?></strong> 
-                                            menyetujui permintaan Anda bergabung ke forum
+                                            <?php if (($notif['type'] ?? 'forum') === 'event'): ?>
+                                                <strong>Event Baru:</strong> <?= htmlspecialchars($notif['name']) ?> telah ditambahkan.
+                                            <?php elseif (($notif['type'] ?? 'forum') === 'lost_found'): ?>
+                                                <strong>Info Kehilangan:</strong> <?= htmlspecialchars($notif['name']) ?> baru saja dilaporkan.
+                                            <?php else: ?>
+                                                <strong><?= htmlspecialchars($notif['name']) ?></strong> 
+                                                menyetujui permintaan Anda bergabung ke forum
+                                            <?php endif; ?>
                                         </p>
                                         <div class="notification-meta">
-                                            <span><?= $forum['code'] ?? 'Forum' ?></span>
-                                            <span><i class="bi bi-people"></i> <?= $forum['members'] ?? 0 ?></span>
+                                            <?php if (($notif['type'] ?? 'forum') === 'event'): ?>
+                                                <span><i class="bi bi-calendar-event"></i> Event</span>
+                                            <?php elseif (($notif['type'] ?? 'forum') === 'lost_found'): ?>
+                                                <span><i class="bi bi-search"></i> Lost & Found</span>
+                                            <?php else: ?>
+                                                <span><?= $notif['code'] ?? 'Forum' ?></span>
+                                                <span><i class="bi bi-people"></i> <?= $notif['members'] ?? 0 ?></span>
+                                            <?php endif; ?>
+                                            <span style="margin-left: 5px; font-size: 0.8em; color: #888;">
+                                                <?= isset($notif['created_at']) ? date('d M H:i', strtotime($notif['created_at'])) : '' ?>
+                                            </span>
                                         </div>
                                     </div>
-                                    <?php if (isset($forum['image'])): ?>
-                                        <img src="<?= $forum['image'] ?>" 
+                                    <?php if (isset($notif['image']) && ($notif['type'] ?? 'forum') === 'forum'): ?>
+                                        <img src="<?= $notif['image'] ?>" 
                                              class="notification-thumb"
                                              alt="Thumbnail"
                                              onerror="this.style.display='none'">
@@ -95,6 +114,17 @@
 function toggleNotifications() {
     const dropdown = document.getElementById('notificationDropdown');
     dropdown.classList.toggle('active');
+    
+    // Hide badge when dropdown is opened
+    if (dropdown.classList.contains('active')) {
+        const badge = document.getElementById('notificationBadge');
+        if (badge) {
+            badge.style.display = 'none';
+        }
+        
+        // Set cookie to remember last check time
+        document.cookie = "last_notif_check=" + new Date().toISOString() + "; path=/; max-age=31536000"; // 1 year
+    }
 }
 
 function switchNotifTab(event, tabName) {

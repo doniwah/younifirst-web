@@ -33,13 +33,19 @@ class EventController
         $userRole = $user['role'] ?? 'user';
         
         // Get events based on role
-        $events = $this->eventRepository->getAllEvents($userRole);
+        $allEvents = $this->eventRepository->getAllEvents($userRole);
+        $upcomingEvents = $this->eventRepository->getUpcomingEvents(5);
+        $trendingEvents = $this->eventRepository->getTrendingEvents(5);
+        $userEvents = $this->eventRepository->getUserEvents($userId, 5);
 
         View::render('component/event/index', [
             'title' => 'Event Management',
             'user' => $userId,
             'userRole' => $userRole,
-            'events' => $events
+            'events' => $allEvents,
+            'upcomingEvents' => $upcomingEvents,
+            'trendingEvents' => $trendingEvents,
+            'userEvents' => $userEvents
         ]);
     }
 
@@ -88,15 +94,51 @@ class EventController
             }
         }
         
+        // Process multi-day events - get first and last date
+        $tanggalHari = $_POST['tanggal_hari'] ?? [];
+        $waktuMulai = $_POST['waktu_mulai'] ?? [];
+        $waktuSelesai = $_POST['waktu_selesai'] ?? [];
+        
+        $tanggalMulai = !empty($tanggalHari) ? $tanggalHari[0] : null;
+        $tanggalSelesai = !empty($tanggalHari) ? end($tanggalHari) : $tanggalMulai;
+        
+        // Combine first date with first time for waktu_pelaksanaan
+        $waktuPelaksanaan = null;
+        if ($tanggalMulai && !empty($waktuMulai[0])) {
+            $waktuPelaksanaan = $waktuMulai[0];
+        }
+        
+        // Process tags
+        $tags = isset($_POST['tags']) ? implode(',', $_POST['tags']) : '';
+        
+        // Process registration deadline
+        $dlPendaftaran = null;
+        if (!empty($_POST['batas_tanggal_tutup']) && !empty($_POST['batas_waktu_tutup'])) {
+            $dlPendaftaran = $_POST['batas_tanggal_tutup'] . ' ' . $_POST['batas_waktu_tutup'];
+        }
+        
+        // Get contact person (WhatsApp)
+        $contactPerson = $_POST['whatsapp'] ?? '';
+        
+        // Get Instagram URL
+        $urlInstagram = $_POST['instagram'] ?? '';
+        
         $eventData = [
             'nama_event' => $_POST['nama_event'] ?? '',
             'deskripsi' => $_POST['deskripsi'] ?? '',
-            'tanggal_mulai' => $_POST['tanggal_mulai'] ?? '',
-            'tanggal_selsai' => $_POST['tanggal_selsai'] ?? '',
+            'tanggal_mulai' => $tanggalMulai,
+            'tanggal_selesai' => $tanggalSelesai,
             'lokasi' => $_POST['lokasi'] ?? '',
-            'organizer' => $_POST['organizer'] ?? '',
-            'kapasitas' => (int)($_POST['kapasitas'] ?? 0),
+            'organizer' => $_POST['organizer'] ?? 'Campus Nexus',
+            'kapasitas' => (int)($_POST['kapasitas'] ?? 100),
             'poster_event' => $posterPath,
+            'kategori' => $tags,
+            'harga' => $_POST['harga'] ?? '0',
+            'dl_pendaftaran' => $dlPendaftaran,
+            'waktu_pelaksanaan' => $waktuPelaksanaan,
+            'user_id' => $userId,
+            'contact_person' => $contactPerson,
+            'url_instagram' => $urlInstagram,
             'status' => $userRole === 'admin' ? 'confirm' : 'waiting'
         ];
 
@@ -143,7 +185,6 @@ class EventController
         View::render('component/event/edit', [
             'title' => 'Edit Event',
             'user' => $userId,
-            'userRole' => $userRole,
             'event' => $event
         ]);
     }
@@ -173,35 +214,31 @@ class EventController
             exit;
         }
 
-        $updateData = [
+        // Handle image upload
+        $posterPath = null;
+        if (isset($_FILES['poster_event']) && $_FILES['poster_event']['error'] === UPLOAD_ERR_OK) {
+            $posterPath = $this->handleImageUpload($_FILES['poster_event']);
+        }
+
+        $eventData = [
             'nama_event' => $_POST['nama_event'] ?? '',
             'deskripsi' => $_POST['deskripsi'] ?? '',
             'tanggal_mulai' => $_POST['tanggal_mulai'] ?? '',
             'tanggal_selsai' => $_POST['tanggal_selsai'] ?? '',
             'lokasi' => $_POST['lokasi'] ?? '',
             'organizer' => $_POST['organizer'] ?? '',
-            'kapasitas' => (int)($_POST['kapasitas'] ?? 0)
+            'kapasitas' => (int)($_POST['kapasitas'] ?? 0),
+            'kategori' => $_POST['kategori'] ?? '',
+            'harga' => $_POST['harga'] ?? 0
         ];
-        
-        // Handle image upload if new image provided
-        if (isset($_FILES['poster_event']) && $_FILES['poster_event']['error'] === UPLOAD_ERR_OK) {
-            $posterPath = $this->handleImageUpload($_FILES['poster_event']);
-            if ($posterPath) {
-                // Delete old image if exists
-                $event = $this->eventRepository->getEventById($id);
-                if ($event && $event['poster_event']) {
-                    $oldImagePath = __DIR__ . '/../../public' . $event['poster_event'];
-                    if (file_exists($oldImagePath)) {
-                        unlink($oldImagePath);
-                    }
-                }
-                $updateData['poster_event'] = $posterPath;
-            }
+
+        if ($posterPath) {
+            $eventData['poster_event'] = $posterPath;
         }
 
-        $success = $this->eventRepository->updateEvent($id, $updateData);
+        $result = $this->eventRepository->updateEvent($id, $eventData);
 
-        if ($success) {
+        if ($result) {
             header('Location: /event?success=Event berhasil diupdate');
         } else {
             header('Location: /event/edit/' . $id . '?error=Gagal mengupdate event');
@@ -225,27 +262,18 @@ class EventController
         
         // Only admin can delete events
         if ($userRole !== 'admin') {
-            echo json_encode(['success' => false, 'message' => 'Anda tidak memiliki akses untuk menghapus event']);
+            header('Location: /event?error=Anda tidak memiliki akses untuk menghapus event');
             exit;
         }
-        
-        // Get event to delete image
-        $event = $this->eventRepository->getEventById($id);
-        
-        $success = $this->eventRepository->deleteEvent($id);
 
-        if ($success) {
-            // Delete image file if exists
-            if ($event && $event['poster_event']) {
-                $imagePath = __DIR__ . '/../../public' . $event['poster_event'];
-                if (file_exists($imagePath)) {
-                    unlink($imagePath);
-                }
-            }
-            echo json_encode(['success' => true, 'message' => 'Event berhasil dihapus']);
+        $result = $this->eventRepository->deleteEvent($id);
+
+        if ($result) {
+            header('Location: /event?success=Event berhasil dihapus');
         } else {
-            echo json_encode(['success' => false, 'message' => 'Gagal menghapus event']);
+            header('Location: /event?error=Gagal menghapus event');
         }
+        exit;
     }
 
     /**
@@ -264,17 +292,18 @@ class EventController
         
         // Only admin can confirm events
         if ($userRole !== 'admin') {
-            echo json_encode(['success' => false, 'message' => 'Anda tidak memiliki akses untuk mengkonfirmasi event']);
+            header('Location: /event?error=Anda tidak memiliki akses untuk mengkonfirmasi event');
             exit;
         }
-        
-        $success = $this->eventRepository->confirmEvent($id);
 
-        if ($success) {
-            echo json_encode(['success' => true, 'message' => 'Event berhasil dikonfirmasi']);
+        $result = $this->eventRepository->confirmEvent($id);
+
+        if ($result) {
+            header('Location: /event?success=Event berhasil dikonfirmasi');
         } else {
-            echo json_encode(['success' => false, 'message' => 'Gagal mengkonfirmasi event']);
+            header('Location: /event?error=Gagal mengkonfirmasi event');
         }
+        exit;
     }
 
     /**
@@ -282,30 +311,30 @@ class EventController
      */
     private function handleImageUpload($file)
     {
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
-        $maxSize = 5 * 1024 * 1024; // 5MB
-        
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        $maxSize = 15 * 1024 * 1024; // 15MB
+
         if (!in_array($file['type'], $allowedTypes)) {
             return false;
         }
-        
+
         if ($file['size'] > $maxSize) {
             return false;
         }
-        
+
         $uploadDir = __DIR__ . '/../../public/uploads/events/';
         if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
+            mkdir($uploadDir, 0777, true);
         }
-        
+
         $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename = 'event_' . time() . '_' . uniqid() . '.' . $extension;
-        $uploadPath = $uploadDir . $filename;
-        
-        if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+        $filename = uniqid() . '_' . time() . '.' . $extension;
+        $destination = $uploadDir . $filename;
+
+        if (move_uploaded_file($file['tmp_name'], $destination)) {
             return '/uploads/events/' . $filename;
         }
-        
+
         return false;
     }
 }

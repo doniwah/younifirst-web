@@ -1,282 +1,693 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?> - Campus Nexus</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Buat Event Baru - Campus Nexus</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/css/sidebar.css">
-    <link rel="stylesheet" href="/css/team.css">
-
+    <link rel="stylesheet" href="/css/dashboard-modern.css">
     <style>
-    /* Force light theme */
-    body {
-        background: #f9fafb !important;
-        color: #1f2937 !important;
-    }
+        body {
+            background: #f5f7fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
 
-    .main-content {
-        background: #f9fafb !important;
-    }
+        .create-event-container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
 
-    .form-container {
-        background: white;
-        border-radius: 12px;
-        padding: 32px;
-        max-width: 800px;
-        margin: 0 auto;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e5e7eb;
-    }
+        .form-row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
 
-    .form-group {
-        margin-bottom: 24px;
-    }
+        .back-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-bottom: 20px;
+            color: #374151;
+        }
 
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 500;
-        color: #374151;
-    }
+        .form-step {
+            display: none;
+        }
 
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-        width: 100%;
-        padding: 12px 16px;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        font-size: 14px;
-        transition: all 0.2s;
-    }
+        .form-step.active {
+            display: block;
+        }
 
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-        outline: none;
-        border-color: #4f87ff;
-        box-shadow: 0 0 0 3px rgba(79, 135, 255, 0.1);
-    }
+        .poster-upload {
+            background: #eff6ff;
+            border: 2px dashed #93c5fd;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 24px;
+            position: relative;
+        }
 
-    .form-group textarea {
-        min-height: 120px;
-        resize: vertical;
-    }
+        .poster-upload:hover {
+            background: #dbeafe;
+        }
 
-    .form-group small {
-        display: block;
-        margin-top: 4px;
-        color: #6b7280;
-        font-size: 13px;
-    }
+        .poster-upload i {
+            font-size: 48px;
+            color: #3b82f6;
+            margin-bottom: 12px;
+        }
 
-    .image-upload-container {
-        border: 2px dashed #d1d5db;
-        border-radius: 8px;
-        padding: 24px;
-        text-align: center;
-        transition: all 0.2s;
-        cursor: pointer;
-    }
+        .poster-upload h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
 
-    .image-upload-container:hover {
-        border-color: #4f87ff;
-        background: #f9fafb;
-    }
+        .poster-upload p {
+            font-size: 13px;
+            color: #6b7280;
+        }
 
-    .image-upload-container.has-image {
-        border-style: solid;
-        border-color: #4f87ff;
-    }
+        .poster-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 12px;
+            margin-top: 12px;
+        }
 
-    .image-preview {
-        max-width: 100%;
-        max-height: 300px;
-        margin-top: 16px;
-        border-radius: 8px;
-        display: none;
-    }
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-    .image-preview.show {
-        display: block;
-    }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+        }
 
-    .upload-icon {
-        font-size: 48px;
-        color: #9ca3af;
-        margin-bottom: 12px;
-    }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
 
-    .form-actions {
-        display: flex;
-        gap: 12px;
-        justify-content: flex-end;
-        margin-top: 32px;
-        padding-top: 24px;
-        border-top: 1px solid #e5e7eb;
-    }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
 
-    .btn {
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s;
-        border: none;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        text-decoration: none;
-    }
+        .input-with-icon {
+            position: relative;
+        }
 
-    .btn-primary {
-        background: #4f87ff;
-        color: white;
-    }
+        .input-with-icon i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
 
-    .btn-primary:hover {
-        background: #3b6fdd;
-    }
+        .input-with-icon input {
+            padding-left: 40px;
+        }
 
-    .btn-secondary {
-        background: #f3f4f6;
-        color: #374151;
-    }
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
 
-    .btn-secondary:hover {
-        background: #e5e7eb;
-    }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
 
-    .alert {
-        padding: 12px 16px;
-        border-radius: 8px;
-        margin-bottom: 24px;
-    }
+        .section-header h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+        }
 
-    .alert-error {
-        background: #fee2e2;
-        color: #991b1b;
-        border: 1px solid #fecaca;
-    }
+        .section-header p {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
 
-    .required {
-        color: #ef4444;
-    }
+        .add-day-btn {
+            background: #eff6ff;
+            color: #3b82f6;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .day-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .day-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .day-card-header h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .remove-day-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .time-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .price-toggle {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .price-option {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .price-option.active {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .price-option i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .price-option span {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .tag-item {
+            padding: 8px 16px;
+            background: #eff6ff;
+            color: #3b82f6;
+            border: 2px solid #bfdbfe;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tag-item:hover {
+            background: #dbeafe;
+        }
+
+        .tag-item.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .tag-item input[type="checkbox"] {
+            display: none;
+        }
+
+        .textarea-wrapper {
+            position: relative;
+        }
+
+        .textarea-wrapper textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .textarea-counter {
+            position: absolute;
+            bottom: 12px;
+            right: 16px;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .social-media {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .social-input {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+
+        .social-input i {
+            font-size: 20px;
+            color: #6b7280;
+        }
+
+        .social-input input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .section-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .section-description {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+
+        .submit-btn, .next-btn {
+            width: 100%;
+            padding: 14px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 24px;
+        }
+
+        .submit-btn:hover, .next-btn:hover {
+            background: #2563eb;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
-
 <body>
     <?php require_once __DIR__ . "/../../layouts/sidebar.php"; ?>
+
     <div class="main-content">
-        <div class="header">
-            <div>
-                <h1><?= $title ?></h1>
-                <p>Buat event baru untuk kampus</p>
-            </div>
-        </div>
+        <div class="create-event-container">
+            <button class="back-button" onclick="handleBack()">
+                <i class="bi bi-arrow-left"></i>
+            </button>
 
-        <div class="form-container">
-            <?php if (isset($_GET['error'])): ?>
-            <div class="alert alert-error">
-                <i class="fas fa-exclamation-circle"></i>
-                <?= htmlspecialchars($_GET['error']) ?>
-            </div>
-            <?php endif; ?>
-
-            <form action="/event/store" method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="nama_event">Nama Event <span class="required">*</span></label>
-                    <input type="text" id="nama_event" name="nama_event" required
-                        placeholder="Contoh: Workshop Web Development">
-                    <small>Nama event yang akan ditampilkan</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="deskripsi">Deskripsi <span class="required">*</span></label>
-                    <textarea id="deskripsi" name="deskripsi" required
-                        placeholder="Jelaskan tentang event, tujuan, dan manfaatnya..."></textarea>
-                    <small>Jelaskan secara detail tentang event</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="tanggal_mulai">Tanggal & Waktu Mulai <span class="required">*</span></label>
-                    <input type="datetime-local" id="tanggal_mulai" name="tanggal_mulai" required>
-                    <small>Waktu dimulainya event</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="tanggal_selsai">Tanggal & Waktu Selesai <span class="required">*</span></label>
-                    <input type="datetime-local" id="tanggal_selsai" name="tanggal_selsai" required>
-                    <small>Waktu berakhirnya event</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="lokasi">Lokasi <span class="required">*</span></label>
-                    <input type="text" id="lokasi" name="lokasi" required
-                        placeholder="Contoh: Auditorium Kampus, Gedung A Lt. 3">
-                    <small>Tempat pelaksanaan event</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="organizer">Penyelenggara <span class="required">*</span></label>
-                    <input type="text" id="organizer" name="organizer" required
-                        placeholder="Contoh: Himpunan Mahasiswa Informatika">
-                    <small>Nama organisasi atau panitia penyelenggara</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="kapasitas">Kapasitas Peserta <span class="required">*</span></label>
-                    <input type="number" id="kapasitas" name="kapasitas" min="1" max="10000" value="100" required>
-                    <small>Jumlah maksimal peserta yang dapat mendaftar</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="poster_event">Poster Event</label>
-                    <div class="image-upload-container" onclick="document.getElementById('poster_event').click()">
-                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                        <p>Klik untuk upload poster event</p>
-                        <small>Format: JPG, PNG, GIF (Max 5MB)</small>
-                        <img id="imagePreview" class="image-preview" alt="Preview">
+            <form action="/event/store" method="POST" enctype="multipart/form-data" id="eventForm">
+                <!-- STEP 1: Basic Information -->
+                <div class="form-step active" id="step1">
+                    <!-- Poster Upload -->
+                    <div class="poster-upload" onclick="document.getElementById('poster').click()">
+                        <i class="bi bi-image"></i>
+                        <h3>Tambahkan Poster Event</h3>
+                        <p>Format jpg/jpeg/png. Maks 15MB</p>
+                        <img id="posterPreview" class="poster-preview hidden" alt="Preview">
+                        <input type="file" id="poster" name="poster_event" accept="image/*" style="display: none;" onchange="previewPoster(this)">
                     </div>
-                    <input type="file" id="poster_event" name="poster_event" accept="image/*" style="display: none;" onchange="previewImage(this)">
-                </div>
 
-                <div class="form-actions">
-                    <a href="/event" class="btn btn-secondary">
-                        <i class="fas fa-times"></i>
-                        Batal
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i>
-                        Simpan Event
-                    </button>
+                    <!-- Row 1: Nama Event & Lokasi -->
+                    <div class="form-row-2col">
+                        <div class="form-group">
+                            <input type="text" name="nama_event" placeholder="Nama Event" maxlength="30" id="namaEvent" required>
+                            <div class="char-counter"><span id="charCount">0</span>/30</div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-with-icon">
+                                <i class="bi bi-geo-alt"></i>
+                                <input type="text" name="lokasi" placeholder="Lokasi Event" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Tanggal Pelaksanaan & Harga -->
+                    <div class="form-row-2col">
+                        <!-- Tanggal dan Waktu Pelaksanaan -->
+                        <div class="form-group">
+                            <div class="section-header">
+                                <div>
+                                    <h3>Tanggal dan Waktu Pelaksanaan</h3>
+                                    <p>Atur tanggal dan waktu event. Tambahkan hari jika berlangsung lebih dari satu.</p>
+                                </div>
+                                <button type="button" class="add-day-btn" onclick="addDay()">
+                                    <i class="bi bi-plus"></i> Tambah Hari
+                                </button>
+                            </div>
+
+                            <div id="daysContainer">
+                                <div class="day-card">
+                                    <div class="day-card-header">
+                                        <h4>Hari 1</h4>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="input-with-icon">
+                                            <i class="bi bi-calendar"></i>
+                                            <input type="date" name="tanggal_hari[]" required>
+                                        </div>
+                                    </div>
+                                    <div class="time-inputs">
+                                        <div class="input-with-icon">
+                                            <i class="bi bi-clock"></i>
+                                            <input type="time" name="waktu_mulai[]" placeholder="Waktu Mulai" required>
+                                        </div>
+                                        <div class="input-with-icon">
+                                            <i class="bi bi-clock"></i>
+                                            <input type="time" name="waktu_selesai[]" placeholder="Waktu Selesai" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Harga & Link Pendaftaran -->
+                        <div>
+                            <div class="form-group">
+                                <label>Harga</label>
+                                <div class="price-toggle">
+                                    <div class="price-option active" onclick="togglePrice('gratis')">
+                                        <i class="bi bi-gift"></i>
+                                        <span>Gratis</span>
+                                    </div>
+                                    <div class="price-option" onclick="togglePrice('berbayar')">
+                                        <i class="bi bi-cash"></i>
+                                        <span>Berbayar</span>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="harga" id="hargaInput" value="0">
+                                <input type="number" name="harga_value" id="hargaValue" class="hidden" placeholder="Masukkan harga" min="0">
+                            </div>
+
+                            <!-- Link Pendaftaran -->
+                            <div class="form-group">
+                                <div class="input-with-icon">
+                                    <i class="bi bi-link-45deg"></i>
+                                    <input type="url" name="link_pendaftaran" placeholder="Link Pendaftaran">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Batas Tanggal dan Waktu Pendaftaran -->
+                    <div class="form-group">
+                        <label>Batas Tanggal dan Waktu Pendaftaran</label>
+                        <p style="font-size: 12px; color: #6b7280; margin-bottom: 12px;">Tentukan kapan pendaftaran dibuka dan ditutup.</p>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <div class="input-with-icon">
+                                    <i class="bi bi-calendar"></i>
+                                    <input type="date" name="batas_tanggal_mulai" placeholder="Tanggal Mulai">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-with-icon">
+                                    <i class="bi bi-clock"></i>
+                                    <input type="time" name="batas_waktu_mulai" placeholder="Waktu Mulai">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <div class="input-with-icon">
+                                    <i class="bi bi-calendar"></i>
+                                    <input type="date" name="batas_tanggal_tutup" placeholder="Tanggal Tutup">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-with-icon">
+                                    <i class="bi bi-clock"></i>
+                                    <input type="time" name="batas_waktu_tutup" placeholder="Waktu Tutup">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tag Terkait -->
+                    <div class="form-group">
+                        <div class="section-label">Tag Terkait</div>
+                        <div class="section-description">Pilih atau ketuk tag yang sesuai dengan jenis event</div>
+                        <div class="tags-container">
+                            <label class="tag-item">
+                                <input type="checkbox" name="tags[]" value="Seminar">
+                                <span>Seminar</span>
+                            </label>
+                            <label class="tag-item">
+                                <input type="checkbox" name="tags[]" value="Webinar">
+                                <span>Webinar</span>
+                            </label>
+                            <label class="tag-item">
+                                <input type="checkbox" name="tags[]" value="Konser">
+                                <span>Konser</span>
+                            </label>
+                            <label class="tag-item">
+                                <input type="checkbox" name="tags[]" value="Pameran">
+                                <span>Pameran</span>
+                            </label>
+                            <label class="tag-item">
+                                <input type="checkbox" name="tags[]" value="Turnamen">
+                                <span>Turnamen</span>
+                            </label>
+                            <label class="tag-item">
+                                <input type="checkbox" name="tags[]" value="Festival">
+                                <span>Festival</span>
+                            </label>
+                            <label class="tag-item">
+                                <input type="checkbox" name="tags[]" value="Online">
+                                <span>Online</span>
+                            </label>
+                            <label class="tag-item">
+                                <input type="checkbox" name="tags[]" value="Offline">
+                                <span>Offline</span>
+                            </label>
+                            <label class="tag-item">
+                                <input type="checkbox" name="tags[]" value="Umum">
+                                <span>Umum</span>
+                            </label>
+                            <label class="tag-item">
+                                <input type="checkbox" name="tags[]" value="Hanya Mahasiswa">
+                                <span>Hanya Mahasiswa</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Keterangan Event -->
+                    <div class="form-group">
+                        <div class="section-label">Keterangan Event</div>
+                        <div class="textarea-wrapper">
+                            <textarea name="deskripsi" id="deskripsi" maxlength="500" placeholder="Tulis keterangan event..."></textarea>
+                            <div class="textarea-counter"><span id="descCount">0</span>/500</div>
+                        </div>
+                    </div>
+
+                    <!-- Media Sosial -->
+                    <div class="form-group">
+                        <div class="section-label">Media Sosial</div>
+                        <div class="section-description">Tambahkan media sosial agar peserta mudah terhubung dengan Anda (Opsional)</div>
+                        <div class="social-media">
+                            <div class="social-input">
+                                <i class="bi bi-instagram"></i>
+                                <input type="text" name="instagram" placeholder="Instagram">
+                            </div>
+                            <div class="social-input">
+                                <i class="bi bi-whatsapp"></i>
+                                <input type="text" name="whatsapp" placeholder="WhatsApp">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hidden fields -->
+                    <input type="hidden" name="organizer" value="Campus Nexus">
+                    <input type="hidden" name="kapasitas" value="100">
+
+                    <button type="submit" class="submit-btn">Buat Event</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-    function previewImage(input) {
-        const preview = document.getElementById('imagePreview');
-        const container = document.querySelector('.image-upload-container');
-        
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.classList.add('show');
-                container.classList.add('has-image');
+        let dayCount = 1;
+
+        // Character counters
+        document.getElementById('namaEvent').addEventListener('input', function() {
+            document.getElementById('charCount').textContent = this.value.length;
+        });
+
+        document.getElementById('deskripsi').addEventListener('input', function() {
+            document.getElementById('descCount').textContent = this.value.length;
+        });
+
+        // Preview poster
+        function previewPoster(input) {
+            const preview = document.getElementById('posterPreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
             }
-            
-            reader.readAsDataURL(input.files[0]);
         }
-    }
+
+        // Add day
+        function addDay() {
+            dayCount++;
+            const container = document.getElementById('daysContainer');
+            const dayCard = document.createElement('div');
+            dayCard.className = 'day-card';
+            dayCard.innerHTML = `
+                <div class="day-card-header">
+                    <h4>Hari ${dayCount}</h4>
+                    <button type="button" class="remove-day-btn" onclick="removeDay(this)">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <div class="input-with-icon">
+                        <i class="bi bi-calendar"></i>
+                        <input type="date" name="tanggal_hari[]" required>
+                    </div>
+                </div>
+                <div class="time-inputs">
+                    <div class="input-with-icon">
+                        <i class="bi bi-clock"></i>
+                        <input type="time" name="waktu_mulai[]" placeholder="Waktu Mulai" required>
+                    </div>
+                    <div class="input-with-icon">
+                        <i class="bi bi-clock"></i>
+                        <input type="time" name="waktu_selesai[]" placeholder="Waktu Selesai" required>
+                    </div>
+                </div>
+            `;
+            container.appendChild(dayCard);
+        }
+
+        // Remove day
+        function removeDay(btn) {
+            btn.closest('.day-card').remove();
+            dayCount--;
+            document.querySelectorAll('.day-card h4').forEach((h4, index) => {
+                h4.textContent = `Hari ${index + 1}`;
+            });
+        }
+
+        // Toggle price
+        function togglePrice(type) {
+            const options = document.querySelectorAll('.price-option');
+            options.forEach(opt => opt.classList.remove('active'));
+            event.target.closest('.price-option').classList.add('active');
+            
+            const hargaValue = document.getElementById('hargaValue');
+            const hargaInput = document.getElementById('hargaInput');
+            
+            if (type === 'gratis') {
+                hargaValue.classList.add('hidden');
+                hargaInput.value = '0';
+            } else {
+                hargaValue.classList.remove('hidden');
+                hargaInput.value = hargaValue.value || '0';
+            }
+        }
+
+        // Update hidden input when price value changes
+        document.getElementById('hargaValue')?.addEventListener('input', function() {
+            document.getElementById('hargaInput').value = this.value;
+        });
+
+        // Toggle tag selection
+        document.querySelectorAll('.tag-item').forEach(tag => {
+            tag.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const checkbox = this.querySelector('input[type="checkbox"]');
+                checkbox.checked = !checkbox.checked;
+            });
+        });
+
+        // Handle back button
+        function handleBack() {
+            window.location.href = '/event';
+        }
     </script>
 </body>
-
 </html>

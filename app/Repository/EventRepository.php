@@ -63,27 +63,39 @@ class EventRepository
      */
     public function createEvent($data)
     {
+        // Generate unique event_id (max 10 characters)
+        // Format: E + 9 digit number (e.g., E123456789)
+        $eventId = 'E' . str_pad(rand(0, 999999999), 9, '0', STR_PAD_LEFT);
+        
         $sql = "
             INSERT INTO event 
-            (nama_event, deskripsi, tanggal_mulai, tanggal_selsai, lokasi, organizer, kapasitas, kategori, harga, poster_event, status) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (event_id, nama_event, deskripsi, tanggal_mulai, tanggal_selsai, lokasi, organizer, kapasitas, 
+             kategori, harga, poster_event, dl_pendaftaran, waktu_pelaksanaan, user_id, 
+             contact_person, url_instagram, status) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ";
         $stmt = $this->db->prepare($sql);
         $result = $stmt->execute([
+            $eventId,
             $data['nama_event'],
             $data['deskripsi'],
             $data['tanggal_mulai'],
-            $data['tanggal_selsai'],
+            $data['tanggal_selesai'] ?? $data['tanggal_mulai'],
             $data['lokasi'],
             $data['organizer'],
             $data['kapasitas'],
             $data['kategori'] ?? '',
-            $data['harga'] ?? 0,
+            $data['harga'] ?? '0',
             $data['poster_event'] ?? null,
+            $data['dl_pendaftaran'] ?? null,
+            $data['waktu_pelaksanaan'] ?? null,
+            $data['user_id'] ?? null,
+            $data['contact_person'] ?? '',
+            $data['url_instagram'] ?? '',
             $data['status'] ?? 'waiting'
         ]);
         
-        return $result ? $this->db->lastInsertId() : false;
+        return $result ? $eventId : false;
     }
 
     /**
@@ -231,6 +243,40 @@ class EventRepository
         ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$limit]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Get trending events (ordered by participants)
+     */
+    public function getTrendingEvents($limit = 5)
+    {
+        $sql = "
+            SELECT * FROM event 
+            WHERE status = 'confirm' AND tanggal_mulai > NOW()
+            ORDER BY peserta_terdaftar DESC
+            LIMIT ?
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$limit]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Get events user has registered for
+     */
+    public function getUserEvents($userId, $limit = 5)
+    {
+        $sql = "
+            SELECT e.* 
+            FROM event e
+            JOIN pendaftaran_event pe ON e.event_id = pe.event_id
+            WHERE pe.user_id = ? AND e.tanggal_mulai > NOW()
+            ORDER BY e.tanggal_mulai ASC
+            LIMIT ?
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$userId, $limit]);
         return $stmt->fetchAll();
     }
 }
