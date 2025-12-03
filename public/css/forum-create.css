@@ -1,6 +1,6 @@
 /* Forum Create Page Styles */
 .create-forum-container {
-    max-width: 600px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 20px;
     background: white;
@@ -250,4 +250,31 @@
 [data-theme="dark"] .submit-btn.active {
     background: #4f87ff;
     color: white;
+}
+.forum-create-layout {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+.left-column {
+    flex: 0 0 200px;
+    display: flex;
+    justify-content: center;
+}
+
+.right-column {
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .forum-create-layout {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .left-column {
+        flex: none;
+        width: 100%;
+    }
 }

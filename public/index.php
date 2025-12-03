@@ -24,10 +24,6 @@ Database::getConnection('prod');
 
 Router::add('GET', '/', HomeController::class, 'index', []);
 Router::add('GET', '/users/logout', UserController::class, 'logout', [MustLoginMiddleware::class]);
-Router::add('GET', '/users/login', UserController::class, 'login', [MustNotLoginMiddleware::class]);
-Router::add('POST', '/users/login', UserController::class, 'postLogin', [MustNotLoginMiddleware::class]);
-Router::add('POST', '/api/login', UserController::class, 'apiLogin');
-Router::add('GET', '/dashboard', DashboardController::class, 'index', [MustLoginMiddleware::class]);
 
 // Team Routes
 Router::add('GET', '/team', TeamController::class, 'index', [MustLoginMiddleware::class]);
@@ -40,12 +36,13 @@ Router::add('POST', '/team/upload-poster/([a-zA-Z0-9]+)', TeamController::class,
 
 // Kompetisi Routes
 Router::add('GET', '/kompetisi', KompetisiController::class, 'index', [MustLoginMiddleware::class]);
+Router::add('GET', '/kompetisi/create', KompetisiController::class, 'create', [MustLoginMiddleware::class]);
 Router::add('POST', '/kompetisi/create', KompetisiController::class, 'create', [MustLoginMiddleware::class]);
 Router::add('POST', '/kompetisi/create-lomba', KompetisiController::class, 'createLomba', [MustLoginMiddleware::class]);
 Router::add('POST', '/kompetisi/create-team', KompetisiController::class, 'createTeam', [MustLoginMiddleware::class]);
 Router::add('GET', '/kompetisi/([a-zA-Z0-9]+)', KompetisiController::class, 'detail', [MustLoginMiddleware::class]);
 
-//API KOMPETISI
+// API Kompetisi Routes
 Router::add('GET', '/api/kompetisi', KompetisiApiController::class, 'index');
 Router::add('GET', '/api/kompetisi/([a-zA-Z0-9]+)', KompetisiApiController::class, 'detail');
 Router::add('POST', '/api/kompetisi/create', KompetisiApiController::class, 'create');

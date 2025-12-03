@@ -504,7 +504,7 @@ class TeamController
         $targetPath = $uploadDir . $filename;
 
         if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-            if ($this->teamRepository->updatePoster($teamId, $filename)) {
+            if ($this->teamRepository->updatePoster($teamId, '/uploads/posters/' . $filename)) {
                 echo json_encode(['success' => true, 'message' => 'Poster uploaded successfully', 'filename' => $filename]);
             } else {
                 echo json_encode(['success' => false, 'message' => 'Failed to update database']);

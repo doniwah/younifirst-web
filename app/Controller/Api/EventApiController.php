@@ -124,24 +124,53 @@ class EventApiController
     }
 
     try {
-        $input = file_get_contents('php://input');
-        $data = json_decode($input, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Invalid JSON data'
-            ], JSON_PRETTY_PRINT);
-            return;
+        // Deteksi apakah data dikirim sebagai JSON atau form-data
+        if (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+            // JSON request
+            $input = file_get_contents('php://input');
+            $data = json_decode($input, true);
+            
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Invalid JSON data'
+                ], JSON_PRETTY_PRINT);
+                return;
+            }
+        } else {
+            // Form-data request (bisa dengan file)
+            $data = $_POST;
+            
+            // Handle file upload jika ada
+            if (isset($_FILES['poster_event']) && $_FILES['poster_event']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = '../uploads/events/';
+                if (!file_exists($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                
+                // Generate unique filename
+                $timestamp = time();
+                $randomString = bin2hex(random_bytes(8));
+                $fileName = $randomString . '_' . $timestamp . '.jpg';
+                $filePath = $uploadDir . $fileName;
+                
+                if (move_uploaded_file($_FILES['poster_event']['tmp_name'], $filePath)) {
+                    $data['poster_event'] = '/uploads/events/' . $fileName;
+                } else {
+                    $data['poster_event'] = '';
+                }
+            } else {
+                $data['poster_event'] = $data['poster_event'] ?? '';
+            }
         }
 
-        // Validation
-        $requiredFields = ['nama_event', 'deskripsi', 'tanggal_mulai', 'lokasi', 'organizer', 'kapasitas', 'kategori', 'harga', 'user_id'];
+        // Validation - Field yang benar-benar required
+        $requiredFields = ['nama_event', 'deskripsi', 'tanggal_mulai', 'lokasi', 'organizer', 'kapasitas', 'kategori', 'user_id'];
         $missingFields = [];
 
         foreach ($requiredFields as $field) {
-            if (empty($data[$field])) {
+            if (!isset($data[$field]) || empty(trim($data[$field]))) {
                 $missingFields[] = $field;
             }
         }
@@ -155,9 +184,9 @@ class EventApiController
             return;
         }
         
-        // Get user role dari user_id yang dikirim
+        // Get user role dari user_id
         $userRole = 'user';
-        $userId = $data['user_id']; // ← Ambil dari data JSON
+        $userId = $data['user_id'];
         
         if ($userId) {
             $db = Database::getConnection('prod');
@@ -167,6 +196,7 @@ class EventApiController
             $userRole = $user['role'] ?? 'user';
         }
 
+        // Siapkan data event dengan nilai default
         $eventData = [
             'nama_event' => trim($data['nama_event']),
             'deskripsi' => trim($data['deskripsi']),
@@ -175,10 +205,22 @@ class EventApiController
             'organizer' => trim($data['organizer']),
             'kapasitas' => (int)$data['kapasitas'],
             'kategori' => trim($data['kategori']),
-            'harga' => (int)$data['harga'],
-            'poster_event' => $data['poster_event'] ?? null,
+            'harga' => isset($data['harga']) ? (int)$data['harga'] : 0, // Default 0 jika tidak ada
+            'poster_event' => $data['poster_event'] ?? '',
+            'contact_person' => $data['contact_person'] ?? '', // Default string kosong
+            'url_instagram' => $data['url_instagram'] ?? '', // Default string kosong
+            'user_id' => $data['user_id'],
             'status' => $userRole === 'admin' ? 'confirm' : 'waiting'
         ];
+
+        // Tambahkan field opsional jika ada
+        if (isset($data['waktu_pelaksanaan']) && !empty(trim($data['waktu_pelaksanaan']))) {
+            $eventData['waktu_pelaksanaan'] = trim($data['waktu_pelaksanaan']);
+        }
+        
+        if (isset($data['dl_pendaftaran']) && !empty(trim($data['dl_pendaftaran']))) {
+            $eventData['dl_pendaftaran'] = trim($data['dl_pendaftaran']);
+        }
 
         $eventId = $this->eventRepository->createEvent($eventData);
 

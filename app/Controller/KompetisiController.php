@@ -15,6 +15,7 @@ class KompetisiController
         $query = $db->query("
             SELECT lomba_id, nama_lomba, tanggal_lomba, kategori, lokasi, deskripsi, hadiah, poster_lomba
             FROM lomba
+            WHERE status != 'waiting'
             ORDER BY tanggal_lomba DESC
         ");
 
@@ -38,6 +39,13 @@ class KompetisiController
 
     public function create()
     {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            View::render('component/kompetisi/create', [
+                'title' => 'Buat Kompetisi Baru'
+            ]);
+            return;
+        }
+
         if (isset($_POST['nama_lomba'])) {
             $this->createLomba();
         } elseif (isset($_POST['nama_team'])) {
@@ -77,14 +85,20 @@ class KompetisiController
         $kategori = $_POST['kategori'] ?? '';
         $lokasi = $_POST['lokasi'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
-        $hadiah = isset($_POST['hadiah']) ? (int)$_POST['hadiah'] : 0;
+        $hadiah = $_POST['hadiah'] ?? ''; // Changed to string/varchar based on user request/schema usually allowing text
         $user_id = $_SESSION['user_id'] ?? 1;
         
+        // New fields
+        $penyelenggara = $_POST['penyelenggara'] ?? '';
+        $lomba_type = $_POST['lomba_type'] ?? 'Individu';
+        $scope = $_POST['scope'] ?? 'Nasional';
+        $biaya = $_POST['biaya'] ?? 'Gratis';
+        $harga_lomba = ($biaya === 'Berbayar') ? ($_POST['harga_lomba'] ?? 0) : 0;
 
         try {
             $stmt = $db->prepare("
-                INSERT INTO lomba (lomba_id, nama_lomba, deskripsi, status, tanggal_lomba, hadiah, kategori, user_id, lokasi, poster_lomba)
-                VALUES (:id, :nama, :desk, 'waiting', :tanggal, :hadiah, :kategori, :user_id, :lokasi, :poster)
+                INSERT INTO lomba (lomba_id, nama_lomba, deskripsi, status, tanggal_lomba, hadiah, kategori, user_id, lokasi, poster_lomba, penyelenggara, lomba_type, scope, biaya, harga_lomba)
+                VALUES (:id, :nama, :desk, 'waiting', :tanggal, :hadiah, :kategori, :user_id, :lokasi, :poster, :penyelenggara, :type, :scope, :biaya, :harga)
             ");
 
             $stmt->execute([
@@ -96,7 +110,12 @@ class KompetisiController
                 ':kategori' => $kategori,
                 ':user_id' => $user_id,
                 ':lokasi' => $lokasi,
-                ':poster' => $posterPath
+                ':poster' => $posterPath,
+                ':penyelenggara' => $penyelenggara,
+                ':type' => $lomba_type,
+                ':scope' => $scope,
+                ':biaya' => $biaya,
+                ':harga' => $harga_lomba
             ]);
 
             header("Location: /kompetisi?status=success&message=Lomba berhasil dibuat");
@@ -116,16 +135,21 @@ class KompetisiController
                         ':kategori' => $kategori,
                         ':user_id' => $user_id,
                         ':lokasi' => $lokasi,
-                        ':poster' => $posterPath
+                        ':poster' => $posterPath,
+                        ':penyelenggara' => $penyelenggara,
+                        ':type' => $lomba_type,
+                        ':scope' => $scope,
+                        ':biaya' => $biaya,
+                        ':harga' => $harga_lomba
                     ]);
                     header("Location: /kompetisi?status=success&message=Lomba berhasil dibuat");
                     exit;
                 } catch (\PDOException $e2) {
-                    header("Location: /kompetisi?status=error&message=Gagal membuat lomba: " . $e2->getMessage());
+                    header("Location: /kompetisi?status=error&message=Gagal membuat lomba: " . urlencode($e2->getMessage()));
                     exit;
                 }
             } else {
-                header("Location: /kompetisi?status=error&message=Gagal membuat lomba: " . $e->getMessage());
+                header("Location: /kompetisi?status=error&message=Gagal membuat lomba: " . urlencode($e->getMessage()));
                 exit;
             }
         }
@@ -146,11 +170,16 @@ class KompetisiController
         $role_required = $_POST['role_dibutuhkan'] ?? '-';
         $user_id = $_SESSION['user_id'] ?? 1; // Default jika session tidak ada
 
+        $posterPath = null;
+        if (isset($_FILES['poster_team']) && $_FILES['poster_team']['error'] === UPLOAD_ERR_OK) {
+            $posterPath = $this->handleImageUpload($_FILES['poster_team']);
+        }
+
         try {
             // Insert team
             $stmt = $db->prepare("
-                INSERT INTO team (team_id, nama_kegiatan, nama_team, deskripsi_anggota, role_required, max_anggota, role, status)
-                VALUES (:id, :kegiatan, :nama, :desk, :role_req, :max, 'ketua', 'waiting')
+                INSERT INTO team (team_id, nama_kegiatan, nama_team, deskripsi_anggota, role_required, max_anggota, role, status, poster_lomba)
+                VALUES (:id, :kegiatan, :nama, :desk, :role_req, :max, 'ketua', 'waiting', :poster)
             ");
 
             $stmt->execute([
@@ -159,7 +188,8 @@ class KompetisiController
                 ':nama' => $nama_team,
                 ':desk' => $deskripsi,
                 ':role_req' => $role_required,
-                ':max' => $max_anggota
+                ':max' => $max_anggota,
+                ':poster' => $posterPath
             ]);
 
             // Insert user sebagai ketua
@@ -186,7 +216,8 @@ class KompetisiController
                         ':nama' => $nama_team,
                         ':desk' => $deskripsi,
                         ':role_req' => $role_required,
-                        ':max' => $max_anggota
+                        ':max' => $max_anggota,
+                        ':poster' => $posterPath
                     ]);
 
                     $stmt2->execute([
@@ -197,11 +228,11 @@ class KompetisiController
                     header("Location: /kompetisi?status=success&message=Tim berhasil dibuat");
                     exit;
                 } catch (\PDOException $e2) {
-                    header("Location: /kompetisi?status=error&message=Gagal membuat tim: " . $e2->getMessage());
+                    header("Location: /kompetisi?status=error&message=Gagal membuat tim: " . urlencode($e2->getMessage()));
                     exit;
                 }
             } else {
-                header("Location: /kompetisi?status=error&message=Gagal membuat tim: " . $e->getMessage());
+                header("Location: /kompetisi?status=error&message=Gagal membuat tim: " . urlencode($e->getMessage()));
                 exit;
             }
         }
@@ -237,5 +268,44 @@ class KompetisiController
         }
         
         return false;
+    }
+
+    public function detail($id)
+    {
+        $db = Database::getConnection('prod');
+
+        $stmt = $db->prepare("
+            SELECT * FROM lomba WHERE lomba_id = :id
+        ");
+        $stmt->execute([':id' => $id]);
+        $competition = $stmt->fetch();
+
+        if (!$competition) {
+            // If not found in lomba, check team (since route is generic /kompetisi/{id})
+            // However, the route regex is generic. Let's check team as well or handle 404.
+            // Based on index.php, teams are also listed. 
+            // But usually detail view is for specific item.
+            // Let's assume it's a competition for now or handle both.
+            
+            $stmtTeam = $db->prepare("SELECT * FROM team WHERE team_id = :id");
+            $stmtTeam->execute([':id' => $id]);
+            $team = $stmtTeam->fetch();
+
+            if ($team) {
+                 View::render('component/kompetisi/detail_team', [
+                    'title' => 'Detail Tim',
+                    'team' => $team
+                ]);
+                return;
+            }
+
+            header("Location: /kompetisi?status=error&message=Kompetisi tidak ditemukan");
+            exit;
+        }
+
+        View::render('component/kompetisi/detail', [
+            'title' => $competition['nama_lomba'],
+            'competition' => $competition
+        ]);
     }
 }

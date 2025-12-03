@@ -21,58 +21,63 @@
                         <button type="button" class="back-button" onclick="history.back()">
                             <i class="bi bi-arrow-left"></i>
                         </button>
-                        <!-- Empty space to center content if needed, but design shows left aligned back button -->
                     </div>
 
-                    <div class="image-upload-section">
-                        <div class="image-preview-wrapper">
-                            <div class="image-preview" id="imagePreview">
-                                <i class="bi bi-people-fill default-icon"></i>
+                    <div class="forum-create-layout">
+                        <div class="left-column">
+                            <div class="image-upload-section">
+                                <div class="image-preview-wrapper">
+                                    <div class="image-preview" id="imagePreview">
+                                        <i class="bi bi-people-fill default-icon"></i>
+                                    </div>
+                                    <label for="forumImage" class="upload-btn">
+                                        <i class="bi bi-camera"></i>
+                                    </label>
+                                    <input type="file" id="forumImage" name="image" accept="image/*" hidden onchange="previewImage(this)">
+                                </div>
+                                <span class="upload-label">Ubah Foto</span>
                             </div>
-                            <label for="forumImage" class="upload-btn">
-                                <i class="bi bi-camera"></i>
-                            </label>
-                            <input type="file" id="forumImage" name="image" accept="image/*" hidden onchange="previewImage(this)">
                         </div>
-                        <span class="upload-label">Ubah Foto</span>
-                    </div>
 
-                    <div class="form-group">
-                        <span class="char-count" id="nameCount">0/40</span>
-                        <input type="text" class="form-input" name="nama_komunitas" placeholder="Nama Forum" maxlength="40" required oninput="updateCount(this, 'nameCount')">
-                    </div>
+                        <div class="right-column">
+                            <div class="form-group">
+                                <span class="char-count" id="nameCount">0/40</span>
+                                <input type="text" class="form-input" name="nama_komunitas" placeholder="Nama Forum" maxlength="40" required oninput="updateCount(this, 'nameCount')">
+                            </div>
 
-                    <div class="form-group">
-                        <span class="char-count" id="descCount">0/500</span>
-                        <textarea class="form-textarea" name="deskripsi" placeholder="Deksripsi Forum" maxlength="500" required oninput="updateCount(this, 'descCount')"></textarea>
-                    </div>
+                            <div class="form-group">
+                                <span class="char-count" id="descCount">0/500</span>
+                                <textarea class="form-textarea" name="deskripsi" placeholder="Deksripsi Forum" maxlength="500" required oninput="updateCount(this, 'descCount')"></textarea>
+                            </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Tagar</label>
-                        <input type="text" class="form-input" name="tags" placeholder="Cari Tagar Forum">
-                    </div>
+                            <div class="form-group">
+                                <label class="form-label">Tagar</label>
+                                <input type="text" class="form-input" name="tags" placeholder="Cari Tagar Forum">
+                            </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Preferensi Forum</label>
-                        <div class="radio-group">
-                            <label class="radio-option">
-                                <input type="radio" name="status" value="public" class="radio-input" checked>
-                                <div>
-                                    <span class="radio-label">Publik</span>
-                                    <span class="radio-desc"> - siapapun bisa bergabung</span>
+                            <div class="form-group">
+                                <label class="form-label">Preferensi Forum</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="status" value="public" class="radio-input" checked>
+                                        <div>
+                                            <span class="radio-label">Publik</span>
+                                            <span class="radio-desc"> - siapapun bisa bergabung</span>
+                                        </div>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="status" value="private" class="radio-input">
+                                        <div>
+                                            <span class="radio-label">Pribadi</span>
+                                            <span class="radio-desc"> - perlu undangan untuk bergabung</span>
+                                        </div>
+                                    </label>
                                 </div>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="status" value="private" class="radio-input">
-                                <div>
-                                    <span class="radio-label">Pribadi</span>
-                                    <span class="radio-desc"> - perlu undangan untuk bergabung</span>
-                                </div>
-                            </label>
+                            </div>
+
+                            <button type="submit" class="submit-btn" id="submitBtn">Buat Forum</button>
                         </div>
                     </div>
-
-                    <button type="submit" class="submit-btn" id="submitBtn">Buat Forum</button>
                 </form>
             </div>
         </div>

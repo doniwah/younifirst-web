@@ -19,6 +19,9 @@
             <button class="filter-btn">
                 <i class="bi bi-funnel"></i>
             </button>
+            <a href="/kompetisi/create" class="btn-create-lomba" style="margin-left: auto; background: #4f87ff; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                <i class="bi bi-plus-lg"></i> Buat Lomba
+            </a>
         </div>
 
         <!-- Kompetisi Tab Content -->
@@ -136,7 +139,6 @@
             <div class="teams-list">
                 <?php if (!empty($teams)): ?>
                 <?php foreach ($teams as $team): ?>
-                <!-- DEBUG: <?php echo 'poster_lomba: ' . ($team['poster_lomba'] ?? 'NULL'); ?> -->
                 <div class="team-card-modern">
                     <div class="team-card-left">
                         <?php if (!empty($team['poster_lomba'])): ?>
@@ -320,38 +322,6 @@
 
 <!-- Modal Buat Tim -->
 <div id="timModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <span class="close" onclick="closeTimModal()"><i class="bi bi-x"></i></span>
-        <h2 class="title_pop">Buat Tim Baru</h2>
-        <p class="deskripsi_pop">Rekrut anggota untuk timmu</p>
-
-        <form action="/kompetisi/create" method="POST" id="timForm">
-            <div class="main-content-add">
-                <div class="left-content">
-                    <label>Nama Tim <span style="color: red;">*</span></label>
-                    <input type="text" name="nama_team" placeholder="Nama tim kamu" required>
-
-                    <label>Nama Kegiatan <span style="color: red;">*</span></label>
-                    <input type="text" name="nama_kegiatan" placeholder="Lomba/penelitian" required>
-
-                    <label>Deskripsi Tim</label>
-                    <textarea name="deskripsi" placeholder="Ceritakan tentang timmu..." rows="4"></textarea>
-                </div>
-                <div class="right-content">
-                    <label>Role Dibutuhkan</label>
-                    <textarea name="role_dibutuhkan" placeholder="Programmer, Designer" rows="4"></textarea>
-
-                    <label>Jumlah anggota <span style="color: red;">*</span></label>
-                    <input type="number" name="max_anggota" placeholder="Contoh: 5" required>
-                </div>
-            </div>
-            <button type="submit" class="submit-btn">Buat Tim</button>
-        </form>
-    </div>
-</div>
-
-<!-- Modal Ajukan Bergabung -->
-<div id="joinModal" class="modal" style="display: none;">
     <div class="modal-content">
         <span class="close" onclick="closeJoinModal()"><i class="bi bi-x"></i></span>
         <h2 class="title_pop">Ajukan Bergabung ke <span id="teamNameDisplay"></span></h2>
