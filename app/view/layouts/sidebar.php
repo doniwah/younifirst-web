@@ -15,75 +15,186 @@
     </div>
 
     <div class="menu">
-        <a href="/dashboard" class="menu-item active">
-            <i class="bi bi-columns-gap"></i>
-            <span>Dashboard</span>
-        </a>
-                <a href="/kompetisi" class="menu-item">
-            <i class="bi bi-trophy"></i>
-            <span>Kompetisi dan Team</span>
-        </a>
-                        <a href="/lost_found" class="menu-item">
-            <i class="bi bi-search"></i>
-            <span>Lost & Found</span>
-        </a>
-        <a href="/event" class="menu-item">
-            <i class="bi bi-calendar4"></i>
-            <span>Event</span>
-        </a>
-        <a href="/forum" class="menu-item">
-            <i class="bi bi-chat-left"></i>
-            <span>Forum</span>
-        </a>
+        <?php 
+        $userRole = (new \App\Service\SessionService())->getRole();
+        
+        if ($userRole === 'satpam'): 
+        ?>
+            <!-- Satpam Menu -->
+            <a href="/lost_found" class="menu-item">
+                <i class="bi bi-search"></i>
+                <span>Lost & Found</span>
+            </a>
+            
+            <a href="/lost_found/create" class="menu-item">
+                <i class="bi bi-plus-circle"></i>
+                <span>Info Barang Hilang</span>
+            </a>
+        <?php elseif ($userRole === 'admin'): ?>
+            <!-- Admin Menu -->
+            <a href="/dashboard" class="menu-item active">
+                <i class="bi bi-columns-gap"></i>
+                <span>Dashboard</span>
+            </a>
 
-
-        <!-- Create Dropdown -->
-        <div class="menu-item-wrapper">
-            <div class="menu-item dropdown-toggle" onclick="toggleDropdown(this)">
-                <div class="menu-link">
-                    <i class="bi bi-plus-circle"></i>
-                    <span>Create</span>
+            <!-- Manajemen Pengguna Dropdown -->
+            <div class="menu-item-wrapper">
+                <div class="menu-item dropdown-toggle" onclick="toggleDropdown(this)">
+                    <div class="menu-link">
+                        <i class="bi bi-people"></i>
+                        <span>Manajemen Pengguna</span>
+                    </div>
+                    <i class="bi bi-chevron-down dropdown-arrow"></i>
                 </div>
-                <i class="bi bi-chevron-down dropdown-arrow"></i>
+                <div class="dropdown-content">
+                    <a href="/admin/users" class="menu-item">
+                        <span>Daftar Pengguna</span>
+                    </a>
+                    <a href="/admin/activity-log" class="menu-item">
+                        <span>Log Aktivitas</span>
+                    </a>
+                </div>
             </div>
-            <div class="dropdown-content">
-                <a href="/forum/create" class="menu-item">
-                    <span>Buat Forum</span>
-                </a>
-                
-                <a href="/team/create" class="menu-item">
-                    <span>Rekrut Team</span>
-                </a>
 
-                <!-- Posting Dropdown -->
-                <div class="menu-item-wrapper">
-                    <div class="menu-item dropdown-toggle" onclick="toggleDropdown(this)">
-                        <div class="menu-link">
-                            <span>Posting</span>
+            <!-- Call Center Dropdown -->
+            <div class="menu-item-wrapper">
+                <div class="menu-item dropdown-toggle" onclick="toggleDropdown(this)">
+                    <div class="menu-link">
+                        <i class="bi bi-headset"></i>
+                        <span>Call Center</span>
+                    </div>
+                    <i class="bi bi-chevron-down dropdown-arrow"></i>
+                </div>
+                <div class="dropdown-content">
+                    <a href="/admin/call-requests" class="menu-item">
+                        <span>Call Request</span>
+                    </a>
+                    <a href="/admin/call-history" class="menu-item">
+                        <span>Riwayat Call</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Manajemen Laporan Dropdown -->
+            <div class="menu-item-wrapper">
+                <div class="menu-item dropdown-toggle" onclick="toggleDropdown(this)">
+                    <div class="menu-link">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span>Manajemen Laporan</span>
+                    </div>
+                    <i class="bi bi-chevron-down dropdown-arrow"></i>
+                </div>
+                <div class="dropdown-content">
+                    <a href="/admin/reports" class="menu-item">
+                        <span>Laporan Masuk</span>
+                    </a>
+                    <a href="/admin/reports/history" class="menu-item">
+                        <span>Riwayat Penanganan</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Konten Aplikasi Dropdown -->
+            <div class="menu-item-wrapper">
+                <div class="menu-item dropdown-toggle" onclick="toggleDropdown(this)">
+                    <div class="menu-link">
+                        <i class="bi bi-app-indicator"></i>
+                        <span>Konten Aplikasi</span>
+                    </div>
+                    <i class="bi bi-chevron-down dropdown-arrow"></i>
+                </div>
+                <div class="dropdown-content">
+                    <a href="/kompetisi" class="menu-item">
+                        <span>Kompetisi dan Team</span>
+                    </a>
+                    <a href="/lost_found" class="menu-item">
+                        <span>Lost & Found</span>
+                    </a>
+                    <a href="/event" class="menu-item">
+                        <span>Event</span>
+                    </a>
+                    <a href="/forum" class="menu-item">
+                        <span>Forum</span>
+                    </a>
+                </div>
+            </div>
+
+            <a href="/help" class="menu-item">
+                <i class="bi bi-question-circle"></i>
+                <span>Bantuan</span>
+            </a>
+
+        <?php else: ?>
+            <!-- Regular User Menu -->
+            <a href="/dashboard" class="menu-item active">
+                <i class="bi bi-columns-gap"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/kompetisi" class="menu-item">
+                <i class="bi bi-trophy"></i>
+                <span>Kompetisi dan Team</span>
+            </a>
+            <a href="/lost_found" class="menu-item">
+                <i class="bi bi-search"></i>
+                <span>Lost & Found</span>
+            </a>
+            <a href="/event" class="menu-item">
+                <i class="bi bi-calendar4"></i>
+                <span>Event</span>
+            </a>
+            <a href="/forum" class="menu-item">
+                <i class="bi bi-chat-left"></i>
+                <span>Forum</span>
+            </a>
+
+            <!-- Create Dropdown -->
+            <div class="menu-item-wrapper">
+                <div class="menu-item dropdown-toggle" onclick="toggleDropdown(this)">
+                    <div class="menu-link">
+                        <i class="bi bi-plus-circle"></i>
+                        <span>Create</span>
+                    </div>
+                    <i class="bi bi-chevron-down dropdown-arrow"></i>
+                </div>
+                <div class="dropdown-content">
+                    <a href="/forum/create" class="menu-item">
+                        <span>Buat Forum</span>
+                    </a>
+                    
+                    <a href="/team/create" class="menu-item">
+                        <span>Rekrut Team</span>
+                    </a>
+
+                    <!-- Posting Dropdown -->
+                    <div class="menu-item-wrapper">
+                        <div class="menu-item dropdown-toggle" onclick="toggleDropdown(this)">
+                            <div class="menu-link">
+                                <span>Posting</span>
+                            </div>
+                            <i class="bi bi-chevron-down dropdown-arrow"></i>
                         </div>
-                        <i class="bi bi-chevron-down dropdown-arrow"></i>
-                    </div>
-                    <div class="dropdown-content">
-                        <a href="/event/create" class="menu-item">
-                            <span>Posting Event</span>
-                        </a>
-                        
-                        <a href="/kompetisi/create" class="menu-item">
-                            <span>Posting Lomba</span>
-                        </a>
+                        <div class="dropdown-content">
+                            <a href="/event/create" class="menu-item">
+                                <span>Posting Event</span>
+                            </a>
+                            
+                            <a href="/kompetisi/create" class="menu-item">
+                                <span>Posting Lomba</span>
+                            </a>
 
-                        <a href="/lost_found/create" class="menu-item">
-                            <span>Info Barang Hilang</span>
-                        </a>
+                            <a href="/lost_found/create" class="menu-item">
+                                <span>Info Barang Hilang</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <a href="/settings" class="menu-item">
-            <i class="bi bi-gear"></i>
-            <span>Settings</span>
-        </a>
+            <a href="/settings" class="menu-item">
+                <i class="bi bi-gear"></i>
+                <span>Settings</span>
+            </a>
+        <?php endif; ?>
     </div>
 
     <div class="user-section">
@@ -94,14 +205,12 @@
             <h3><?= htmlspecialchars($_SESSION['nama'] ?? 'User') ?></h3>
             <p><?= htmlspecialchars($_SESSION['email'] ?? 'user@campus.edu') ?></p>
         </div>
-        <a href="/logout" class="logout-icon" title="Logout">
+        <a href="users/logout" class="logout-icon" title="Logout">
             <i class="fas fa-sign-out-alt"></i>
         </a>
     </div>
 </div>
-
 <script>
-// Sidebar Toggle
 function toggleDropdown(element) {
     const wrapper = element.parentElement;
     const content = wrapper.querySelector('.dropdown-content');

@@ -33,8 +33,13 @@ class UserController
         try {
             $response = $this->userService->login($request);
 
-            $this->sessionService->create($response->user->user_id);
-            View::redirect('/dashboard');
+            $this->sessionService->create($response->user->user_id, $response->user->role);
+            
+            if ($response->user->role === 'satpam') {
+                View::redirect('/lost_found');
+            } else {
+                View::redirect('/dashboard');
+            }
         } catch (ValidationException $e) {
             View::render('auth/login', ['error' => $e->getMessage()]);
         }

@@ -11,6 +11,7 @@ use App\Controller\LostnFoundController;
 use App\Controller\ForumController;
 use App\Controller\TeamController;
 use App\Controller\UserController;
+use App\Controller\SettingsController;
 use App\Controller\Api\KompetisiApiController;
 use App\Controller\Api\TeamApiController;
 use App\Controller\Api\EventApiController;
@@ -29,6 +30,9 @@ Router::add('POST', '/users/login', UserController::class, 'postLogin', [MustNot
 Router::add('GET', '/users/register', UserController::class, 'register', [MustNotLoginMiddleware::class]);
 Router::add('POST', '/users/register', UserController::class, 'register', [MustNotLoginMiddleware::class]);
 Router::add('GET', '/users/logout', UserController::class, 'logout', [MustLoginMiddleware::class]);
+Router::add('GET', '/settings', SettingsController::class, 'index', [MustLoginMiddleware::class]);
+Router::add('POST', '/settings/update', SettingsController::class, 'updateProfile', [MustLoginMiddleware::class]);
+Router::add('POST', '/settings/toggle-notification', SettingsController::class, 'toggleNotification', [MustLoginMiddleware::class]);
 
 // Team Routes
 Router::add('GET', '/team', TeamController::class, 'index', [MustLoginMiddleware::class]);

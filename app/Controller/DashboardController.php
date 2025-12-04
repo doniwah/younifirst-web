@@ -10,9 +10,33 @@ class DashboardController
     public function index()
     {
         // Get user session data
+        $sessionService = new \App\Service\SessionService();
         $userName = $_SESSION['nama'] ?? 'Mahasiswa';
         $userId = $_SESSION['user_id'] ?? null;
+        $userRole = $sessionService->getRole();
 
+        // Initialize repository
+        $repo = new DashboardRepository();
+
+        // Admin Dashboard Logic
+        if ($userRole === 'admin') {
+            $adminData = [
+                'total_users' => $repo->getTotalUsers(),
+                'active_users' => $repo->getActiveUsers(),
+                'laporan_masuk' => $repo->getLaporanMasukCount(),
+                'call_requests' => $repo->getCallRequestCount(),
+                'chart_data' => $repo->getLaporanMingguan(),
+                'recent_activity' => $repo->getRecentActivity(),
+                'action_items' => $repo->getActionItems(),
+                'title' => 'Beranda Admin - YouniFirst',
+                'user_name' => $userName
+            ];
+
+            View::render('component/dashboard/admin', $adminData);
+            return;
+        }
+
+        // Regular User Logic
         // Initialize empty arrays
         $feedPosts = [];
         $upcomingEvents = [];
@@ -21,7 +45,7 @@ class DashboardController
 
         // Try to fetch data from database with individual error handling
         try {
-            $repo = new DashboardRepository();
+            // ... existing logic ...
             
             // Try to get feed posts
             try {
@@ -115,7 +139,6 @@ class DashboardController
         View::render('component/dashboard/index', [
             'title' => 'Beranda - YouniFirst',
             'user_name' => $userName,
-            'notifications_count' => $unreadCount,
             'notifications_count' => $unreadCount,
             'user_forums' => $userForums, // Pass actual user forums for sidebar
             'new_notifications' => $newNotifications, // Pass notifications for header

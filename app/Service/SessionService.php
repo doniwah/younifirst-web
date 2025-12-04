@@ -5,6 +5,7 @@ namespace App\Service;
 class SessionService
 {
     public static string $SESSION_KEY = 'user_id';
+    public static string $SESSION_ROLE_KEY = 'user_role';
 
     public function __construct()
     {
@@ -13,14 +14,20 @@ class SessionService
         }
     }
 
-    public function create(string $userId): void
+    public function create(string $userId, string $role = 'user'): void
     {
         $_SESSION[self::$SESSION_KEY] = $userId;
+        $_SESSION[self::$SESSION_ROLE_KEY] = $role;
     }
 
     public function current(): ?string
     {
         return $_SESSION[self::$SESSION_KEY] ?? null;
+    }
+
+    public function getRole(): string
+    {
+        return $_SESSION[self::$SESSION_ROLE_KEY] ?? 'user';
     }
 
     public function destroy(): void
