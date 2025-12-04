@@ -11,6 +11,7 @@ use App\Controller\LostnFoundController;
 use App\Controller\ForumController;
 use App\Controller\TeamController;
 use App\Controller\UserController;
+use App\Controller\AdminController;
 use App\Controller\SettingsController;
 use App\Controller\Api\KompetisiApiController;
 use App\Controller\Api\TeamApiController;
@@ -33,6 +34,36 @@ Router::add('GET', '/users/logout', UserController::class, 'logout', [MustLoginM
 Router::add('GET', '/settings', SettingsController::class, 'index', [MustLoginMiddleware::class]);
 Router::add('POST', '/settings/update', SettingsController::class, 'updateProfile', [MustLoginMiddleware::class]);
 Router::add('POST', '/settings/toggle-notification', SettingsController::class, 'toggleNotification', [MustLoginMiddleware::class]);
+// Admin Routes
+// Admin Routes
+
+Router::add('GET', '/admin/reports', AdminController::class, 'reports', [MustLoginMiddleware::class]);
+
+// Reports API Routes
+Router::add('GET', '/api/reports', AdminController::class, 'getReports', [MustLoginMiddleware::class]);
+Router::add('GET', '/api/reports/([0-9]+)', AdminController::class, 'getReportDetail', [MustLoginMiddleware::class]);
+Router::add('POST', '/api/reports/update-status', AdminController::class, 'updateReportStatus', [MustLoginMiddleware::class]);
+Router::add('GET', '/api/reports/stats', AdminController::class, 'getReportStats', [MustLoginMiddleware::class]);
+
+Router::add('GET', '/admin/call-requests', AdminController::class, 'callRequests', [MustLoginMiddleware::class]);
+Router::add('POST', '/admin/call-requests/dispose', AdminController::class, 'disposeCallRequest', [MustLoginMiddleware::class]);
+Router::add('POST', '/admin/call-requests/call', AdminController::class, 'handleCall', [MustLoginMiddleware::class]);
+Router::add('POST', '/admin/call-requests/complete', AdminController::class, 'completeCall', [MustLoginMiddleware::class]);
+Router::add('GET', '/admin/users', AdminController::class, 'users', [MustLoginMiddleware::class]);
+Router::add('POST', '/admin/users/add', AdminController::class, 'addUser', [MustLoginMiddleware::class]);
+Router::add('GET', '/admin/users/get/([a-zA-Z0-9]+)', AdminController::class, 'getUser', [MustLoginMiddleware::class]);
+Router::add('POST', '/admin/users/update', AdminController::class, 'updateUser', [MustLoginMiddleware::class]);
+Router::add('POST', '/admin/users/change-status', AdminController::class, 'changeUserStatus', [MustLoginMiddleware::class]);
+Router::add('POST', '/admin/users/delete', AdminController::class, 'deleteUser', [MustLoginMiddleware::class]);
+// Tambahkan route baru
+// Tambahkan route baru untuk export activity log
+Router::add('GET', '/admin/activity-log/export-pdf', AdminController::class, 'exportActivityLogPdf', [MustLoginMiddleware::class]);
+Router::add('GET', '/admin/users/export-pdf', AdminController::class, 'exportUsersPdf', [MustLoginMiddleware::class]);
+Router::add('GET', '/admin/activity-log', AdminController::class, 'activityLog', [MustLoginMiddleware::class]);
+
+// Moderation Routes
+Router::add('GET', '/admin/moderation', \App\Controller\ModerationController::class, 'index', [MustLoginMiddleware::class]);
+Router::add('POST', '/admin/moderation/update', \App\Controller\ModerationController::class, 'updateStatus', [MustLoginMiddleware::class]);
 
 // Team Routes
 Router::add('GET', '/team', TeamController::class, 'index', [MustLoginMiddleware::class]);

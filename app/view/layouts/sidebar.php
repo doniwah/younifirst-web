@@ -37,6 +37,11 @@
                 <span>Dashboard</span>
             </a>
 
+            <a href="/admin/moderation" class="menu-item <?= $current_path === '/admin/moderation' ? 'active' : '' ?>">
+                <i class="bi bi-shield-check"></i>
+                <span>Moderasi Konten</span>
+            </a>
+
             <!-- Manajemen Pengguna Dropdown -->
             <div class="menu-item-wrapper">
                 <div class="menu-item dropdown-toggle" onclick="toggleDropdown(this)">
@@ -69,9 +74,9 @@
                     <a href="/admin/call-requests" class="menu-item">
                         <span>Call Request</span>
                     </a>
-                    <a href="/admin/call-history" class="menu-item">
+                    <!-- <a href="/admin/call-history" class="menu-item">
                         <span>Riwayat Call</span>
-                    </a>
+                    </a> -->
                 </div>
             </div>
 
@@ -85,12 +90,12 @@
                     <i class="bi bi-chevron-down dropdown-arrow"></i>
                 </div>
                 <div class="dropdown-content">
-                    <a href="/admin/reports" class="menu-item">
+                    <!-- <a href="/admin/reports" class="menu-item">
                         <span>Laporan Masuk</span>
                     </a>
                     <a href="/admin/reports/history" class="menu-item">
                         <span>Riwayat Penanganan</span>
-                    </a>
+                    </a> -->
                 </div>
             </div>
 

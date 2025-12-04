@@ -15,7 +15,8 @@
   ],
   "require": {
     "php": ">=8",
-    "fakerphp/faker": "^1.24"
+    "fakerphp/faker": "^1.24",
+    "tecnickcom/tcpdf": "^6.10"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.5"

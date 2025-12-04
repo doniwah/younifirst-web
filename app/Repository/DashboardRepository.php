@@ -374,93 +374,251 @@ class DashboardRepository
 
     public function getLaporanMingguan()
     {
-        // Mock data for chart
-        return [
-            'Sen' => ['masuk' => 12, 'selesai' => 10],
-            'Sel' => ['masuk' => 19, 'selesai' => 15],
-            'Rab' => ['masuk' => 8, 'selesai' => 8],
-            'Kam' => ['masuk' => 15, 'selesai' => 12],
-            'Jum' => ['masuk' => 22, 'selesai' => 18],
-            'Sab' => ['masuk' => 6, 'selesai' => 6],
-            'Min' => ['masuk' => 4, 'selesai' => 4],
-        ];
+        try {
+            // Initialize last 7 days with 0
+            $days = [];
+            for ($i = 6; $i >= 0; $i--) {
+                $date = date('Y-m-d', strtotime("-$i days"));
+                $dayName = $this->getDayName(date('D', strtotime($date)));
+                $days[$date] = [
+                    'label' => $dayName,
+                    'masuk' => 0,
+                    'selesai' => 0
+                ];
+            }
+
+            // Query for reports in last 7 days
+            // Query for reports in last 7 days
+            $sql = "
+                SELECT 
+                    created_at::date as date,
+                    COUNT(*) as total,
+                    SUM(CASE WHEN status != 'pending' THEN 1 ELSE 0 END) as selesai
+                FROM reports 
+                WHERE created_at >= (CURRENT_DATE - INTERVAL '6 days')
+                GROUP BY created_at::date
+            ";
+
+            $stmt = $this->db->query($sql);
+            $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            // Fill in the data
+            foreach ($results as $row) {
+                $date = $row['date'];
+                if (isset($days[$date])) {
+                    $days[$date]['masuk'] = (int)$row['total'];
+                    $days[$date]['selesai'] = (int)$row['selesai'];
+                }
+            }
+
+            // Format for chart (using day name as key)
+            $chartData = [];
+            foreach ($days as $day) {
+                $chartData[$day['label']] = [
+                    'masuk' => $day['masuk'],
+                    'selesai' => $day['selesai']
+                ];
+            }
+
+            return $chartData;
+
+        } catch (\Exception $e) {
+            error_log("Error fetching weekly reports: " . $e->getMessage());
+            // Return empty structure on error
+            return [
+                'Sen' => ['masuk' => 0, 'selesai' => 0],
+                'Sel' => ['masuk' => 0, 'selesai' => 0],
+                'Rab' => ['masuk' => 0, 'selesai' => 0],
+                'Kam' => ['masuk' => 0, 'selesai' => 0],
+                'Jum' => ['masuk' => 0, 'selesai' => 0],
+                'Sab' => ['masuk' => 0, 'selesai' => 0],
+                'Min' => ['masuk' => 0, 'selesai' => 0],
+            ];
+        }
     }
 
-    public function getRecentActivity()
+    private function getDayName($day)
     {
-        // Mock data for list
-        return [
-            [
-                'type' => 'report',
-                'title' => 'Laporan baru diterima',
-                'desc' => 'User @mahasiswa123 melaporkan spam',
-                'time' => '2 menit lalu',
+        $days = [
+            'Mon' => 'Sen',
+            'Tue' => 'Sel',
+            'Wed' => 'Rab',
+            'Thu' => 'Kam',
+            'Fri' => 'Jum',
+            'Sat' => 'Sab',
+            'Sun' => 'Min'
+        ];
+        return $days[$day] ?? $day;
+    }
+
+    public function getRecentActivity($limit = 5)
+    {
+        try {
+            $sql = "
+                SELECT 
+                    al.action_type,
+                    al.description,
+                    al.created_at,
+                    u.username,
+                    u.nama_lengkap
+                FROM activity_logs al
+                LEFT JOIN users u ON al.user_id = u.user_id
+                ORDER BY al.created_at DESC
+                LIMIT ?
+            ";
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$limit]);
+            $logs = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            return array_map(function($log) {
+                $typeConfig = $this->getActivityTypeConfig($log['action_type'] ?? 'system');
+                
+                // Determine title and description based on log data
+                // If description is empty, generate one
+                $desc = $log['description'];
+                if (empty($desc)) {
+                    $user = $log['username'] ?? 'Unknown User';
+                    $desc = "$user performed " . ($log['action_type'] ?? 'action');
+                }
+
+                return [
+                    'type' => $log['action_type'] ?? 'system',
+                    'title' => $typeConfig['title'],
+                    'desc' => $desc,
+                    'time' => $this->getTimeAgo($log['created_at']),
+                    'icon' => $typeConfig['icon'],
+                    'color' => $typeConfig['color']
+                ];
+            }, $logs);
+
+        } catch (\Exception $e) {
+            error_log("Error fetching recent activity: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    private function getActivityTypeConfig($type)
+    {
+        $configs = [
+            'report' => [
+                'title' => 'Laporan',
                 'icon' => 'bi-file-earmark-text',
                 'color' => '#f59e0b'
             ],
-            [
-                'type' => 'call',
-                'title' => 'Call request selesai',
-                'desc' => 'Admin menyelesaikan panggilan dengan user',
-                'time' => '15 menit lalu',
+            'call' => [
+                'title' => 'Call Request',
                 'icon' => 'bi-telephone',
                 'color' => '#10b981'
             ],
-            [
-                'type' => 'user',
-                'title' => 'User baru terdaftar',
-                'desc' => 'budi.santoso@univ.ac.id telah mendaftar',
-                'time' => '30 menit lalu',
+            'user_register' => [
+                'title' => 'User Baru',
                 'icon' => 'bi-person-plus',
                 'color' => '#10b981'
             ],
-            [
-                'type' => 'suspend',
-                'title' => 'Akun di-suspend',
-                'desc' => 'User @spammer01 di-suspend oleh moderator',
-                'time' => '1 jam lalu',
+            'suspend' => [
+                'title' => 'Suspend User',
                 'icon' => 'bi-shield-x',
                 'color' => '#ef4444'
             ],
-            [
-                'type' => 'system',
-                'title' => 'Maintenance selesai',
-                'desc' => 'Sistem backup berhasil dilakukan',
-                'time' => '2 jam lalu',
-                'icon' => 'bi-check-circle',
-                'color' => '#8b5cf6'
+            'delete' => [
+                'title' => 'Hapus User',
+                'icon' => 'bi-trash',
+                'color' => '#ef4444'
+            ],
+            'login' => [
+                'title' => 'Login',
+                'icon' => 'bi-box-arrow-in-right',
+                'color' => '#3b82f6'
+            ],
+            'system' => [
+                'title' => 'System',
+                'icon' => 'bi-gear',
+                'color' => '#6b7280'
             ]
         ];
+
+        return $configs[$type] ?? $configs['system'];
     }
 
-    public function getActionItems()
+    public function getActionItems($limit = 5)
     {
-        // Mock data for "Perlu Tindakan"
-        return [
-            [
-                'type' => 'call',
-                'title' => 'Call Request Urgent',
-                'desc' => 'User membutuhkan bantuan segera',
-                'tag' => 'high',
-                'icon' => 'bi-telephone-in',
-                'color' => '#ef4444'
-            ],
-            [
-                'type' => 'report',
-                'title' => 'Laporan Pelecehan',
-                'desc' => 'Konten tidak pantas terdeteksi',
-                'tag' => 'high',
-                'icon' => 'bi-exclamation-triangle',
-                'color' => '#ef4444'
-            ],
-            [
-                'type' => 'review',
-                'title' => 'Review Akun Suspended',
-                'desc' => '3 akun menunggu review',
-                'tag' => 'medium',
-                'icon' => 'bi-person-x',
-                'color' => '#f59e0b'
-            ]
-        ];
+        $items = [];
+
+        try {
+            // 1. Fetch Pending Call Requests
+            $sqlCall = "
+                SELECT 
+                    id,
+                    subject,
+                    description,
+                    priority,
+                    created_at
+                FROM call_requests
+                WHERE status = 'pending'
+                ORDER BY priority DESC, created_at ASC
+                LIMIT ?
+            ";
+            $stmtCall = $this->db->prepare($sqlCall);
+            $stmtCall->execute([$limit]);
+            $calls = $stmtCall->fetchAll(\PDO::FETCH_ASSOC);
+
+            foreach ($calls as $call) {
+                $items[] = [
+                    'type' => 'call',
+                    'title' => $call['subject'] ?: 'Call Request',
+                    'desc' => $call['description'] ?: 'No description',
+                    'tag' => $call['priority'] ?: 'normal',
+                    'icon' => 'bi-telephone-in',
+                    'color' => '#ef4444', // Red for urgent/pending
+                    'created_at' => $call['created_at']
+                ];
+            }
+
+            // 2. Fetch Pending Reports (if we haven't hit the limit)
+            if (count($items) < $limit) {
+                $remaining = $limit - count($items);
+                $sqlReport = "
+                    SELECT 
+                        id,
+                        judul,
+                        deskripsi,
+                        kategori,
+                        created_at
+                    FROM reports
+                    WHERE status = 'pending'
+                    ORDER BY created_at ASC
+                    LIMIT ?
+                ";
+                $stmtReport = $this->db->prepare($sqlReport);
+                $stmtReport->execute([$remaining]);
+                $reports = $stmtReport->fetchAll(\PDO::FETCH_ASSOC);
+
+                foreach ($reports as $report) {
+                    $items[] = [
+                        'type' => 'report',
+                        'title' => $report['judul'] ?: 'Laporan Masuk',
+                        'desc' => $report['deskripsi'] ?: 'No description',
+                        'tag' => $report['kategori'] ?: 'General',
+                        'icon' => 'bi-exclamation-triangle',
+                        'color' => '#f59e0b', // Orange for warning
+                        'created_at' => $report['created_at']
+                    ];
+                }
+            }
+
+            // Sort combined items by created_at (oldest first usually for action items, or priority)
+            // Here we prioritize calls (already at top) then reports. 
+            // If we want strict time sorting:
+            // usort($items, function($a, $b) {
+            //     return strtotime($a['created_at']) - strtotime($b['created_at']);
+            // });
+
+            return $items;
+
+        } catch (\Exception $e) {
+            error_log("Error fetching action items: " . $e->getMessage());
+            return [];
+        }
     }
 }
