@@ -81,7 +81,7 @@ class LostFoundRepository
             $data['no_hp'],
             $data['email'] ?? null,
             $data['foto_barang'] ?? null,
-            $data['status'] ?? 'aktif'
+            $data['status'] 
         ]);
         
         return $result ? $data['id_barang'] : false;

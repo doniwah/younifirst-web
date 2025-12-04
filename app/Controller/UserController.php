@@ -33,7 +33,12 @@ class UserController
         try {
             $response = $this->userService->login($request);
 
-            $this->sessionService->create($response->user->user_id, $response->user->role);
+            $this->sessionService->create(
+                $response->user->user_id, 
+                $response->user->role,
+                $response->user->username,
+                $response->user->email
+            );
             
             if ($response->user->role === 'satpam') {
                 View::redirect('/lost_found');

@@ -17,19 +17,16 @@ class PdfGenerator extends TCPDF
 
     public function Header()
     {
-        // Logo
         $this->SetY(10);
-        
-        // Header background
-        $this->SetFillColor(79, 70, 229); // Indigo
+
+        $this->SetFillColor(79, 70, 229); 
         $this->Rect(0, 0, 210, 35, 'F');
         
-        // Title
+
         $this->SetTextColor(255, 255, 255);
         $this->SetFont('helvetica', 'B', 20);
         $this->Cell(0, 15, $this->headerTitle, 0, 1, 'C', 0);
-        
-        // Subtitle
+
         if ($this->headerSubtitle) {
             $this->SetFont('helvetica', '', 10);
             $this->Cell(0, 5, $this->headerSubtitle, 0, 1, 'C', 0);
@@ -51,10 +48,9 @@ class PdfGenerator extends TCPDF
 
     public function generateUsersTable($users, $stats)
     {
-        // Info Box - Statistics
+
         $this->SetY(45);
         
-        // Draw statistics boxes
         $boxWidth = 45;
         $boxHeight = 20;
         $startX = 15;
@@ -69,17 +65,16 @@ class PdfGenerator extends TCPDF
         
         $x = $startX;
         foreach ($statistics as $stat) {
-            // Box background
+           
             $this->SetFillColor($stat['color'][0], $stat['color'][1], $stat['color'][2]);
             $this->RoundedRect($x, $startY, $boxWidth, $boxHeight, 3, '1111', 'F');
             
-            // Value
+            
             $this->SetXY($x, $startY + 3);
             $this->SetFont('helvetica', 'B', 18);
             $this->SetTextColor(255, 255, 255);
             $this->Cell($boxWidth, 8, $stat['value'], 0, 1, 'C');
             
-            // Label
             $this->SetXY($x, $startY + 11);
             $this->SetFont('helvetica', '', 9);
             $this->Cell($boxWidth, 5, $stat['label'], 0, 1, 'C');
@@ -89,17 +84,16 @@ class PdfGenerator extends TCPDF
         
         $this->Ln(25);
         
-        // Table header
+       
         $this->SetFont('helvetica', 'B', 9);
         $this->SetFillColor(79, 70, 229);
         $this->SetTextColor(255, 255, 255);
         $this->SetDrawColor(79, 70, 229);
         $this->SetLineWidth(0.3);
         
-        // Column widths
+       
         $w = [8, 35, 50, 30, 25, 20, 20];
         
-        // Header
         $this->Cell($w[0], 8, 'No', 1, 0, 'C', 1);
         $this->Cell($w[1], 8, 'Username', 1, 0, 'C', 1);
         $this->Cell($w[2], 8, 'Email', 1, 0, 'C', 1);
@@ -109,7 +103,6 @@ class PdfGenerator extends TCPDF
         $this->Cell($w[6], 8, 'Status', 1, 0, 'C', 1);
         $this->Ln();
         
-        // Data
         $this->SetFont('helvetica', '', 8);
         $this->SetTextColor(50, 50, 50);
         $this->SetDrawColor(220, 220, 220);
@@ -123,12 +116,10 @@ class PdfGenerator extends TCPDF
             } else {
                 $this->SetFillColor(255, 255, 255);
             }
-            
-            // Check if we need a new page
+        
             if ($this->GetY() > 260) {
                 $this->AddPage();
                 
-                // Reprint header
                 $this->SetFont('helvetica', 'B', 9);
                 $this->SetFillColor(79, 70, 229);
                 $this->SetTextColor(255, 255, 255);

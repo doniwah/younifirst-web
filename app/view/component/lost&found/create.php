@@ -142,7 +142,7 @@
                                 <select name="kategori" class="form-control" required>
                                     <option value="">Pilih Kategori</option>
                                     <option value="hilang">Barang Hilang</option>
-                                    <option value="ditemukan">Barang Ditemukan</option>
+                                    <option value="menemukan">Barang Ditemukan</option>
                                 </select>
                             </div>
 

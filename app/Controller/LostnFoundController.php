@@ -93,7 +93,7 @@ class LostnFoundController
             'no_hp' => $_POST['no_hp'] ?? '',
             'email' => $_POST['email'] ?? '',
             'foto_barang' => $fotoPath,
-            'status' => 'aktif'
+            'status' => 'post'
         ];
 
         $itemId = $this->lostFoundRepository->createItem($itemData);

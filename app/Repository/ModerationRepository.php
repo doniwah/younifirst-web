@@ -46,8 +46,8 @@ class ModerationRepository
         // 4. Lost & Found (Table: lost_found)
         // Schema: id_barang, nama_barang, status (statuslostfound), created_at
         // We cast to text to avoid "invalid input value for enum" errors if the value doesn't match.
-        // We'll check for 'aktif', 'pending', or 'waiting' by casting.
-        $sqlLost = "SELECT id_barang as id, nama_barang as title, 'lost_found' as type, created_at FROM lost_found WHERE status::text IN ('aktif', 'pending', 'waiting')";
+        // We'll check for 'aktif', 'pending', 'waiting', or 'post' by casting.
+        $sqlLost = "SELECT id_barang as id, nama_barang as title, 'lost_found' as type, created_at FROM lost_found WHERE status::text IN ('aktif', 'pending', 'waiting', 'post')";
         $stmtLost = $this->db->query($sqlLost);
         while ($row = $stmtLost->fetch(PDO::FETCH_ASSOC)) {
             $items[] = $row;

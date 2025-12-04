@@ -14,10 +14,12 @@ class SessionService
         }
     }
 
-    public function create(string $userId, string $role = 'user'): void
+    public function create(string $userId, string $role = 'user', string $username = '', string $email = ''): void
     {
         $_SESSION[self::$SESSION_KEY] = $userId;
         $_SESSION[self::$SESSION_ROLE_KEY] = $role;
+        $_SESSION['nama'] = $username;
+        $_SESSION['email'] = $email;
     }
 
     public function current(): ?string
