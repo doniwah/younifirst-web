@@ -13,13 +13,13 @@
 
 <body>
     <?php require_once __DIR__ . "/../../layouts/sidebar.php"; ?>
-    
+
     <div class="main-content">
         <div class="dashboard-container">
             <!-- Header -->
-            <?php 
+            <?php
             $page_title = 'Beranda';
-            require_once __DIR__ . "/../../layouts/page-header.php"; 
+            require_once __DIR__ . "/../../layouts/page-header.php";
             ?>
 
             <div class="dashboard-layout">
@@ -33,26 +33,23 @@
                         </div>
                         <img src="/images/welcome-illustration.svg" alt="Welcome" onerror="this.style.display='none'">
                     </div>
-
-                    <!-- Feed Posts -->
                     <div class="feed-section">
                         <?php if (!empty($feed_posts)): ?>
                             <?php foreach ($feed_posts as $post): ?>
                                 <div class="feed-card">
                                     <div class="post-header">
-                                        <img src="<?= $post['user_avatar'] ?? '/images/avatar-default.png' ?>" 
-                                             alt="Avatar"
-                                             onerror="this.style.display='none'">
+                                        <img src="<?= $post['user_avatar'] ?? '/images/avatar-default.png' ?>" alt="Avatar"
+                                            onerror="this.style.display='none'">
                                         <div>
                                             <strong><?= htmlspecialchars($post['user_name'] ?? 'Admin') ?></strong>
-                                            <span class="post-time"><?= htmlspecialchars($post['time_ago'] ?? 'Baru saja') ?></span>
+                                            <span
+                                                class="post-time"><?= htmlspecialchars($post['time_ago'] ?? 'Baru saja') ?></span>
                                         </div>
                                     </div>
                                     <div class="post-content">
                                         <?php if (!empty($post['image'])): ?>
-                                            <img src="<?= htmlspecialchars($post['image']) ?>" 
-                                                 alt="Post image"
-                                                 onerror="this.style.display='none'">
+                                            <img src="<?= htmlspecialchars($post['image']) ?>" alt="Post image"
+                                                onerror="this.style.display='none'">
                                         <?php endif; ?>
                                         <?php if (!empty($post['title'])): ?>
                                             <h3><?= htmlspecialchars($post['title']) ?></h3>
@@ -97,9 +94,8 @@
                         <?php if (!empty($user_forums)): ?>
                             <?php foreach ($user_forums as $forum): ?>
                                 <div class="forum-item">
-                                    <img src="<?= $forum['image'] ?? '/images/forum-placeholder.jpg' ?>" 
-                                         alt="Forum"
-                                         onerror="this.style.display='none'">
+                                    <img src="<?= $forum['image'] ?? '/images/forum-placeholder.jpg' ?>" alt="Forum"
+                                        onerror="this.style.display='none'">
                                     <div>
                                         <strong><?= htmlspecialchars($forum['name']) ?></strong>
                                         <?php if (isset($forum['code'])): ?>
@@ -127,9 +123,8 @@
                         <?php if (!empty($upcoming_events)): ?>
                             <?php foreach ($upcoming_events as $event): ?>
                                 <div class="event-card">
-                                    <img src="<?= $event['image'] ?? '/images/event-placeholder.jpg' ?>" 
-                                         alt="Event"
-                                         onerror="this.style.display='none'">
+                                    <img src="<?= $event['image'] ?? '/images/event-placeholder.jpg' ?>" alt="Event"
+                                        onerror="this.style.display='none'">
                                     <div class="event-info">
                                         <strong><?= htmlspecialchars($event['title']) ?></strong>
                                         <span><i class="bi bi-calendar"></i> <?= htmlspecialchars($event['date']) ?></span>
@@ -150,12 +145,12 @@
                         <?php if (!empty($upcoming_competitions)): ?>
                             <?php foreach ($upcoming_competitions as $comp): ?>
                                 <div class="competition-card">
-                                    <img src="<?= $comp['image'] ?? '/images/competition-placeholder.jpg' ?>" 
-                                         alt="Competition"
-                                         onerror="this.style.display='none'">
+                                    <img src="<?= $comp['image'] ?? '/images/competition-placeholder.jpg' ?>" alt="Competition"
+                                        onerror="this.style.display='none'">
                                     <div class="comp-info">
                                         <strong><?= htmlspecialchars($comp['title']) ?></strong>
-                                        <span><i class="bi bi-clock"></i> Deadline: <?= htmlspecialchars($comp['deadline']) ?></span>
+                                        <span><i class="bi bi-clock"></i> Deadline:
+                                            <?= htmlspecialchars($comp['deadline']) ?></span>
                                         <?php if (isset($comp['category'])): ?>
                                             <span style="color: var(--success-color); font-size: 12px;">
                                                 <?= htmlspecialchars($comp['category']) ?>
@@ -186,7 +181,7 @@
             // Remove active from all tabs and contents
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
+
             // Add active to clicked tab and corresponding content
             event.target.classList.add('active');
             document.getElementById('tab-' + tabName).classList.add('active');
@@ -196,7 +191,7 @@
         document.addEventListener('click', function(event) {
             const dropdown = document.getElementById('notificationDropdown');
             const notifWrapper = document.querySelector('.notification-wrapper');
-            
+
             if (dropdown && notifWrapper && !notifWrapper.contains(event.target)) {
                 dropdown.classList.remove('active');
             }
@@ -207,14 +202,14 @@
             const html = document.documentElement;
             const currentTheme = html.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
+
             html.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
-            
+
             // Update button text
             const modeToggle = document.querySelector('.mode-toggle span');
             const modeIcon = document.querySelector('.mode-toggle i');
-            
+
             if (newTheme === 'dark') {
                 modeToggle.textContent = 'MODE GELAP';
                 modeIcon.className = 'bi bi-moon';
@@ -228,7 +223,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
-            
+
             if (savedTheme === 'dark') {
                 const modeToggle = document.querySelector('.mode-toggle span');
                 const modeIcon = document.querySelector('.mode-toggle i');

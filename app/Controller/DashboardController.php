@@ -15,10 +15,8 @@ class DashboardController
         $userId = $_SESSION['user_id'] ?? null;
         $userRole = $sessionService->getRole();
 
-        // Initialize repository
         $repo = new DashboardRepository();
 
-        // Admin Dashboard Logic
         if ($userRole === 'admin') {
             $adminData = [
                 'total_users' => $repo->getTotalUsers(),
@@ -46,7 +44,7 @@ class DashboardController
         // Try to fetch data from database with individual error handling
         try {
             // ... existing logic ...
-            
+
             // Try to get feed posts
             try {
                 $feedPosts = $repo->getFeedPosts(10);
@@ -111,9 +109,9 @@ class DashboardController
 
             // Merge all notifications
             $allNotifications = array_merge($userForums, $recentEvents, $recentLostFound);
-            
+
             // Sort by created_at desc
-            usort($allNotifications, function($a, $b) {
+            usort($allNotifications, function ($a, $b) {
                 return strtotime($b['created_at'] ?? 'now') - strtotime($a['created_at'] ?? 'now');
             });
 
@@ -129,7 +127,6 @@ class DashboardController
                     $unreadCount++;
                 }
             }
-
         } catch (\Exception $e) {
             error_log("Error initializing DashboardRepository: " . $e->getMessage());
             $newNotifications = [];

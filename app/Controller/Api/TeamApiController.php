@@ -60,10 +60,6 @@ class TeamApiController
             ], JSON_PRETTY_PRINT);
         }
     }
-
-    /**
-     * Get team by ID
-     */
     public function getTeam($id)
     {
         header('Content-Type: application/json');

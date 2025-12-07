@@ -38,12 +38,12 @@
         <div class="features-grid">
             <?php if (!empty($features)): ?>
                 <?php foreach ($features as $index => $feature): ?>
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="<?= 200 + ($index * 200) ?>">
-                    <div class="feature-icon <?= $feature['icon_color_class'] ?>"><i class="<?= $feature['icon'] ?>"
-                            style="color: #ffffff; font-size: 20px;"></i></div>
-                    <h3><?= htmlspecialchars($feature['title']) ?></h3>
-                    <p><?= htmlspecialchars($feature['description']) ?></p>
-                </div>
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="<?= 200 + ($index * 200) ?>">
+                        <div class="feature-icon <?= $feature['icon_color_class'] ?>"><i class="<?= $feature['icon'] ?>"
+                                style="color: #ffffff; font-size: 20px;"></i></div>
+                        <h3><?= htmlspecialchars($feature['title']) ?></h3>
+                        <p><?= htmlspecialchars($feature['description']) ?></p>
+                    </div>
                 <?php endforeach; ?>
             <?php else: ?>
                 <p>Belum ada fitur yang ditampilkan.</p>
@@ -83,9 +83,9 @@
         <div class="stats-card" data-aos="fade-right" data-aos-delay="800">
             <?php if (!empty($stats)): ?>
                 <?php foreach ($stats as $stat): ?>
-                <div class="stats-number"><?= htmlspecialchars($stat['number']) ?></div>
-                <div class="stats-label"><?= htmlspecialchars($stat['label']) ?></div>
-                <p class="stats-description"><?= htmlspecialchars($stat['description']) ?></p>
+                    <div class="stats-number"><?= htmlspecialchars($stat['number']) ?></div>
+                    <div class="stats-label"><?= htmlspecialchars($stat['label']) ?></div>
+                    <p class="stats-description"><?= htmlspecialchars($stat['description']) ?></p>
                 <?php endforeach; ?>
             <?php else: ?>
                 <div class="stats-number">0+</div>
@@ -104,27 +104,27 @@
         <div class="testimonial-grid">
             <?php if (!empty($testimonials)): ?>
                 <?php foreach ($testimonials as $index => $testimonial): ?>
-                <div class="testimonial-card" data-aos="zoom-in" data-aos-delay="<?= 200 + ($index * 200) ?>">
-                    <div class="card-header">
-                        <div class="avatar <?= $testimonial['avatar_class'] ?>">
-                            <?php
-                            $parts = explode(' ', $testimonial['name']);
-                            $initials = '';
-                            foreach ($parts as $part) {
-                                $initials .= strtoupper(substr($part, 0, 1));
-                            }
-                            echo substr($initials, 0, 2);
-                            ?>
+                    <div class="testimonial-card" data-aos="zoom-in" data-aos-delay="<?= 200 + ($index * 200) ?>">
+                        <div class="card-header">
+                            <div class="avatar <?= $testimonial['avatar_class'] ?>">
+                                <?php
+                                $parts = explode(' ', $testimonial['name']);
+                                $initials = '';
+                                foreach ($parts as $part) {
+                                    $initials .= strtoupper(substr($part, 0, 1));
+                                }
+                                echo substr($initials, 0, 2);
+                                ?>
+                            </div>
+                            <div class="user-info">
+                                <h3><?= htmlspecialchars($testimonial['name']) ?></h3>
+                                <p><?= htmlspecialchars($testimonial['major']) ?></p>
+                            </div>
                         </div>
-                        <div class="user-info">
-                            <h3><?= htmlspecialchars($testimonial['name']) ?></h3>
-                            <p><?= htmlspecialchars($testimonial['major']) ?></p>
+                        <div class="testimonial-text">
+                            <?= htmlspecialchars($testimonial['text']) ?>
                         </div>
                     </div>
-                    <div class="testimonial-text">
-                        <?= htmlspecialchars($testimonial['text']) ?>
-                    </div>
-                </div>
                 <?php endforeach; ?>
             <?php else: ?>
                 <p>Belum ada testimoni.</p>
@@ -141,12 +141,12 @@
         <div class="faq-container">
             <?php if (!empty($faqs)): ?>
                 <?php foreach ($faqs as $faq): ?>
-                <div class="faq-item" data-aos="fade-up">
-                    <div class="faq-question"><?= htmlspecialchars($faq['question']) ?></div>
-                    <div class="faq-answer">
-                        <?= htmlspecialchars($faq['answer']) ?>
+                    <div class="faq-item" data-aos="fade-up">
+                        <div class="faq-question"><?= htmlspecialchars($faq['question']) ?></div>
+                        <div class="faq-answer">
+                            <?= htmlspecialchars($faq['answer']) ?>
+                        </div>
                     </div>
-                </div>
                 <?php endforeach; ?>
             <?php else: ?>
                 <p>Belum ada FAQ.</p>
@@ -159,11 +159,11 @@
     ?>
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
     <script>
-    AOS.init({
-        duration: 1000,
-        once: true,
-        offset: 120,
-    });
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 120,
+        });
     </script>
 </body>
 
