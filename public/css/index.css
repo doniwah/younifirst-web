@@ -6,7 +6,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background: linear-gradient(180deg, #f0f4ff 0%, #ffffff 100%);
+  background: #000000;
 }
 
 .navbar {
@@ -19,8 +19,9 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 20px 40px;
-  background: white;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .logo {
@@ -29,11 +30,11 @@ body {
   gap: 10px;
   font-size: 20px;
   font-weight: 600;
-  color: #333;
+  color: #ffffff;
 }
 
 .logo span {
-  background: linear-gradient(to right, #003366, #0070c0);
+  background: linear-gradient(to right, #60a5fa, #3b82f6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 700;
@@ -53,24 +54,24 @@ body {
 
 .btn_nav a {
   padding: 8px 12px 8px 12px;
-  color: black;
+  color: #ffffff;
   text-decoration: none;
   border-radius: 8px;
   margin: 4px;
 }
 
 .btn_nav a:hover {
-  background-color: #f1f5f9;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .btn_nav a.active {
   color: white;
-  background: #0f4174;
+  background: #3b82f6;
 }
 
 .btn_nav a i {
   margin: 5px;
-  color: black;
+  color: #ffffff;
 }
 
 .btn_nav a.active i {
@@ -99,37 +100,52 @@ body {
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
-  color: #000;
+  color: #ffffff;
 }
 
 .logout_btn i {
   margin-right: 10px;
-  color: #000;
-  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.6));
+  color: #ffffff;
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.6));
 }
 
 .hero {
+  position: relative;
   text-align: center;
-  padding: 80px 20px;
-  max-width: 800px;
+  padding: 150px 20px 100px;
+  max-width: 100%;
+  width: 100%;
   margin: 0 auto;
   margin-top: 70px;
+  background: #000000;
+  overflow: hidden;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .hero h1 {
   font-size: 54px;
-  background: linear-gradient(to right, #003366, #0070c0);
+  background: linear-gradient(to right, #60a5fa, #3b82f6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin-bottom: 10px;
   line-height: 1.2;
   padding-bottom: 10px;
-  margin-top: 40px;
+  margin-top: 0;
 }
 
 .hero p {
-  color: #666;
+  color: #b0b0b0;
   font-size: 20px;
   line-height: 1.6;
   margin-bottom: 40px;
@@ -180,18 +196,19 @@ body {
   padding: 60px 20px;
   max-width: 1500px;
   margin: 0 auto;
+  background: #000000;
 }
 
 .features h2 {
   text-align: center;
   font-size: 44px;
-  color: #333;
+  color: #ffffff;
   margin-bottom: 15px;
 }
 
 .features-subtitle {
   text-align: center;
-  color: #666;
+  color: #b0b0b0;
   margin-bottom: 60px;
   font-size: 18px;
 }
@@ -268,11 +285,12 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 60px;
   align-items: center;
+  background: #000000;
 }
 
 .why-content h2 {
   font-size: 48px;
-  color: #000000;
+  color: #ffffff;
   margin-bottom: 30px;
   line-height: 1.2;
 }
@@ -296,12 +314,12 @@ body {
 
 .why-item h3 {
   font-size: 18px;
-  color: #000000;
+  color: #ffffff;
   margin-bottom: 8px;
 }
 
 .why-item p {
-  color: #666;
+  color: #b0b0b0;
   font-size: 14px;
   line-height: 1.6;
 }
@@ -346,9 +364,12 @@ body {
   color: #666;
   font-size: 14px;
 }
+
 .testimonial-section {
   max-width: 1200px;
   margin: 0 auto;
+  background: #000000;
+  padding: 60px 20px;
 }
 
 .section-header {
@@ -358,14 +379,14 @@ body {
 
 .section-header h2 {
   font-size: 48px;
-  color: #1a1a1a;
+  color: #ffffff !important;
   margin-bottom: 16px;
   font-weight: 700;
 }
 
 .section-header p {
   font-size: 18px;
-  color: #6c757d;
+  color: #b0b0b0;
 }
 
 .testimonial-grid {
@@ -441,6 +462,8 @@ body {
   margin: 0 auto;
   margin-top: 40px;
   margin-bottom: 40px;
+  background: #000000;
+  padding: 60px 20px;
 }
 
 .section-header {
@@ -492,12 +515,12 @@ body {
 }
 
 .footer {
-  background: white;
+  background: #000000;
   padding: 30px 40px;
   text-align: center;
-  color: #666;
+  color: #b0b0b0;
   font-size: 14px;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .footer-logo {
@@ -507,18 +530,18 @@ body {
   gap: 10px;
   margin-bottom: 15px;
   font-weight: 600;
-  color: #333;
+  color: #ffffff;
 }
 
 .footer-logo span {
-  background: linear-gradient(145deg, #002b5b, #00529b);
+  background: linear-gradient(145deg, #60a5fa, #3b82f6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 700;
 }
 
 .footer-logo p {
-  color: #666;
+  color: #b0b0b0;
 }
 
 @media (max-width: 768px) {
@@ -542,6 +565,7 @@ body {
   .testimonial-grid {
     grid-template-columns: 1fr;
   }
+
   .section-header h2 {
     font-size: 32px;
   }
@@ -556,5 +580,130 @@ body {
 
   .faq-answer {
     font-size: 14px;
+  }
+}
+
+/* Wave Animation Styles */
+.wave-animation-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  background: #000000;
+  display: block;
+  z-index: 1;
+}
+
+/* Gradient overlay untuk blending dengan background */
+.wave-animation-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(to bottom, #000000 0%, rgba(0, 0, 0, 0.6) 40%, transparent 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.wave-animation-container::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(to top, #000000 0%, rgba(0, 0, 0, 0.6) 40%, transparent 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.wave-video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1.5);
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  opacity: 0.8;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+/* Ensure sections have proper positioning */
+.hero,
+.features,
+.why-section,
+.testimonial-section,
+.faq-section {
+  position: relative;
+  z-index: 2;
+}
+
+/* Responsive adjustments for wave animations */
+@media (max-width: 768px) {
+  .hero {
+    padding: 100px 20px 80px;
+    min-height: 500px;
+  }
+
+  .hero h1 {
+    font-size: 32px;
+  }
+
+  .wave-video {
+    transform: translate(-50%, -50%) scale(1.8);
+  }
+
+  .why-section {
+    grid-template-columns: 1fr;
+  }
+
+  .features h2,
+  .why-content h2 {
+    font-size: 28px;
+  }
+
+  .section-header h2 {
+    font-size: 36px;
+  }
+
+  .testimonial-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header h2 {
+    font-size: 32px;
+  }
+
+  .faq-item {
+    padding: 24px;
+  }
+
+  .faq-question {
+    font-size: 16px;
+  }
+
+  .faq-answer {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 80px 20px 60px;
+    min-height: 400px;
+  }
+
+  .wave-video {
+    transform: translate(-50%, -50%) scale(2);
   }
 }

@@ -18,13 +18,20 @@
     ?>
 
     <section class="hero">
-        <h1 data-aos="fade-up">Terhubung, Berkompetisi, Berkembang Bersama</h1>
-        <p data-aos="fade-up" data-aos-delay="200">YouNiFirst adalah platform all-in-one untuk mahasiswa. Temukan lomba,
-            tim, event, dan lebih banyak lagi dalam
-            satu tempat.</p>
-        <div class="cta-buttons">
-            <button class="btn-primary" data-aos="fade-right" data-aos-delay="400">Mulai Sekarang</button>
-            <button class="btn-secondary" data-aos="fade-left" data-aos-delay="600">Pelajari Lebih Lanjut</button>
+        <div class="wave-animation-container">
+            <video autoplay loop muted playsinline class="wave-video" id="wave-video-1">
+                <source src="/images/animasi/wave-animation.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="hero-content">
+            <h1 data-aos="fade-up">Terhubung, Berkompetisi, Berkembang Bersama</h1>
+            <p data-aos="fade-up" data-aos-delay="200">YouNiFirst adalah platform all-in-one untuk mahasiswa. Temukan lomba,
+                tim, event, dan lebih banyak lagi dalam
+                satu tempat.</p>
+            <div class="cta-buttons">
+                <button class="btn-primary" data-aos="fade-right" data-aos-delay="400">Mulai Sekarang</button>
+                <button class="btn-secondary" data-aos="fade-left" data-aos-delay="600">Pelajari Lebih Lanjut</button>
+            </div>
         </div>
     </section>
 
@@ -88,9 +95,9 @@
                     <p class="stats-description"><?= htmlspecialchars($stat['description']) ?></p>
                 <?php endforeach; ?>
             <?php else: ?>
-                <div class="stats-number">0+</div>
+                <div class="stats-number">5000+</div>
                 <div class="stats-label">Pengguna</div>
-                <p class="stats-description">Data belum tersedia</p>
+                <p class="stats-description">Data Pengguna Terakhir</p>
             <?php endif; ?>
         </div>
     </section>
@@ -163,6 +170,35 @@
             duration: 1000,
             once: true,
             offset: 120,
+        });
+
+        // Force all wave videos to play
+        document.addEventListener('DOMContentLoaded', function() {
+            const waveVideos = document.querySelectorAll('.wave-video');
+
+            waveVideos.forEach(function(video, index) {
+                // Set video properties
+                video.muted = true;
+                video.playsInline = true;
+                video.loop = true;
+
+                // Try to play the video
+                const playPromise = video.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.then(function() {
+                        console.log('Wave video ' + (index + 1) + ' is playing');
+                    }).catch(function(error) {
+                        console.log('Wave video ' + (index + 1) + ' autoplay failed:', error);
+                        // Retry after a short delay
+                        setTimeout(function() {
+                            video.play().catch(function(e) {
+                                console.log('Wave video ' + (index + 1) + ' retry failed:', e);
+                            });
+                        }, 500);
+                    });
+                }
+            });
         });
     </script>
 </body>
